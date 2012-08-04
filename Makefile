@@ -4,7 +4,7 @@ OBJS =		ProjectB.o
 
 LIBS =
 
-TARGET =	ProjectB
+TARGET =	Server
 
 $(TARGET):	$(OBJS)
 	$(CXX) -o $(TARGET) $(OBJS) $(LIBS)
