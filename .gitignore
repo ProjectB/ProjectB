@@ -1,9 +1,13 @@
+# temp
+*~
+
 # eclipse
 .project
 .cproject
 
 # bin
 Server
+server
 
 # Compiled Object files
 *.slo

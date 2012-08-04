@@ -1,5 +1,5 @@
 //============================================================================
-// Name        : ProjectB.cpp
+// Name        : server.cpp
 // Author      : 
 // Version     :
 // Copyright   : Your copyright notice
@@ -11,6 +11,5 @@
 
 int main(void) {
 	puts("Hello World!!!");
-	puts("Rika Bruxo!");
 	return EXIT_SUCCESS;
 }
