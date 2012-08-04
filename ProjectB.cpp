@@ -11,5 +11,6 @@
 
 int main(void) {
 	puts("Hello World!!!");
+	puts("Rika Bruxo!");
 	return EXIT_SUCCESS;
 }
