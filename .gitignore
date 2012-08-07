@@ -6,8 +6,7 @@
 .cproject
 
 # bin
-Server
-server
+main
 
 # Compiled Object files
 *.slo
