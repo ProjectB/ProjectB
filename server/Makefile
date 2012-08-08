@@ -4,13 +4,15 @@ OBJS =		main.o
 
 LIBS =
 
-TARGET =	all
+TARGET = all
 
 MAIN = main
 
 HTTPSERVER = httpServer
 
-all: $(MAIN) $(HTTPSERVER)
+SIMPLEWSSERVER = simpleWSSever
+
+all: $(MAIN) $(HTTPSERVER) $(SIMPLEWSSERVER)
 
 $(MAIN):	$(OBJS)
 	$(CXX) -o $(MAIN) $(OBJS) $(LIBS)
@@ -18,5 +20,8 @@ $(MAIN):	$(OBJS)
 $(HTTPSERVER): PracticalSocket.o HTTPServer.o
 	$(CXX) -o $(HTTPSERVER) PracticalSocket.o HTTPServer.o $(LIBS)
 
+$(SIMPLEWSSERVER): PracticalSocket.o SimpleWebSocketServer.o
+	$(CXX) -o $(SIMPLEWSSERVER) PracticalSocket.o SimpleWebSocketServer.o $(LIBS)
+
 clean:
-	rm -f $(OBJS) $(MAIN) $(HTTPSERVER) *.o
+	rm -f $(OBJS) $(MAIN) $(HTTPSERVER) $(SIMPLEWSSERVER) *.o

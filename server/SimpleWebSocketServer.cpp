@@ -1,5 +1,5 @@
 /*
- * HTTPServer.cpp
+ * SimpleWebSocketServer.cpp
  *
  *  Created on: Aug 8, 2012
  *      Author: ricardo
@@ -9,6 +9,7 @@
 #include <iostream>           // For cerr and cout
 #include <cstdlib>            // For atoi()
 #include <cstring>
+#include <sstream>
 
 using namespace std;
 
@@ -22,11 +23,7 @@ int main(int argc, char *argv[]) {
 
 	if (argc >= 2) {                     // Test for correct number of arguments
 		echoServPort = atoi(argv[1]);  // First arg: local port
-		//cerr << "Usage: " << argv[0] << " <Server Port>" << endl;
-		//exit(1);
 	}
-
-	//unsigned short echoServPort = atoi(argv[1]);  // First arg: local port
 
 	cout << "Listening at port " << echoServPort << endl;
 
@@ -35,7 +32,6 @@ int main(int argc, char *argv[]) {
 
 		for (;;) {   // Run forever
 			HandleTCPClient(servSock.accept());  // Wait for a client to connect
-			break;
 		}
 	} catch (SocketException &e) {
 		cerr << e.what() << endl;
@@ -51,12 +47,12 @@ void HandleTCPClient(TCPSocket *sock) {
 	cout << "Handling client ";
 	try {
 		cout << sock->getForeignAddress() << ":";
-	} catch (SocketException e) {
+	} catch (const SocketException & e) {
 		cerr << "Unable to get foreign address" << endl;
 	}
 	try {
 		cout << sock->getForeignPort();
-	} catch (SocketException e) {
+	} catch (const SocketException & e) {
 		cerr << "Unable to get foreign port" << endl;
 	}
 	cout << endl;
@@ -64,19 +60,26 @@ void HandleTCPClient(TCPSocket *sock) {
 	// Send received string and receive again until the end of transmission
 	char echoBuffer[RCVBUFSIZE];
 	unsigned int recvMsgSize;
+	stringstream buffer;
 	while ((recvMsgSize = sock->recv(echoBuffer, RCVBUFSIZE)) > 0) { // Zero means
 		// end of transmission
-
-		if (recvMsgSize < RCVBUFSIZE)
-			echoBuffer[recvMsgSize] = 0;
-		cout << echoBuffer;
-		if (string(echoBuffer).find("\r\n\r\n") != string::npos)
+		//cout << echoBuffer;
+		int pos;
+		if ((pos = string(echoBuffer).find("\r\n\r\n")) != string::npos)
+		{
+			echoBuffer[pos] = 0;
+			buffer << echoBuffer;
 			break;
-	}
-	cout << endl;
+		}
 
-	string answer("HTTP/1.0 200 OK\r\nConnection: close\r\nContent-Type: text/html;\r\ncharset=UTF-8\r\n\r\nFuncionou!\r\n\r\n");
-	sock->send(answer.c_str(), strlen(answer.c_str()));
+		buffer << echoBuffer;
+
+	}
+	//cout << endl;
+	cout << buffer.str() << endl;
+
+	//string answer("HTTP/1.0 200 OK\r\nConnection: close\r\nContent-Type: text/html;\r\ncharset=UTF-8\r\n\r\nFuncionou!\r\n\r\n");
+	//sock->send(answer.c_str(), strlen(answer.c_str()));
 
 	delete sock;
 }
