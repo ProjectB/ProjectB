@@ -1,12 +1,13 @@
+# bin
+main
+httpServer
+
 # temp
 *~
 
 # eclipse
 .project
 .cproject
-
-# bin
-main
 
 # Compiled Object files
 *.slo

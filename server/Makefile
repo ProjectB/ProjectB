@@ -4,12 +4,19 @@ OBJS =		main.o
 
 LIBS =
 
-TARGET =	main
+TARGET =	all
 
-$(TARGET):	$(OBJS)
-	$(CXX) -o $(TARGET) $(OBJS) $(LIBS)
+MAIN = main
 
-all:	$(TARGET)
+HTTPSERVER = httpServer
+
+all: $(MAIN) $(HTTPSERVER)
+
+$(MAIN):	$(OBJS)
+	$(CXX) -o $(MAIN) $(OBJS) $(LIBS)
+
+$(HTTPSERVER): PracticalSocket.o HTTPServer.o
+	$(CXX) -o $(HTTPSERVER) PracticalSocket.o HTTPServer.o $(LIBS)
 
 clean:
-	rm -f $(OBJS) $(TARGET)
+	rm -f $(OBJS) $(MAIN) $(HTTPSERVER) *.o
