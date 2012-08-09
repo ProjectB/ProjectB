@@ -11,12 +11,43 @@
 #include <cstdlib>            // For atoi()
 #include <cstring>
 #include <sstream>
+#include <vector>
+#include <string>
+
 
 using namespace std;
 
 const unsigned int RCVBUFSIZE = 32;    // Size of receive buffer
 
-void HandleTCPClient(TCPSocket *sock); // TCP client handling function
+
+std::string replace(const std::string s, const std::string toBeReplaced, const std::string toBePut) {
+	size_t pos;
+	string result = string(s);
+	while ((pos = result.find(toBeReplaced)) != std::string::npos)
+	{
+		result = result.replace(pos, toBeReplaced.length(), toBePut.c_str());
+	}
+	return result;
+}
+
+std::vector<std::string> &split(const std::string &s, char delim, std::vector<std::string> &elems) {
+    std::stringstream ss(s);
+    std::string item;
+    while(std::getline(ss, item, delim)) {
+        elems.push_back(item);
+    }
+    return elems;
+}
+
+
+std::vector<std::string> split(const std::string &s, char delim) {
+    std::vector<std::string> elems;
+    return split(s, delim, elems);
+}
+
+
+
+void HandleTCPClient(TCPSocket *sock = NULL); // TCP client handling function
 
 int main(int argc, char *argv[]) {
 
@@ -29,10 +60,11 @@ int main(int argc, char *argv[]) {
 	cout << "Listening at port " << echoServPort << endl;
 
 	try {
-		TCPServerSocket servSock(echoServPort);     // Server Socket object
+		//TCPServerSocket servSock(echoServPort);     // Server Socket object
 
 		for (;;) {   // Run forever
-			HandleTCPClient(servSock.accept());  // Wait for a client to connect
+			HandleTCPClient(/*servSock.accept()*/);  // Wait for a client to connect
+			break;
 		}
 	} catch (SocketException &e) {
 		cerr << e.what() << endl;
@@ -45,6 +77,7 @@ int main(int argc, char *argv[]) {
 
 // TCP client handling function
 void HandleTCPClient(TCPSocket *sock) {
+	/*
 	cout << "Handling client ";
 	try {
 		cout << sock->getForeignAddress() << ":";
@@ -61,10 +94,11 @@ void HandleTCPClient(TCPSocket *sock) {
 	// Send received string and receive again until the end of transmission
 	char echoBuffer[RCVBUFSIZE];
 	unsigned int recvMsgSize;
+	*/
 	stringstream buffer;
+	/*
 	while ((recvMsgSize = sock->recv(echoBuffer, RCVBUFSIZE)) > 0) { // Zero means
 		// end of transmission
-		//cout << echoBuffer;
 		int pos;
 		if ((pos = string(echoBuffer).find("\r\n\r\n")) != string::npos)
 		{
@@ -75,10 +109,33 @@ void HandleTCPClient(TCPSocket *sock) {
 
 		buffer << echoBuffer;
 
-	}
-	//cout << endl;
+	}*/
+
+	buffer << "Handling client 127.0.0.1:39210\r\nGET / HTTP/1.1\r\nUpgrade: websocket\r\nConnection: Upgrade\r\nHost: localhost:8080\r\nOrigin: null\r\nSec-WebSocket-Key: 6H3KOPvZDqggL+krxcLVrA=\r\nSec-WebSocket-Version: 13\r\nSec-WebSocket-Extensions: x-webkit-deflate-frame";
 	cout << buffer.str() << endl;
 	
+	string msgRcv = string(buffer.str());
+	msgRcv = replace(msgRcv, "\r", "");
+	vector<string> lines = split(msgRcv, '\n');
+
+	string key;
+	for (vector<string>::iterator i = lines.begin(); i != lines.end(); i++)
+	{
+		size_t pos;
+		string line = (string) *i;
+		if (line.find("Sec-WebSocket-Key") != string::npos)
+		{
+			pos = line.find(":") + 2;
+			key = line.substr(pos);
+		}
+	}
+
+	cout << "rcvkey:" << key << endl;
+    key += "258EAFA5-E914-47DA-95CA-C5AB0DC85B11\0";
+    cout << "anskey:" << key << endl;
+
+    /* kodo pra baixo */
+
 	char answer[256];
 	string tempAnswer;
 	int begin, end;
@@ -149,3 +206,5 @@ Sec-WebSocket-Extensions: x-webkit-deflate-frame
 
 	delete sock;
 }
+
+
