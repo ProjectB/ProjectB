@@ -10,7 +10,7 @@ MAIN = main
 
 HTTPSERVER = httpServer
 
-SIMPLEWSSERVER = simpleWSSever
+SIMPLEWSSERVER = simpleWSServer
 
 all: $(MAIN) $(HTTPSERVER) $(SIMPLEWSSERVER)
 

@@ -35,7 +35,6 @@ int main(int argc, char *argv[]) {
 
 		for (;;) {   // Run forever
 			HandleTCPClient(servSock.accept());  // Wait for a client to connect
-			break;
 		}
 	} catch (SocketException &e) {
 		cerr << e.what() << endl;
