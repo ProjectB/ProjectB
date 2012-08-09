@@ -2,18 +2,11 @@
  * SimpleWebSocketServer.cpp
  *
  *  Created on: Aug 8, 2012
-<<<<<<< HEAD
- *      Author: ricardo
- */
-
-#include "PracticalSocket.h"  // For Socket, ServerSocket, and SocketException
-=======
  *      Author: ricardo, the wizard
  */
 
 #include "PracticalSocket.h"  // For Socket, ServerSocket, and SocketException
 #include "SHA1.h"			  // For SHA-1 encoding
->>>>>>> kodo
 #include <iostream>           // For cerr and cout
 #include <cstdlib>            // For atoi()
 #include <cstring>
@@ -85,9 +78,6 @@ void HandleTCPClient(TCPSocket *sock) {
 	}
 	//cout << endl;
 	cout << buffer.str() << endl;
-<<<<<<< HEAD
-
-=======
 	
 	char answer[256];
 	string tempAnswer;
@@ -154,7 +144,6 @@ Sec-WebSocket-Extensions: x-webkit-deflate-frame
 */
 	
 	
->>>>>>> kodo
 	//string answer("HTTP/1.0 200 OK\r\nConnection: close\r\nContent-Type: text/html;\r\ncharset=UTF-8\r\n\r\nFuncionou!\r\n\r\n");
 	//sock->send(answer.c_str(), strlen(answer.c_str()));
 
