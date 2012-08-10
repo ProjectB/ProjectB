@@ -12,7 +12,8 @@ HTTPSERVER = httpServer
 
 SIMPLEWSSERVER = simpleWSServer
 
-all: $(MAIN) $(HTTPSERVER) $(SIMPLEWSSERVER)
+all: $(SIMPLEWSSERVER)
+others: $(MAIN) $(HTTPSERVER) 
 
 $(MAIN):	$(OBJS)
 	$(CXX) -o $(MAIN) $(OBJS) $(LIBS)
@@ -20,8 +21,8 @@ $(MAIN):	$(OBJS)
 $(HTTPSERVER): PracticalSocket.o HTTPServer.o
 	$(CXX) -o $(HTTPSERVER) PracticalSocket.o HTTPServer.o $(LIBS)
 
-$(SIMPLEWSSERVER): PracticalSocket.o SimpleWebSocketServer.o
-	$(CXX) -o $(SIMPLEWSSERVER) PracticalSocket.o SimpleWebSocketServer.o $(LIBS)
+$(SIMPLEWSSERVER): PracticalSocket.o SimpleWebSocketServer.o SHA1.o base64.o
+	$(CXX) -o $(SIMPLEWSSERVER) PracticalSocket.o SimpleWebSocketServer.o SHA1.o base64.o $(LIBS)
 
 clean:
 	rm -f $(OBJS) $(MAIN) $(HTTPSERVER) $(SIMPLEWSSERVER) *.o
