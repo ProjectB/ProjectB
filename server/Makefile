@@ -1,28 +1,15 @@
 CXXFLAGS =	-O2 -g -Wall -fmessage-length=0
 
-OBJS =		main.o
+OBJS = main.o Server.o GameServer.o ClientConnection.o
 
-LIBS =
+LIBS = lib/sha1.o lib/PracticalSocket.o lib/base64.o
 
-TARGET = all
+TARGET = main
 
-MAIN = main
+all: $(TARGET)
 
-HTTPSERVER = httpServer
-
-SIMPLEWSSERVER = simpleWSServer
-
-all: $(SIMPLEWSSERVER)
-others: $(MAIN) $(HTTPSERVER) 
-
-$(MAIN):	$(OBJS)
-	$(CXX) -o $(MAIN) $(OBJS) $(LIBS)
-
-$(HTTPSERVER): PracticalSocket.o HTTPServer.o
-	$(CXX) -o $(HTTPSERVER) PracticalSocket.o HTTPServer.o $(LIBS)
-
-$(SIMPLEWSSERVER): PracticalSocket.o SimpleWebSocketServer.o SHA1.o base64.o
-	$(CXX) -o $(SIMPLEWSSERVER) PracticalSocket.o SimpleWebSocketServer.o SHA1.o base64.o $(LIBS)
+$(TARGET):	$(OBJS)
+	$(CXX) -o $(TARGET) $(OBJS) $(LIBS)
 
 clean:
-	rm -f $(OBJS) $(MAIN) $(HTTPSERVER) $(SIMPLEWSSERVER) *.o
+	rm -f $(TARGET) *.o
