@@ -25,6 +25,7 @@ const unsigned int RCVBUFSIZE = 32;    // Size of receive buffer
 #define _SWSSDEBUG 0
 
 /* pragmas */
+ 
 string getMessage(TCPSocket *);
 string translateMessage(char [RCVBUFSIZE], TCPSocket *);
 
@@ -310,11 +311,9 @@ void HandleTCPClient(TCPSocket *sock) {
 	    }
 	  else if(message.compare("_0x9_ping") == 0)
 	    {
-	      // so...?
 	    }
 	  else if(message.compare("_0xA_pong") == 0)
 	    {
-	      // aaaand...?
 	    }
 	  else
 	    {
@@ -348,7 +347,7 @@ string translateMessage(char buffer[RCVBUFSIZE], TCPSocket *sock)
   bool boolMask;
   bool finalMessage;
 
-  //.......SOME SORCERY HERE ALSO!  
+  //.......SORCERY
   if(firstByte < 0x80)
     {
       if(_SWSSDEBUG) cout << "finalMessage false" << endl;
