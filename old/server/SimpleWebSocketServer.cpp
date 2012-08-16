@@ -170,30 +170,33 @@ std::vector<std::string> split(const std::string &s, char delim) {
 
 
 
-void SimpleWebSocketServer::runServer(int argc, char *argv[]) {
+//void SimpleWebSocketServer::runServer(int argc, char *argv[]) {
+void SimpleWebSocketServer::runServer(void*) {
+  int argc = 0;
+  char *argv[1];
 
-	unsigned short echoServPort = 8080;  // First arg: local port
-
-	if (argc >= 2) {                     // Test for correct number of arguments
-		echoServPort = atoi(argv[1]);  // First arg: local port
-	}
-
-	cout << "Listening at port " << echoServPort << endl;
-
-	try {
-		TCPServerSocket servSock(echoServPort);     // Server Socket object
-
-		for (;;) {   // Run forever
-			handleTCPClient(servSock.accept());  // Wait for a client to connect
-			//break;
-		}
-	} catch (SocketException &e) {
-		cerr << e.what() << endl;
-		return;
-	}
-	// NOT REACHED
-
-	return;
+  unsigned short echoServPort = 8080;  // First arg: local port
+  
+  if (argc >= 2) {                     // Test for correct number of arguments
+    echoServPort = atoi(argv[1]);  // First arg: local port
+  }
+  
+  cout << "Listening at port " << echoServPort << endl;
+  
+  try {
+    TCPServerSocket servSock(echoServPort);     // Server Socket object
+    
+    for (;;) {   // Run forever
+      handleTCPClient(servSock.accept());  // Wait for a client to connect
+      //break;
+    }
+  } catch (SocketException &e) {
+    cerr << e.what() << endl;
+    return;
+  }
+  // NOT REACHED
+  
+  return;
 }
 
 // TCP client handling function

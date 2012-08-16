@@ -33,7 +33,8 @@ namespace Server
     string getMessage(TCPSocket *sock);
     string translateMessage(char *, TCPSocket *sock);
   public:
-    void runServer(int, char **);
+    //void runServer(int, char **);
+    void runServer(void*);
   };
 }
 

@@ -9,10 +9,16 @@
 #include <stdlib.h>
 #include <pthread.h>
 
+#if defined(__cplusplus)
+extern "C"
+#endif
+
+
 #include "SimpleWebSocketServer.hpp"
 
 using namespace Server;
 
+void *callWSServer(void*);
 void initialize();
 void loadContent();
 void unloadContent();
@@ -23,33 +29,47 @@ void draw();
 int main(void)
 {
   pthread_t thread_wsServer;
+  void* wtf;
   int t1;
 
-  SimpleWebSocketServer wsServer;
-  
+  t1 = pthread_create(&thread_wsServer, NULL, &callWSServer, NULL);
 
-  t1 = pthread_create(&thread_wsServer, NULL, SimpleWebSocketServer::runServer(0, NULL), "Websocket Server");
-  return EXIT_SUCCESS;
+  pthread_join(t1, &wtf);
+  return t1;
+}
+
+void *callWSServer(void* x)
+{
+  char *msg;
+  msg = (char*)x;
+  while(1)
+    cout << msg << endl;
+  return x;
 }
 
 
 void initialize()
 {
+  return;
 }
 
 void loadContent()
 {
+  return;
 }
 
 void unloadContent()
 {
+  return;
 }
 
 void update()
 {
+  return;
 }
 
 void draw()
 {
+  return;
 }
 
