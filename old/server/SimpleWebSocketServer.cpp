@@ -12,18 +12,6 @@ using namespace Server;
 
 #define _SWSSDEBUG 0
 
-<<<<<<< HEAD
-/* pragmas */
- 
-string getMessage(TCPSocket *);
-string translateMessage(char [RCVBUFSIZE], TCPSocket *);
-
-void test(){
-
-}
-=======
->>>>>>> kodo
-
 inline const unsigned int SimpleWebSocketServer::rol(const unsigned int num, const unsigned int cnt)
 {
 	return((num << cnt) | (num >> (32-cnt)));
