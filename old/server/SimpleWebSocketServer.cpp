@@ -170,10 +170,7 @@ std::vector<std::string> split(const std::string &s, char delim) {
 
 
 
-//void SimpleWebSocketServer::runServer(int argc, char *argv[]) {
-void SimpleWebSocketServer::runServer(void*) {
-  int argc = 0;
-  char *argv[1];
+void SimpleWebSocketServer::runServer(int argc, char *argv[]) {
 
   unsigned short echoServPort = 8080;  // First arg: local port
   
