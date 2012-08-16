@@ -21,8 +21,8 @@ $(MAIN):	$(OBJS)
 $(HTTPSERVER): PracticalSocket.o HTTPServer.o
 	$(CXX) -o $(HTTPSERVER) PracticalSocket.o HTTPServer.o $(LIBS)
 
-$(SIMPLEWSSERVER): PracticalSocket.o SimpleWebSocketServer.o SHA1.o base64.o
-	$(CXX) -o $(SIMPLEWSSERVER) PracticalSocket.o SimpleWebSocketServer.o SHA1.o base64.o $(LIBS)
+$(SIMPLEWSSERVER): main.o PracticalSocket.o SimpleWebSocketServer.o SHA1.o base64.o
+	$(CXX) -o $(SIMPLEWSSERVER) main.o PracticalSocket.o SimpleWebSocketServer.o SHA1.o base64.o $(LIBS)
 
 clean:
 	rm -f $(OBJS) $(MAIN) $(HTTPSERVER) $(SIMPLEWSSERVER) *.o

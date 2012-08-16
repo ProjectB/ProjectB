@@ -5,25 +5,14 @@
  *      Author: ricardo, the wizard
  */
 
-#include "PracticalSocket.h"  // For Socket, ServerSocket, and SocketException
-#include "SHA1.h"			  // For SHA-1 encoding
-#include "base64.h"
-#include <iostream>           // For cerr and cout
-#include <cstdlib>            // For atoi()
-#include <cstring>
-#include <sstream>
-#include <vector>
-#include <string>
-#include <stdio.h>
 
+#include "SimpleWebSocketServer.hpp"
 
-using namespace std;
-
-
-const unsigned int RCVBUFSIZE = 32;    // Size of receive buffer
+using namespace Server;
 
 #define _SWSSDEBUG 0
 
+<<<<<<< HEAD
 /* pragmas */
  
 string getMessage(TCPSocket *);
@@ -32,13 +21,15 @@ string translateMessage(char [RCVBUFSIZE], TCPSocket *);
 void test(){
 
 }
+=======
+>>>>>>> kodo
 
-inline const unsigned int rol(const unsigned int num, const unsigned int cnt)
+inline const unsigned int SimpleWebSocketServer::rol(const unsigned int num, const unsigned int cnt)
 {
 	return((num << cnt) | (num >> (32-cnt)));
 }
 
-void innerHash(unsigned int *result, unsigned int *w)
+void SimpleWebSocketServer::innerHash(unsigned int *result, unsigned int *w)
 {
 	unsigned int save[5];
 	save[0]=result[0];
@@ -102,59 +93,59 @@ void innerHash(unsigned int *result, unsigned int *w)
 	result[4]+=save[4];
 }
 
-void calc(const void *src, const int bytelength, unsigned char *hash)
+void SimpleWebSocketServer::calc(const void *src, const int bytelength, unsigned char *hash)
+{
+  // Init the result array, and create references to the five unsigned integers for better readabillity.
+  unsigned int result[5]={0x67452301,0xEFCDAB89,0x98BADCFE,0x10325476,0xC3D2E1F0};
+  
+  const unsigned char *sarray=(const unsigned char*)src;
+  // The variables
+  unsigned int w[80];
+  int j,i,i1;
+  j=0;
+  // Loop through all complete 64byte blocks.
+  for(i=0,i1=64; i<=(bytelength-64); i=i1,i1+=64)
+    {
+      int k=0;
+      for(j=i;j<i1;j+=4)
 	{
-		// Init the result array, and create references to the five unsigned integers for better readabillity.
-		unsigned int result[5]={0x67452301,0xEFCDAB89,0x98BADCFE,0x10325476,0xC3D2E1F0};
-
-		const unsigned char *sarray=(const unsigned char*)src;
-		// The variables
-		unsigned int w[80];
-		int j,i,i1;
-		j=0;
-		// Loop through all complete 64byte blocks.
-		for(i=0,i1=64; i<=(bytelength-64); i=i1,i1+=64)
-		{
-			int k=0;
-			for(j=i;j<i1;j+=4)
-			{
-				// This line will swap endian on big endian and keep endian on little endian.
-				w[k++]=(unsigned int)sarray[j+3]|(((unsigned int)sarray[j+2])<<8)|(((unsigned int)sarray[j+1])<<16)|(((unsigned int)sarray[j])<<24);
-			}
-			innerHash(result,w);
-		}
-		// fill in reminder
-		i1=bytelength-i;
-		memset(w,0,sizeof(unsigned int)*16);
-		for(j=0;j<i1;j++)
-		{
-			w[j>>2]|=(unsigned int)sarray[j+i]<<((3-(j&3))<<3);
-		}
-		w[j>>2]|=0x80<<((3-(j&3))<<3);
-		if(i1>=56)
-		{
-			innerHash(result,w);
-			memset(w,0,sizeof(unsigned int)*16);
-		}
-		w[15]=bytelength<<3;
-		innerHash(result,w);
-		// Store hash in result pointer, and make sure we get in in the correct order on both endian models.
-		for(i=20;--i>=0;)
-		{
-			hash[i]=(result[i>>2]>>(((3-i)&0x3)<<3))&0xFF;
-		}
+	  // This line will swap endian on big endian and keep endian on little endian.
+	  w[k++]=(unsigned int)sarray[j+3]|(((unsigned int)sarray[j+2])<<8)|(((unsigned int)sarray[j+1])<<16)|(((unsigned int)sarray[j])<<24);
 	}
+      innerHash(result,w);
+    }
+  // fill in reminder
+  i1=bytelength-i;
+  memset(w,0,sizeof(unsigned int)*16);
+  for(j=0;j<i1;j++)
+    {
+      w[j>>2]|=(unsigned int)sarray[j+i]<<((3-(j&3))<<3);
+    }
+  w[j>>2]|=0x80<<((3-(j&3))<<3);
+  if(i1>=56)
+    {
+      innerHash(result,w);
+      memset(w,0,sizeof(unsigned int)*16);
+    }
+  w[15]=bytelength<<3;
+  innerHash(result,w);
+  // Store hash in result pointer, and make sure we get in in the correct order on both endian models.
+  for(i=20;--i>=0;)
+    {
+      hash[i]=(result[i>>2]>>(((3-i)&0x3)<<3))&0xFF;
+    }
+}
 
-	void toHexString(const unsigned char *hash, char *hexstring)
-	{
-		const char tab[]={"0123456789abcdef"};
-		for(int i=20;--i>=0;)
-		{
-			hexstring[i<<1]=tab[(hash[i]>>4)&0xF];
-			hexstring[(i<<1)+1]=tab[hash[i]&0xF];
-		}
-		hexstring[40]=0;
-	}
+void SimpleWebSocketServer::toHexString(const unsigned char *hash, char *hexstring)
+{
+  const char tab[]={"0123456789abcdef"};
+  for(int i=20;--i>=0;)
+    {
+      hexstring[i<<1]=tab[(hash[i]>>4)&0xF];
+      hexstring[(i<<1)+1]=tab[hash[i]&0xF];
+    }
+  hexstring[40]=0;
+}
 
 
 
@@ -188,9 +179,10 @@ std::vector<std::string> split(const std::string &s, char delim) {
 
 
 
-void HandleTCPClient(TCPSocket *sock = NULL); // TCP client handling function
 
-int main(int argc, char *argv[]) {
+
+
+void SimpleWebSocketServer::runServer(int argc, char *argv[]) {
 
 	unsigned short echoServPort = 8080;  // First arg: local port
 
@@ -204,20 +196,20 @@ int main(int argc, char *argv[]) {
 		TCPServerSocket servSock(echoServPort);     // Server Socket object
 
 		for (;;) {   // Run forever
-			HandleTCPClient(servSock.accept());  // Wait for a client to connect
+			handleTCPClient(servSock.accept());  // Wait for a client to connect
 			//break;
 		}
 	} catch (SocketException &e) {
 		cerr << e.what() << endl;
-		exit(1);
+		return;
 	}
 	// NOT REACHED
 
-	return 0;
+	return;
 }
 
 // TCP client handling function
-void HandleTCPClient(TCPSocket *sock) {
+void SimpleWebSocketServer::handleTCPClient(TCPSocket *sock) {
 
 	cout << "Handling client ";
 	try {
@@ -328,14 +320,14 @@ void HandleTCPClient(TCPSocket *sock) {
 
 }
 
-string getMessage(TCPSocket *sock)
+string SimpleWebSocketServer::getMessage(TCPSocket *sock)
 {
   char buf[RCVBUFSIZE];
   sock->recv(buf, RCVBUFSIZE);
   return translateMessage(buf, sock);
 }
 
-string translateMessage(char buffer[RCVBUFSIZE], TCPSocket *sock)
+string SimpleWebSocketServer::translateMessage(char buffer[RCVBUFSIZE], TCPSocket *sock)
 {
 
   string message;
@@ -499,5 +491,3 @@ string translateMessage(char buffer[RCVBUFSIZE], TCPSocket *sock)
 
   return message;
 }
-
-
