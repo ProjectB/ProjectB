@@ -18,7 +18,7 @@ extern "C"
 
 using namespace Server;
 
-void *callWSServer(void*);
+void callWSServer(void);
 void initialize();
 void loadContent();
 void unloadContent();
@@ -28,23 +28,12 @@ void draw();
 
 int main(void)
 {
-  pthread_t thread_wsServer;
-  void* wtf;
-  int t1;
-
-  t1 = pthread_create(&thread_wsServer, NULL, &callWSServer, NULL);
-
-  pthread_join(t1, &wtf);
   return t1;
 }
 
-void *callWSServer(void* x)
+void callWSServer(void)
 {
-  char *msg;
-  msg = (char*)x;
-  while(1)
-    cout << msg << endl;
-  return x;
+  return;
 }
 
 
