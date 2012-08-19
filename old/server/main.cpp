@@ -9,10 +9,6 @@
 #include <stdlib.h>
 #include <pthread.h>
 
-#if defined(__cplusplus)
-extern "C"
-#endif
-
 
 #include "SimpleWebSocketServer.hpp"
 
@@ -28,7 +24,8 @@ void draw();
 
 int main(void)
 {
-  return t1;
+  SimpleWebSocketServer wsServer;
+  return 0;
 }
 
 void callWSServer(void)
