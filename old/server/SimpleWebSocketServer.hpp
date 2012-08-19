@@ -33,7 +33,7 @@ namespace Server
     void toHexString(const unsigned char *, char *);
     
   public:
-    void* handleTCPClient(void *);
+    void handleTCPClient(TCPSocket *);
   };
 }
 

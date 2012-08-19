@@ -164,8 +164,14 @@ std::vector<std::string> split(const std::string &s, char delim) {
     return split(s, delim, elems);
 }
 
+void* callHandle(void *ptr)
+{
+  SimpleWebSocketServer wss;
 
-void* handleTCPClient(void*);
+  wss.handleTCPClient((TCPSocket*)ptr);
+  
+  return NULL;
+}
 
 int main(int argc, char *argv[]) {
 
@@ -183,7 +189,8 @@ int main(int argc, char *argv[]) {
     for (;;) {   // Run forever
       pthread_t thread;
       // Wait for a client to connect
-      pthread_create(&thread, NULL, &(Server::SimpleWebSocketServer::handleTCPClient), (void*) servSock.accept());
+      //      pthread_create(&thread, NULL, &(Server::SimpleWebSocketServer::handleTCPClient), (void*) servSock.accept());
+      pthread_create(&thread, NULL, callHandle, (void*) servSock.accept());
     }
   } catch (SocketException &e) {
     cerr << e.what() << endl;
@@ -196,10 +203,7 @@ int main(int argc, char *argv[]) {
 
 
 // TCP client handling function
-void* SimpleWebSocketServer::handleTCPClient(void *ptr) {
-  
-  TCPSocket *sock = (TCPSocket*) ptr;
-
+void SimpleWebSocketServer::handleTCPClient(TCPSocket *sock) {
   
 
 	cout << "Handling client ";
@@ -286,5 +290,5 @@ void* SimpleWebSocketServer::handleTCPClient(void *ptr) {
     clientInterface *clInt = new clientInterface(sock);
     
     delete clInt;
-    return NULL;
+    return;
 }
