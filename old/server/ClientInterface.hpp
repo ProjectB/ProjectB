@@ -1,29 +1,33 @@
 
+#ifndef CL_INTER_HPP_
+#define CL_INTER_HPP_
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <pthread.h>
 
 
-#ifndef CL_INTER_HPP_
-#define CL_INTER_HPP_
 
 #include "SimpleWebSocketServer.hpp"
 
-class clientInterface
+class ClientInterface
 {
 private:
   string receivePacket();
   string translatePacket(char*);
-  void sendInput(string);
+  void sendToServer(string);
   
   
 public:
-  clientInterface(TCPSocket*);
-  ~clientInterface();
+  void unqueue();
+  ClientInterface(TCPSocket*);
+  ~ClientInterface();
+
   
 
 private:
-  TCPSocket* socket;  
+  TCPSocket* socket;
+  bool isQueued;
   
 };
 

@@ -8,9 +8,6 @@
 
 #include "SimpleWebSocketServer.hpp"
 
-using namespace Server;
-
-
 inline const unsigned int SimpleWebSocketServer::rol(const unsigned int num, const unsigned int cnt)
 {
 	return((num << cnt) | (num >> (32-cnt)));
@@ -173,6 +170,15 @@ void* callHandle(void *ptr)
   return NULL;
 }
 
+void* callGameServer(void*)
+{
+  GameServer gs;
+
+  gs.Run();
+  
+  return NULL;
+}
+
 int main(int argc, char *argv[]) {
 
   unsigned short echoServPort = 8080;  // First arg: local port
@@ -180,6 +186,10 @@ int main(int argc, char *argv[]) {
   if (argc >= 2) {                     // Test for correct number of arguments
     echoServPort = atoi(argv[1]);  // First arg: local port
   }
+  
+  pthread_t gsThread;
+  
+  pthread_create(&gsThread, NULL, callGameServer, NULL);
   
   cout << "Listening at port " << echoServPort << endl;
 
@@ -189,7 +199,6 @@ int main(int argc, char *argv[]) {
     for (;;) {   // Run forever
       pthread_t thread;
       // Wait for a client to connect
-      //      pthread_create(&thread, NULL, &(Server::SimpleWebSocketServer::handleTCPClient), (void*) servSock.accept());
       pthread_create(&thread, NULL, callHandle, (void*) servSock.accept());
     }
   } catch (SocketException &e) {
@@ -205,90 +214,91 @@ int main(int argc, char *argv[]) {
 // TCP client handling function
 void SimpleWebSocketServer::handleTCPClient(TCPSocket *sock) {
   
-
-	cout << "Handling client ";
-	try {
-		cout << sock->getForeignAddress() << ":";
-	} catch (const SocketException & e) {
-		cerr << "Unable to get foreign address" << endl;
-	}
-	try {
-		cout << sock->getForeignPort();
-	} catch (const SocketException & e) {
-		cerr << "Unable to get foreign port" << endl;
-	}
-	cout << endl;
-
-	// Send received string and receive again until the end of transmission
-	char echoBuffer[RCVBUFSIZE];
-	unsigned int recvMsgSize;
-
-	stringstream buffer;
-
-	while ((recvMsgSize = sock->recv(echoBuffer, RCVBUFSIZE)) > 0) { // Zero means
-		// end of transmission
-		int pos;
-		if ((pos = string(echoBuffer).find("\r\n\r\n")) != string::npos)
-		{
-			echoBuffer[pos] = 0;
-			buffer << echoBuffer;
-			break;
-		}
-
-		buffer << echoBuffer;
-
-	}
-
-	//buffer << "Handling client 127.0.0.1:39210\r\nGET / HTTP/1.1\r\nUpgrade: websocket\r\nConnection: Upgrade\r\nHost: localhost:8080\r\nOrigin: null\r\nSec-WebSocket-Key: 6H3KOPvZDqggL+krxcLVrA=\r\nSec-WebSocket-Version: 13\r\nSec-WebSocket-Extensions: x-webkit-deflate-frame";
-	cout << buffer.str() << endl;
-	
-	string msgRcv = string(buffer.str());
-	msgRcv = replace(msgRcv, "\r", "");
-	vector<string> lines = split(msgRcv, '\n');
-
-	string key;
-	for (vector<string>::iterator i = lines.begin(); i != lines.end(); i++)
+  
+  
+  cout << "Handling client ";
+  try {
+    cout << sock->getForeignAddress() << ":";
+  } catch (const SocketException & e) {
+    cerr << "Unable to get foreign address" << endl;
+  }
+  try {
+    cout << sock->getForeignPort();
+  } catch (const SocketException & e) {
+    cerr << "Unable to get foreign port" << endl;
+  }
+  cout << endl;
+  
+  // Send received string and receive again until the end of transmission
+  char echoBuffer[RCVBUFSIZE];
+  unsigned int recvMsgSize;
+  
+  stringstream buffer;
+  
+  while ((recvMsgSize = sock->recv(echoBuffer, RCVBUFSIZE)) > 0) { // Zero means
+    // end of transmission
+    int pos;
+    if ((pos = string(echoBuffer).find("\r\n\r\n")) != string::npos)
+      {
+	echoBuffer[pos] = 0;
+	buffer << echoBuffer;
+	break;
+      }
+    
+    buffer << echoBuffer;
+    
+  }
+  
+  //buffer << "Handling client 127.0.0.1:39210\r\nGET / HTTP/1.1\r\nUpgrade: websocket\r\nConnection: Upgrade\r\nHost: localhost:8080\r\nOrigin: null\r\nSec-WebSocket-Key: 6H3KOPvZDqggL+krxcLVrA=\r\nSec-WebSocket-Version: 13\r\nSec-WebSocket-Extensions: x-webkit-deflate-frame";
+  cout << buffer.str() << endl;
+  
+  string msgRcv = string(buffer.str());
+  msgRcv = replace(msgRcv, "\r", "");
+  vector<string> lines = split(msgRcv, '\n');
+  
+  string key;
+  for (vector<string>::iterator i = lines.begin(); i != lines.end(); i++)
+    {
+      size_t pos;
+      string line = (string) *i;
+      if (line.find("Sec-WebSocket-Key") != string::npos)
 	{
-		size_t pos;
-		string line = (string) *i;
-		if (line.find("Sec-WebSocket-Key") != string::npos)
-		{
-			pos = line.find(":") + 2;
-			key = line.substr(pos);
-		}
+	  pos = line.find(":") + 2;
+	  key = line.substr(pos);
 	}
-
-	cout << "rcvkey:" << key << endl;
-    key += "258EAFA5-E914-47DA-95CA-C5AB0DC85B11\0";
-    cout << "anskey:" << key << endl;
-
-    unsigned char answer1[256];
-    for(int i = 0; i < 256; i++) answer1[i] = 0;
-
-    cout << "clear: " << answer1 << endl;
-
-    calc((const void *)key.c_str(), (unsigned int)key.length(), answer1);
-    cout << "baseX: " << answer1 << endl;
-    cout << "base64: " << base64_encode(answer1, 20) << endl;
-
- /*
+    }
+  
+  cout << "rcvkey:" << key << endl;
+  key += "258EAFA5-E914-47DA-95CA-C5AB0DC85B11\0";
+  cout << "anskey:" << key << endl;
+  
+  unsigned char answer1[256];
+  for(int i = 0; i < 256; i++) answer1[i] = 0;
+  
+  cout << "clear: " << answer1 << endl;
+  
+  calc((const void *)key.c_str(), (unsigned int)key.length(), answer1);
+  cout << "baseX: " << answer1 << endl;
+  cout << "base64: " << base64_encode(answer1, 20) << endl;
+  
+  /*
     SHA1 sha = new SHA1CryptoServiceProvider();
     return Convert.ToBase64String(sha.ComputeHash(Encoding.UTF8.GetBytes((String)secWebSocketKey + "258EAFA5-E914-47DA-95CA-C5AB0DC85B11")));
-}
-   */
-
-    string answer2 =
-      "HTTP/1.1 101 Switching Protocols\r\n"
-      "Upgrade: websocket\r\n"
-      "Connection: Upgrade\r\n"
-      "Sec-WebSocket-Accept: " + base64_encode(answer1, 20) + "\r\n\r\n";
-    //"Sec-WebSocket-Protocol: chat\r\n\r\n";
-    
-    cout << endl <<  answer2 << endl;
-    sock->send(answer2.c_str(), strlen(answer2.c_str()));
-    
-    clientInterface *clInt = new clientInterface(sock);
-    
-    delete clInt;
-    return;
+    }
+  */
+  
+  string answer2 =
+    "HTTP/1.1 101 Switching Protocols\r\n"
+    "Upgrade: websocket\r\n"
+    "Connection: Upgrade\r\n"
+    "Sec-WebSocket-Accept: " + base64_encode(answer1, 20) + "\r\n\r\n";
+  //"Sec-WebSocket-Protocol: chat\r\n\r\n";
+  
+  cout << endl <<  answer2 << endl;
+  sock->send(answer2.c_str(), strlen(answer2.c_str()));
+  
+  clientInterface *clInt = new clientInterface(sock);
+  
+  delete clInt;
+  return;
 }

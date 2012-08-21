@@ -21,8 +21,8 @@ $(MAIN):	$(OBJS)
 $(HTTPSERVER): PracticalSocket.o HTTPServer.o
 	$(CXX) -o $(HTTPSERVER) PracticalSocket.o HTTPServer.o $(LIBS)
 
-$(SIMPLEWSSERVER): clientInterface.o PracticalSocket.o SimpleWebSocketServer.o SHA1.o base64.o
-	$(CXX) -o $(SIMPLEWSSERVER) clientInterface.o PracticalSocket.o SimpleWebSocketServer.o SHA1.o base64.o $(LIBS) -lpthread
+$(SIMPLEWSSERVER): Bomber.o GameServer.o ClientInterface.o PracticalSocket.o SimpleWebSocketServer.o SHA1.o base64.o
+	$(CXX) -o $(SIMPLEWSSERVER) Bomber.o GameServer.o ClientInterface.o PracticalSocket.o SimpleWebSocketServer.o SHA1.o base64.o $(LIBS) -lpthread
 
 clean:
 	rm -f $(OBJS) $(MAIN) $(HTTPSERVER) $(SIMPLEWSSERVER) *.o

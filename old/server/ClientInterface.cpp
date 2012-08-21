@@ -6,18 +6,25 @@
  */
 
 
-#include "clientInterface.hpp"
+#include "ClientInterface.hpp"
 
 
 #define _SWSSDEBUG 0
 
-clientInterface::clientInterface(TCPSocket *sock)
+ClientInterface::ClientInterface(TCPSocket *sock)
 {
+  //  GameServer gs;
   string message;
   
   socket = sock;
 
+  isQueued = true;
+  //gs.joinGameQueue(sock);
 
+  /* not very smart :D */
+  while(isQueued);
+
+  
   while(1)
     {
       message = receivePacket();
@@ -35,25 +42,29 @@ clientInterface::clientInterface(TCPSocket *sock)
 	}
       else
 	{
-	  sendInput(message);
+	  sendToServer(message);
 	}
     }
 }
 
-clientInterface::~clientInterface()
+ClientInterface::~ClientInterface()
 {
   delete socket;
 }
 
-void clientInterface::sendInput(string input)
+void ClientInterface::unqueue()
 {
-
-  //send game server the input
-  //return status or snap shot...?
-  return;
+  isQueued = false;
 }
 
-string clientInterface::receivePacket()
+/* send client's input to server */
+void ClientInterface::sendToServer(string message)
+{
+return;
+}
+
+/* receive packet from client's browser */
+string ClientInterface::receivePacket()
 {
   char buf[RCVBUFSIZE];
   
@@ -62,7 +73,7 @@ string clientInterface::receivePacket()
   return translatePacket(buf);
 }
 
-string clientInterface::translatePacket(char buffer[RCVBUFSIZE])
+string ClientInterface::translatePacket(char buffer[RCVBUFSIZE])
 {
 
   string message;
