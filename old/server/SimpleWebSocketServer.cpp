@@ -6,7 +6,7 @@
  */
 
 
-#include "SimpleWebSocketServer.hpp"
+#include "defines.hpp"
 
 inline const unsigned int SimpleWebSocketServer::rol(const unsigned int num, const unsigned int cnt)
 {
@@ -172,9 +172,9 @@ void* callHandle(void *ptr)
 
 void* callGameServer(void*)
 {
-  GameServer gs;
+  GameServer *gs = new GameServer();
 
-  gs.Run();
+  delete gs;
   
   return NULL;
 }
@@ -297,7 +297,7 @@ void SimpleWebSocketServer::handleTCPClient(TCPSocket *sock) {
   cout << endl <<  answer2 << endl;
   sock->send(answer2.c_str(), strlen(answer2.c_str()));
   
-  clientInterface *clInt = new clientInterface(sock);
+  ClientInterface *clInt = new ClientInterface(sock);
   
   delete clInt;
   return;

@@ -6,7 +6,7 @@
  */
 
 
-#include "ClientInterface.hpp"
+#include "defines.hpp"
 
 
 #define _SWSSDEBUG 0

@@ -4,7 +4,7 @@
  *
  */
 
-#include "GameServer.hpp"
+#include "defines.hpp"
 
 #define _GSDEBUG 0
 
