@@ -30,19 +30,16 @@ void GameServer::joinGameQueue(TCPSocket* sock, ClientInterface clInt)
 
 }
 
-void* callGame(void* ptr)
+void callGame(gameQueue localQueue)
 {
-  gameQueue lq;
-  //  class Bomber *bomb = new Bomber((gameQueue) ptr);
+  Bomber *bomb = new Bomber(localQueue);
 
-  //  delete bomb;
-  return NULL;
+  delete bomb;
 }
 
 void GameServer::createGame()
 {
   gameQueue localQueue;
-  pthread_t gameThread;
   int i;
 
 
@@ -60,8 +57,7 @@ void GameServer::createGame()
       game.socketList.pop_front();
     }
 
-
-  pthread_create(&gameThread, NULL, callGame, (void*) &localQueue);
+  thread gameThread(callGame, localQueue);
   
   return;
 }

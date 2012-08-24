@@ -161,22 +161,18 @@ std::vector<std::string> split(const std::string &s, char delim) {
     return split(s, delim, elems);
 }
 
-void* callHandle(void *ptr)
+void callHandleTCPClient(TCPSocket* wsSocket)
 {
   SimpleWebSocketServer wss;
 
-  wss.handleTCPClient((TCPSocket*)ptr);
-  
-  return NULL;
+  wss.handleTCPClient(wsSocket);
 }
 
-void* callGameServer(void*)
+void callGameServer()
 {
   GameServer *gs = new GameServer();
 
   delete gs;
-  
-  return NULL;
 }
 
 int main(int argc, char *argv[]) {
@@ -186,10 +182,8 @@ int main(int argc, char *argv[]) {
   if (argc >= 2) {                     // Test for correct number of arguments
     echoServPort = atoi(argv[1]);  // First arg: local port
   }
-  
-  pthread_t gsThread;
-  
-  pthread_create(&gsThread, NULL, callGameServer, NULL);
+
+  thread gsThread(callGameServer);
   
   cout << "Listening at port " << echoServPort << endl;
 
@@ -197,9 +191,8 @@ int main(int argc, char *argv[]) {
     TCPServerSocket servSock(echoServPort);     // Server Socket object
     
     for (;;) {   // Run forever
-      pthread_t thread;
       // Wait for a client to connect
-      pthread_create(&thread, NULL, callHandle, (void*) servSock.accept());
+      thread t(callHandleTCPClient, servSock.accept());
     }
   } catch (SocketException &e) {
     cerr << e.what() << endl;

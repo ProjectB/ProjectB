@@ -1,4 +1,4 @@
-CXXFLAGS =	-O2 -g -Wall -fmessage-length=0
+CXXFLAGS =	-O2 -g -Wall -std=c++0x -fmessage-length=0
 
 OBJS =		main.o
 
@@ -21,8 +21,8 @@ $(MAIN):	$(OBJS)
 $(HTTPSERVER): PracticalSocket.o HTTPServer.o
 	$(CXX) -o $(HTTPSERVER) PracticalSocket.o HTTPServer.o $(LIBS)
 
-$(SIMPLEWSSERVER): Bomber.o GameServer.o ClientInterface.o PracticalSocket.o SimpleWebSocketServer.o SHA1.o base64.o
-	$(CXX) -o $(SIMPLEWSSERVER) Bomber.o GameServer.o ClientInterface.o PracticalSocket.o SimpleWebSocketServer.o SHA1.o base64.o $(LIBS) -lpthread
+$(SIMPLEWSSERVER): Bomber.o GameServer.o ClientInterface.o PracticalSocket.o SimpleWebSocketServer.o SHA1.o base64.o 
+	$(CXX) -o $(SIMPLEWSSERVER) Bomber.o GameServer.o ClientInterface.o PracticalSocket.o SimpleWebSocketServer.o SHA1.o base64.o $(LIBS) -pthread 
 
 clean:
 	rm -f $(OBJS) $(MAIN) $(HTTPSERVER) $(SIMPLEWSSERVER) *.o

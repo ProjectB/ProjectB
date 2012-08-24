@@ -6,7 +6,7 @@
 #include <vector>
 #include <string>
 #include <list>
-#include <pthread.h>
+#include <thread>
 
 
 
