@@ -10,6 +10,7 @@
 
 class Server {
 	unsigned short port;
+public:
 	Server(unsigned short port);
 	void start();
 };

@@ -16,3 +16,6 @@ $(BIN): $(OBJ)
 	
 clean:
 	rm -rf $(OBJ) $(BIN)
+
+run:
+	./$(BIN)

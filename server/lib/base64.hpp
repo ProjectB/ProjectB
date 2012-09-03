@@ -11,7 +11,9 @@
 
 #include <string>
 
-std::string base64_encode(unsigned char const* , unsigned int len);
-std::string base64_decode(std::string const& s);
-
+namespace base64
+{
+std::string encode(unsigned char const* , unsigned int len);
+std::string decode(std::string const& s);
+}
 #endif /* BASE64_H_ */

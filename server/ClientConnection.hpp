@@ -5,7 +5,7 @@
  *      Author: ricardo
  */
 #include <string>
-#include "lib/PracticalSocket.h"
+#include "lib/PracticalSocket.hpp"
 
 
 #ifndef CLIENTCONNECTION_H_
