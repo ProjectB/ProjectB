@@ -5,11 +5,17 @@
 #include <string>
 #include <vector>
 #include <cstdlib>
+#include <cstring>
 #include "lib/PracticalSocket.hpp"
 #include "ClientConnection.hpp"
+#include "lib/sha1.hpp"
+#include "lib/base64.hpp"
+#include "defs.hpp"
+
+using namespace std;
 
 ClientConnection::ClientConnection(TCPSocket* sock) {
-    const unsigned int RECVBUFSIZE = 32;
+    this->sock = sock;
 
     cout << "Handling client ";
     try {
@@ -24,11 +30,11 @@ ClientConnection::ClientConnection(TCPSocket* sock) {
     }
     cout << endl;
 
-    char recvBuffer[RECVBUFSIZE];
+    char recvBuffer[RCVBUFSIZE];
     unsigned int recvMsgSize;
     stringstream msg;
 
-    while ((recvMsgSize = sock->recv(recvBuffer, RECVBUFSIZE)) > 0) {
+    while ((recvMsgSize = sock->recv(recvBuffer, RCVBUFSIZE)) > 0) {
         int pos;
         if ((pos = string(recvBuffer).find("\r\n\r\n")) != string::npos) {
             recvBuffer[pos] = 0;
@@ -38,17 +44,230 @@ ClientConnection::ClientConnection(TCPSocket* sock) {
         msg << recvBuffer;
     }
 
-    answerWSClient(sock, msg.str());
+    cout << "Answering client" << endl;
+    if(answerWSClient(msg.str())) {
+        cout << "Connection established" << endl;
+    }
+    else {
+        cout << "Fail to answer client" << endl;
+        delete sock;
+        this->sock = NULL;
+    }
 }
 
-void ClientConnection::answerWSClient(TCPSocket* sock, string msg) {
+bool ClientConnection::isConnected() {
+    return !(this->sock == NULL);
+}
+
+bool ClientConnection::answerWSClient(string msg) {
     string key;
     vector<string> lines;
     istringstream iss(msg);
     copy(istream_iterator<string>(iss), istream_iterator<string>(), back_inserter<vector<string>>(lines));
 
+    bool found = false;
     for (vector<string>::iterator i = lines.begin(); i != lines.end(); i++) {
-        cout << *i << endl;
+        if (found) {
+            key = *i;
+            break;
+        }
+        if ((*i).compare("Sec-WebSocket-Key:") == 0) found = true;
     }
+    if(!found) return false;
+
+    key += "258EAFA5-E914-47DA-95CA-C5AB0DC85B11\0";
+
+    cout << "key: " << key << endl;
+
+    unsigned char answer[256];
+    for(int i = 0; i < 256; i++) answer[i] = 0;
+    sha1::calc((const void *)key.c_str(), (unsigned int)key.length(), answer);
+
+    cout << "sha1: " << answer << endl;
+    cout << "base64: " << base64::encode(answer, 20) << endl;
+
+    string httpAnswer =
+      "HTTP/1.1 101 Switching Protocols\r\n"
+      "Upgrade: websocket\r\n"
+      "Connection: Upgrade\r\n"
+      "Sec-WebSocket-Accept: " + base64::encode(answer, 20) + "\r\n\r\n";
+
+    this->sock->send(httpAnswer.c_str(), strlen(httpAnswer.c_str()));
+
+    return true;
 }
 
+/* receive packet from client's browser */
+string ClientConnection::receivePacket()
+{
+  char buf[RCVBUFSIZE];
+
+  this->sock->recv(buf, RCVBUFSIZE);
+
+  return translatePacket(buf);
+}
+
+//by kodo!
+string ClientConnection::translatePacket(char buffer[RCVBUFSIZE])
+{
+
+  string message;
+  char firstByte = buffer[0];
+  char secondByte = buffer[1];
+  char mask[4];
+  int payloadLen;
+  int maskOffset; //payload data starting byte may change because of payload length
+  bool boolMask;
+  bool finalMessage;
+
+  //.......SORCERY
+  if(firstByte < 0x80)
+    {
+      if(_SWSSDEBUG) cout << "finalMessage false" << endl;
+      //not the final message
+      finalMessage = true;
+    }
+  else
+    {
+      if(_SWSSDEBUG) cout << "finalMessage true" << endl;
+      finalMessage = false;
+    }
+
+  //primeiros 4 bits
+  if((firstByte & 0xF) == 0)
+    {
+      if(_SWSSDEBUG) cout << "continuation frame" << endl;
+      //continuation frame
+    }
+  else if((firstByte & 0xF) == 0x1)
+    {
+      if(_SWSSDEBUG) cout << "text frame" << endl;
+      //text frame
+    }
+  else if((firstByte & 0xF) == 0x8)
+    {
+      //connection close
+      if(_SWSSDEBUG) cout << "connection closed" << endl;
+      return "_0x8_connection_close";
+    }
+  else if((firstByte & 0xF) == 0x9)
+    {
+      //ping
+      if(_SWSSDEBUG) cout << "ping" << endl;
+      return "_0x9_ping";
+    }
+  else if((firstByte & 0xF) == 0xA)
+    {
+      //pong
+      if(_SWSSDEBUG) cout << "pong" << endl;
+      return "_0xA_pong";
+    }
+
+
+  /* SORCERY, BE CAREFUL: IF FALSE THEN TRUE :D */
+  if(secondByte < 0x80)
+    {
+      //not masked
+      if(_SWSSDEBUG) cout << "boolMask false" << endl;
+      boolMask = true;
+    }
+  else
+    {
+      if(_SWSSDEBUG) cout << "boolMask true" << endl;
+      //masked
+      boolMask = false;
+    }
+
+  payloadLen = (int)(secondByte & 0x7F);
+  if(_SWSSDEBUG) cout << "(1st) payload length: " << payloadLen << endl;
+
+
+  if(payloadLen == 126)
+    {
+      if(_SWSSDEBUG) cout << "(2nd-126) payload length: " << payloadLen << endl;
+      payloadLen += buffer[2] + buffer[3];
+
+      if(boolMask)
+    {
+      mask[0] = buffer[4];
+      mask[1] = buffer[5];
+      mask[2] = buffer[6];
+      mask[3] = buffer[7];
+      maskOffset = 8;
+    }
+      else
+    {
+      maskOffset = 4;
+    }
+      if(_SWSSDEBUG) cout << "out: " << maskOffset << endl;
+    }
+  else if(payloadLen == 127)
+    {
+      if(_SWSSDEBUG) cout << "(2nd-127) payload length: " << payloadLen << endl;
+      payloadLen += buffer[2] + buffer[3] + buffer[4] + buffer[5] + buffer[6] + buffer[7] + buffer[8] + buffer[9];
+
+      if(boolMask)
+    {
+      mask[0] = buffer[10];
+      mask[1] = buffer[11];
+      mask[2] = buffer[12];
+      mask[3] = buffer[13];
+      maskOffset = 14;
+    }
+      else
+    {
+      maskOffset = 10;
+    }
+      if(_SWSSDEBUG) cout << "out: " << maskOffset << endl;
+    }
+  else
+    {
+      //payload length < 126
+      if(boolMask)
+    {
+      mask[0] = buffer[2];
+      mask[1] = buffer[3];
+      mask[2] = buffer[4];
+      mask[3] = buffer[5];
+      maskOffset = 6;
+    }
+      else
+    {
+      maskOffset = 2;
+    }
+      if(_SWSSDEBUG) cout << "no changes..out: " << maskOffset << endl;
+    }
+
+  int i;
+
+  if(boolMask)
+    {
+      for(i=0; i < payloadLen; i++)
+    {
+      message.push_back(buffer[i+maskOffset] ^ mask[i % 4]);
+    }
+    }
+  else
+    {
+      if(_SWSSDEBUG) cout << "intern...: ";
+      for(i=0; i < payloadLen; i++)
+    {
+      if(_SWSSDEBUG) cout << buffer[i+maskOffset];
+      message.push_back(buffer[i+maskOffset]);
+    }
+      if(_SWSSDEBUG) cout << endl;
+    }
+
+  if(_SWSSDEBUG) cout << "this message: " << message << endl;
+
+
+  if(!finalMessage)
+    {
+      //get next message?
+      message += receivePacket();
+    }
+
+  if(_SWSSDEBUG) cout << "return" << endl;
+
+  return message;
+}

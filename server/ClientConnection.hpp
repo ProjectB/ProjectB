@@ -13,9 +13,13 @@
 
 class ClientConnection {
 public:
+    TCPSocket* sock;
 	ClientConnection(TCPSocket* sock);
+	bool isConnected();
+	std::string receivePacket();
 private:
-	void answerWSClient(TCPSocket* sock, string msg);
+	bool answerWSClient(std::string msg);
+	std::string translatePacket(char buffer[]);
 };
 
 
