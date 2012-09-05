@@ -62,7 +62,7 @@
     } 
 
     function doSend(message) {
-        writeToScreen("SENT: " + message);
+        //writeToScreen("SENT: " + message);
         websocket.send(message);
     } 
 
@@ -77,6 +77,10 @@
        writeToScreen("INPUT: "+ evt.keyCode);
        doSend("input: " + evt.keyCode);
     }
+
+    window.onbeforeunload = function onWindowClose(event) { 
+        websocket.close(); 
+    } 
 
     window.addEventListener("load", init, false); 
 </script>

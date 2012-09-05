@@ -17,11 +17,12 @@ void Server::start() {
         TCPServerSocket servSocket(port);
         for (;;) {
             ClientConnection * client = new ClientConnection(servSocket.accept());
-            if (client->isConnected()) {
-                while (1) {
-                    // temporario
-                    string message = client->receivePacket();
+            while (client->isConnected()) {
+
+                // server de eco temporario
+                    string message = client->receiveMsg();
                     cout << "Client-message: " << message << endl;
+                    //client->sendMsg("ok\r\n\r\n");
                     if (message.compare("_0x8_connection_close") == 0) {
                         cout << "connection closed!" << endl;
                         break;
@@ -29,10 +30,9 @@ void Server::start() {
                     } else if (message.compare("_0xA_pong") == 0) {
                     } else {
                     }
-                }
-            } else {
-                delete client;
+
             }
+            delete client;
         }
     } catch (SocketException & e) {
         cerr << e.what() << endl;

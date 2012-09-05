@@ -97,8 +97,13 @@ bool ClientConnection::answerWSClient(string msg) {
     return true;
 }
 
+void ClientConnection::sendMsg(string message) {
+    //TODO: implementar a magica reversa
+    //this->sock->send(message.c_str(), strlen(message.c_str()));
+}
+
 /* receive packet from client's browser */
-string ClientConnection::receivePacket()
+string ClientConnection::receiveMsg()
 {
   char buf[RCVBUFSIZE];
 
@@ -264,7 +269,7 @@ string ClientConnection::translatePacket(char buffer[RCVBUFSIZE])
   if(!finalMessage)
     {
       //get next message?
-      message += receivePacket();
+      message += receiveMsg();
     }
 
   if(_SWSSDEBUG) cout << "return" << endl;

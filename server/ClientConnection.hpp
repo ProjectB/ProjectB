@@ -16,7 +16,8 @@ public:
     TCPSocket* sock;
 	ClientConnection(TCPSocket* sock);
 	bool isConnected();
-	std::string receivePacket();
+	void sendMsg(std::string message);
+	std::string receiveMsg();
 private:
 	bool answerWSClient(std::string msg);
 	std::string translatePacket(char buffer[]);
