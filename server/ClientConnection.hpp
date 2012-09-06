@@ -13,6 +13,8 @@
 
 class ClientConnection {
 public:
+    std::string address;
+    unsigned short port;
     TCPSocket* sock;
 	ClientConnection(TCPSocket* sock);
 	bool isConnected();

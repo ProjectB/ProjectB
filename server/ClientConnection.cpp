@@ -19,14 +19,18 @@ ClientConnection::ClientConnection(TCPSocket* sock) {
 
     cout << "Handling client ";
     try {
-        cout << sock->getForeignAddress() << ":";
+        this->address = sock->getForeignAddress();
+        cout << this->address << ":";
     } catch (const SocketException& e) {
         cerr << "Unable to get foreign address" << endl;
+        this->address = "undefined";
     }
     try {
-        cout << sock->getForeignPort();
+        this->port = sock->getForeignPort();
+        cout << this->port;
     } catch (const SocketException& e) {
         cerr << "Unable to get foreign port" << endl;
+        this->port = 0;
     }
     cout << endl;
 
