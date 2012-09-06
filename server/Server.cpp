@@ -22,7 +22,7 @@ void Server::start() {
                 // server de eco temporario
                     string message = client->receiveMsg();
                     cout << "Client-message: " << message << endl;
-                    client->sendMsg("ok\r\n\r\n");
+                    client->sendMsg(message);
                     if (message.compare("_0x8_connection_close") == 0) {
                         cout << "connection closed!" << endl;
                         break;

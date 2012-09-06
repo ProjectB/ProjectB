@@ -278,70 +278,49 @@ string ClientConnection::translatePacket(char buffer[RCVBUFSIZE])
   return message;
 }
 
+/*
+unsigned char createByte(const string byteStr) {
+    unsigned char byte = 0;
+    if (byteStr.length() < 8) return 0;
+
+    if (byteStr[0] == '1') byte |= 0x80;
+    if (byteStr[0] == '1') byte |= 0x40;
+    if (byteStr[0] == '1') byte |= 0x20;
+    if (byteStr[0] == '1') byte |= 0x10;
+    if (byteStr[0] == '1') byte |= 0x8;
+    if (byteStr[0] == '1') byte |= 0x4;
+    if (byteStr[0] == '1') byte |= 0x2;
+    if (byteStr[0] == '1') byte |= 0x1;
+
+    return byte;
+}
+*/
 
 string ClientConnection::createPacket(string str)
 {
-  string msg;
+  vector<unsigned char> msg;
   int length = str.length();
 
-  msg.push_back('0'); //FIN bit... 0 means final message
-  msg.push_back('0'); //RSV1
-  msg.push_back('0'); //RSV2
-  msg.push_back('0'); //RSV3
-  //opcode.. 0x01 = text frame
-  msg.push_back('0');
-  msg.push_back('0');
-  msg.push_back('0');
-  msg.push_back('1');
+  /* hello
+  msg.push_back(0x81);
+  msg.push_back(0x05);
+  msg.push_back(0x48);
+  msg.push_back(0x65);
+  msg.push_back(0x6c);
+  msg.push_back(0x6c);
+  msg.push_back(0x6f);
+  */
 
-  msg.push_back('1'); //mask..1 means no mask
+  msg.push_back(0x81);
+  if (length < 126)
+      msg.push_back(length);
+  else {
+      msg.push_back(126);
+      msg.push_back(length);
+  }
 
-  if(length < 126)
-    {
-      msg.push_back(length & 0x40);
-      msg.push_back(length & 0x20);
-      msg.push_back(length & 0x10);
-      msg.push_back(length & 0x8);
-      msg.push_back(length & 0x4);
-      msg.push_back(length & 0x2);
-      msg.push_back(length & 0x1);
-    }
-  else if(length < 65536)
-    {
+  for(int i=0; i < length; i++) msg.push_back(str[i]);
 
-      //126
-      msg.push_back('1');
-      msg.push_back('1');
-      msg.push_back('1');
-      msg.push_back('1');
-      msg.push_back('1');
-      msg.push_back('1');
-      msg.push_back('0');
-
-      msg.push_back(length & 0x8000);
-      msg.push_back(length & 0x4000);
-      msg.push_back(length & 0x2000);
-      msg.push_back(length & 0x1000);
-      msg.push_back(length & 0x800);
-      msg.push_back(length & 0x400);
-      msg.push_back(length & 0x200);
-      msg.push_back(length & 0x100);
-      msg.push_back(length & 0x80);
-      msg.push_back(length & 0x40);
-      msg.push_back(length & 0x20);
-      msg.push_back(length & 0x10);
-      msg.push_back(length & 0x8);
-      msg.push_back(length & 0x4);
-      msg.push_back(length & 0x2);
-      msg.push_back(length & 0x1);
-    }
-
-  for(int i=0; i < length; i++)
-    {
-      msg.push_back(str.at(i));
-    }
-
-  return msg;
-
+  return string(msg.begin(), msg.end());
 }
 
