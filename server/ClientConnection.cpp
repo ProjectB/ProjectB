@@ -99,7 +99,8 @@ bool ClientConnection::answerWSClient(string msg) {
 
 void ClientConnection::sendMsg(string message) {
     //TODO: implementar a magica reversa
-    //this->sock->send(message.c_str(), strlen(message.c_str()));
+	string msg = createPacket(message);
+    this->sock->send(msg.c_str(), strlen(msg.c_str()));
 }
 
 /* receive packet from client's browser */
@@ -276,3 +277,71 @@ string ClientConnection::translatePacket(char buffer[RCVBUFSIZE])
 
   return message;
 }
+
+
+string ClientConnection::createPacket(string str)
+{
+  string msg;
+  int length = str.length();
+
+  msg.push_back('0'); //FIN bit... 0 means final message
+  msg.push_back('0'); //RSV1
+  msg.push_back('0'); //RSV2
+  msg.push_back('0'); //RSV3
+  //opcode.. 0x01 = text frame
+  msg.push_back('0');
+  msg.push_back('0');
+  msg.push_back('0');
+  msg.push_back('1');
+
+  msg.push_back('1'); //mask..1 means no mask
+
+  if(length < 126)
+    {
+      msg.push_back(length & 0x40);
+      msg.push_back(length & 0x20);
+      msg.push_back(length & 0x10);
+      msg.push_back(length & 0x8);
+      msg.push_back(length & 0x4);
+      msg.push_back(length & 0x2);
+      msg.push_back(length & 0x1);
+    }
+  else if(length < 65536)
+    {
+
+      //126
+      msg.push_back('1');
+      msg.push_back('1');
+      msg.push_back('1');
+      msg.push_back('1');
+      msg.push_back('1');
+      msg.push_back('1');
+      msg.push_back('0');
+
+      msg.push_back(length & 0x8000);
+      msg.push_back(length & 0x4000);
+      msg.push_back(length & 0x2000);
+      msg.push_back(length & 0x1000);
+      msg.push_back(length & 0x800);
+      msg.push_back(length & 0x400);
+      msg.push_back(length & 0x200);
+      msg.push_back(length & 0x100);
+      msg.push_back(length & 0x80);
+      msg.push_back(length & 0x40);
+      msg.push_back(length & 0x20);
+      msg.push_back(length & 0x10);
+      msg.push_back(length & 0x8);
+      msg.push_back(length & 0x4);
+      msg.push_back(length & 0x2);
+      msg.push_back(length & 0x1);
+    }
+
+  for(int i=0; i < length; i++)
+    {
+      msg.push_back(str.at(i));
+    }
+
+  return msg;
+
+}
+

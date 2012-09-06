@@ -21,6 +21,7 @@ public:
 private:
 	bool answerWSClient(std::string msg);
 	std::string translatePacket(char buffer[]);
+	std::string createPacket(std::string str);
 };
 
 
