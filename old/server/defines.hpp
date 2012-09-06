@@ -116,6 +116,8 @@ public:
   ~Bomber();
 
 private:
+  string createMessage(string);
+
   Player p1, p2, p3, p4;
 };
 
