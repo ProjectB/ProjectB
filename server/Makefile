@@ -8,7 +8,10 @@ BIN = bin/main
 
 all: $(BIN)
 
-obj/%.o: %.cpp
+obj/main.o: main.cpp
+	$(CXX) $(CXXFLAGS) -c $< -o $@
+	
+obj/%.o: %.cpp %.hpp
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 $(BIN): $(OBJ)

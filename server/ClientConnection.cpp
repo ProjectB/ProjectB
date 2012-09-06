@@ -14,7 +14,8 @@
 
 using namespace std;
 
-ClientConnection::ClientConnection(TCPSocket* sock) {
+ClientConnection::ClientConnection(int id, TCPSocket* sock) {
+    this->id = id;
     this->sock = sock;
 
     cout << "Handling client ";
@@ -57,6 +58,10 @@ ClientConnection::ClientConnection(TCPSocket* sock) {
         delete sock;
         this->sock = NULL;
     }
+}
+
+ClientConnection::~ClientConnection() {
+    delete this->sock;
 }
 
 bool ClientConnection::isConnected() {
@@ -102,7 +107,6 @@ bool ClientConnection::answerWSClient(string msg) {
 }
 
 void ClientConnection::sendMsg(string message) {
-    //TODO: implementar a magica reversa
 	string msg = createPacket(message);
     this->sock->send(msg.c_str(), strlen(msg.c_str()));
 }
@@ -111,9 +115,7 @@ void ClientConnection::sendMsg(string message) {
 string ClientConnection::receiveMsg()
 {
   char buf[RCVBUFSIZE];
-
   this->sock->recv(buf, RCVBUFSIZE);
-
   return translatePacket(buf);
 }
 

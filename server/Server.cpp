@@ -33,8 +33,8 @@ void Server::start() {
     cout << "Listening at port: " << port << endl;
     try {
         TCPServerSocket servSocket(port);
-        for (;;) {
-            ClientConnection * client = new ClientConnection(servSocket.accept());
+        for (int id = 0;; id++) {
+            ClientConnection * client = new ClientConnection(id, servSocket.accept());
             thread t(tempFun, client);
             t.detach(); // precisa se n for dar join
         }
