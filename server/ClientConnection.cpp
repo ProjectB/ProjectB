@@ -61,11 +61,16 @@ ClientConnection::ClientConnection(int id, TCPSocket* sock) {
 }
 
 ClientConnection::~ClientConnection() {
-    delete this->sock;
+    if(sock != NULL) delete sock;
 }
 
 bool ClientConnection::isConnected() {
-    return !(this->sock == NULL);
+    return !(sock == NULL);
+}
+
+void ClientConnection::disconnect() {
+    delete sock;
+    sock = NULL;
 }
 
 bool ClientConnection::answerWSClient(string msg) {

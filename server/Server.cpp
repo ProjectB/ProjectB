@@ -2,6 +2,7 @@
 #include <cstdlib>
 #include <thread>
 #include "ClientConnection.hpp"
+#include "GameServer.hpp"
 #include "Server.hpp"
 #include "lib/PracticalSocket.hpp"
 
@@ -11,32 +12,18 @@ Server::Server(unsigned short port) {
     this->port = port;
 }
 
-void tempFun(ClientConnection * client) {
-    while (client->isConnected()) {
-
-        // server de eco temporario
-        string message = client->receiveMsg();
-        cout << "Client(" << client->address << ":" << client->port << "): " << message << endl;
-        client->sendMsg(message);
-        if (message.compare("_0x8_connection_close") == 0) {
-            //cout << "connection closed!" << endl;
-            break;
-        } else if (message.compare("_0x9_ping") == 0) {
-        } else if (message.compare("_0xA_pong") == 0) {
-        } else {
-        }
-    }
-    delete client;
-}
-
-void Server::start() {
+void Server::run() {
     cout << "Listening at port: " << port << endl;
     try {
+        GameServer * gs = new GameServer();
         TCPServerSocket servSocket(port);
+
+        gs->start();
+
         for (int id = 0;; id++) {
             ClientConnection * client = new ClientConnection(id, servSocket.accept());
-            thread t(tempFun, client);
-            t.detach(); // precisa se n for dar join
+            gs->clientQueue.push(client);
+
         }
     } catch (SocketException & e) {
         cerr << e.what() << endl;

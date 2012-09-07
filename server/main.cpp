@@ -9,6 +9,6 @@ int main(int argc, char *argv[]) {
         port = atoi(argv[1]);
 
     Server server(port);
-    server.start();
+    server.run();
 
 }
