@@ -12,12 +12,12 @@
 
 using namespace std;
 
-GameServer::GameServer() : isRunning() {
+GameServer::GameServer() :
+        isRunning() {
 }
 
 void GameServer::run() {
     isRunning = true;
-    vector<thread> clientThreads;
 
     while (isRunning) {
         // atuliza clientes
@@ -27,7 +27,8 @@ void GameServer::run() {
 
             cout << "SERVER: new client " << client->str() << endl;
 
-            clientThreads.push_back(thread([this, client] {this->runClient(client);}));
+            thread t = thread([this, client] {this->runClient(client);});
+            t.detach();
         }
 
         // atualiza estados
@@ -49,15 +50,10 @@ void GameServer::run() {
     }
 
     for (vector<ClientConnection *>::iterator it = clients.begin(); it != clients.end();) {
-        if (!(*it)->isConnected()) {
-            it = clients.erase(it);
-            continue;
-        }
-        (*it)->disconnect();
+        if ((*it)->isConnected())
+            (*it)->disconnect();
+        it = clients.erase(it);
     }
-
-    for (vector<thread>::iterator it = clientThreads.begin(); it != clientThreads.end(); it++)
-        (*it).join();
 }
 
 void GameServer::stop() {
@@ -74,30 +70,26 @@ void GameServer::runClient(ClientConnection * client) {
     struct tm * timeinfo;
 
     while (client->isConnected()) {
-        if (client->hasData()) {
-            string rawMessage = client->receiveMsg();
+        string rawMessage = client->receiveMsg();
 
-            time ( &rawtime );
-            timeinfo = localtime ( &rawtime );
-            string timeStr(asctime(timeinfo));
-            timeStr.erase(timeStr.length()-1, timeStr.length()-1);
+        time(&rawtime);
+        timeinfo = localtime(&rawtime);
+        string timeStr(asctime(timeinfo));
+        timeStr.erase(timeStr.length() - 1, timeStr.length() - 1);
 
-            stringstream ss;
-            ss <<  timeStr << ":Client(" << client->str() << "):" << rawMessage;
-            string message = ss.str();
+        stringstream ss;
+        ss << timeStr << ":Client(" << client->str() << "):" << rawMessage;
+        string message = ss.str();
 
-            cout << message << endl;
-            //thread pushThread([this,message]{this->msgQueue.push(message);});
-            this->msgQueue.push(message);
+        cout << message << endl;
+        this->msgQueue.push(message);
 
-            if (rawMessage.compare(0, strlen("_0x8_connection_close")-1, "_0x8_connection_close") == 0) {
-                //client->connMutex.lock();
-                client->disconnect();
-            } else if (rawMessage.compare(0, strlen("_0x9_ping")-1, "_0xA_ping") == 0) {
-            } else if (rawMessage.compare(0, strlen("_0xA_pong")-1, "_0xA_pong") == 0) {
-            } else {
-            }
-            //pushThread.join();
+        if (rawMessage.compare(0, strlen("_0x8_connection_close") - 1, "_0x8_connection_close") == 0) {
+            client->disconnect();
+        } else if (rawMessage.compare(0, strlen("_0x9_ping") - 1, "_0xA_ping") == 0) {
+            client->disconnect();
+        } else if (rawMessage.compare(0, strlen("_0xA_pong") - 1, "_0xA_pong") == 0) {
+            client->disconnect();
         }
     }
 }

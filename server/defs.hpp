@@ -9,6 +9,6 @@
 #define DEFS_HPP_
 
 const unsigned int RCVBUFSIZE = 32;
-#define _SWSSDEBUG 0
+#define _SWSSDEBUG 1
 
 #endif /* DEFS_HPP_ */
