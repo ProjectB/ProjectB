@@ -84,11 +84,11 @@ void GameServer::runClient(ClientConnection * client) {
         cout << message << endl;
         this->msgQueue.push(message);
 
-        if (rawMessage.compare(0, strlen("_0x8_connection_close") - 1, "_0x8_connection_close") == 0) {
+        if (rawMessage.compare(0, strlen("_0x8_connection_close"), "_0x8_connection_close") == 0) {
             client->disconnect();
-        } else if (rawMessage.compare(0, strlen("_0x9_ping") - 1, "_0xA_ping") == 0) {
+        } else if (rawMessage.compare(0, strlen("_0x9_ping"), "_0xA_ping") == 0) {
             client->disconnect();
-        } else if (rawMessage.compare(0, strlen("_0xA_pong") - 1, "_0xA_pong") == 0) {
+        } else if (rawMessage.compare(0, strlen("_0xA_pong"), "_0xA_pong") == 0) {
             client->disconnect();
         }
     }
