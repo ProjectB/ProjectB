@@ -22,10 +22,12 @@ public:
     ClientConnection(int id, TCPSocket* sock);
     ~ClientConnection();
 
+    std::string str();
     bool isConnected();
     void disconnect();
     void sendMsg(std::string message);
     std::string receiveMsg();
+    int hasData();
 
 private:
     TCPSocket* sock;

@@ -17,12 +17,12 @@
     function handleKeyDown(evt) {
         
 //       currentlyPressedKeys[event.keyCode] = true;
-       doSend("KEYDOWN: " + evt.keyCode );
+        doSend("KEYDOWN: " + evt.keyCode );
     }
 
     function handleKeyUp(evt) {
-       //currentlyPressedKeys[event.keyCode] = false;
-       doSend("KEYUP: " + evt.keyCode );
+        //currentlyPressedKeys[event.keyCode] = false;
+        doSend("KEYUP: " + evt.keyCode );
     }
 
     function testWebSocket() {
@@ -62,7 +62,7 @@
     } 
 
     function doSend(message) {
-        //writeToScreen("SENT: " + message);
+        writeToScreen("SENT: " + message);
         websocket.send(message);
     } 
 

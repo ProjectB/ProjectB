@@ -11,14 +11,12 @@
 #include <queue>
 #include <thread>
 
-template <class T>
+template <typename T>
 class MultithreadQueue {
 private:
 	std::queue<T> mtQueue;
 	std::mutex mtMutex;
 public:
-	MultithreadQueue(	);
-	~MultithreadQueue();
 	void push(T elem) {
 		mtMutex.lock();
 		mtQueue.push(elem);

@@ -1,6 +1,13 @@
 #include <cstdlib>
+#include <iostream>
 #include "Server.hpp"
 
+using namespace std;
+
+void showHelp() {
+    cout << " - help/?:    show this help" << endl;
+    cout << " - exit/quit: stops server and exits application" << endl;
+}
 
 int main(int argc, char *argv[]) {
 
@@ -9,6 +16,22 @@ int main(int argc, char *argv[]) {
         port = atoi(argv[1]);
 
     Server server(port);
-    server.run();
+    server.start();
 
+    cout << "Type 'help' to list available commands" << endl;
+
+    string line;
+    while (!getline(cin, line).eof()) {
+        if (line.compare("exit") == 0 || line.compare("quit") == 0)
+            break;
+        else if (line.compare("help") == 0 || line.compare("?") == 0)
+            showHelp();
+        else
+            cout << "Command not found." << endl;
+    }
+
+    cout << "Closing..." << endl;
+    server.stop();
+
+    return 0;
 }

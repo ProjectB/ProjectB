@@ -65,12 +65,24 @@ ClientConnection::~ClientConnection() {
 }
 
 bool ClientConnection::isConnected() {
-    return !(sock == NULL);
+    bool isConnected;
+    connMutex.lock();
+    isConnected = !(sock == NULL);
+    connMutex.unlock();
+    return isConnected;
 }
 
 void ClientConnection::disconnect() {
+    connMutex.lock();
     delete sock;
     sock = NULL;
+    connMutex.unlock();
+}
+
+string ClientConnection::str() {
+    stringstream ss("");
+    ss << address << ":" << port;
+    return ss.str();
 }
 
 bool ClientConnection::answerWSClient(string msg) {
@@ -91,14 +103,14 @@ bool ClientConnection::answerWSClient(string msg) {
 
     key += "258EAFA5-E914-47DA-95CA-C5AB0DC85B11\0";
 
-    cout << "key: " << key << endl;
+    //cout << "key: " << key << endl;
 
     unsigned char answer[256];
     for(int i = 0; i < 256; i++) answer[i] = 0;
     sha1::calc((const void *)key.c_str(), (unsigned int)key.length(), answer);
 
-    cout << "sha1: " << answer << endl;
-    cout << "base64: " << base64::encode(answer, 20) << endl;
+    //cout << "sha1: " << answer << endl;
+    //cout << "base64: " << base64::encode(answer, 20) << endl;
 
     string httpAnswer =
       "HTTP/1.1 101 Switching Protocols\r\n"
@@ -335,3 +347,6 @@ string ClientConnection::createPacket(string str)
   return string(msg.begin(), msg.end());
 }
 
+int ClientConnection::hasData() {
+    return sock->hasData();
+}

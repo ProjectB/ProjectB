@@ -11,13 +11,17 @@
 #include <queue>
 #include <vector>
 #include <string>
+#include <atomic>
 
 #include "MultithreadQueue.hpp"
 #include "ClientConnection.hpp"
 
 class GameServer {
 private:
+    std::thread mainThread;
+    std::atomic<bool> isRunning;
     void run();
+    void runClient(ClientConnection * client);
 public:
     MultithreadQueue<ClientConnection*> clientQueue;
     MultithreadQueue<std::string> msgQueue;
@@ -27,8 +31,9 @@ public:
     GameServer();
 
     void start();
+    void stop();
 
-    void runClient(ClientConnection * client);
+
 };
 
 #endif /* GAMESERVER_H_ */

@@ -4,24 +4,30 @@
 #include <string>
 #include <iostream>
 #include <thread>
+#include <sstream>
+#include <cstring>
 
 #include "GameServer.hpp"
-#include "MultithreadQueue.hpp"
+//#include "MultithreadQueue.hpp"
 
 using namespace std;
 
-GameServer::GameServer() {
-
+GameServer::GameServer() : isRunning() {
 }
 
 void GameServer::run() {
-    while(true) {
+    isRunning = true;
+    vector<thread> clientThreads;
+
+    while (isRunning) {
         // atuliza clientes
         while (!clientQueue.empty()) {
             ClientConnection * client = clientQueue.pop();
             clients.push_back(client);
-            //std::thread t(this->runClient, client);
-            //t.detach();
+
+            cout << "SERVER: new client " << client->str() << endl;
+
+            clientThreads.push_back(thread([this, client] {this->runClient(client);}));
         }
 
         // atualiza estados
@@ -29,41 +35,70 @@ void GameServer::run() {
             msgs.push_back(msgQueue.pop());
 
         // broadcast
-        for(vector<ClientConnection *>::iterator it = clients.begin(); it != clients.end(); )
-        {
-            if ((*it)->isConnected()) {
+        for (vector<ClientConnection *>::iterator it = clients.begin(); it != clients.end();) {
+            if (!(*it)->isConnected()) {
                 it = clients.erase(it);
                 continue;
             }
 
-            for(vector<string>::iterator jt = msgs.begin(); jt != msgs.end(); jt++)
+            for (vector<string>::iterator jt = msgs.begin(); jt != msgs.end(); jt++)
                 (*it)->sendMsg(*jt);
             it++;
         }
-
         msgs.clear();
     }
+
+    for (vector<ClientConnection *>::iterator it = clients.begin(); it != clients.end();) {
+        if (!(*it)->isConnected()) {
+            it = clients.erase(it);
+            continue;
+        }
+        (*it)->disconnect();
+    }
+
+    for (vector<thread>::iterator it = clientThreads.begin(); it != clientThreads.end(); it++)
+        (*it).join();
+}
+
+void GameServer::stop() {
+    isRunning = false;
+    mainThread.join();
 }
 
 void GameServer::start() {
-    //thread t1(run, this);
-    //Description   Resource    Path    Location    Type
+    mainThread = thread([this] {this->run();});
 }
 
 void GameServer::runClient(ClientConnection * client) {
+    time_t rawtime;
+    struct tm * timeinfo;
+
     while (client->isConnected()) {
-        // server de eco temporario
-        string message = client->receiveMsg();
-        cout << "Client(" << client->address << ":" << client->port << "): " << message << endl;
-        msgQueue.push(message);
-        if (message.compare("_0x8_connection_close") == 0) {
-            client->connMutex.lock();
-            break;
-        } else if (message.compare("_0x9_ping") == 0) {
-        } else if (message.compare("_0xA_pong") == 0) {
-        } else {
+        if (client->hasData()) {
+            string rawMessage = client->receiveMsg();
+
+            time ( &rawtime );
+            timeinfo = localtime ( &rawtime );
+            string timeStr(asctime(timeinfo));
+            timeStr.erase(timeStr.length()-1, timeStr.length()-1);
+
+            stringstream ss;
+            ss <<  timeStr << ":Client(" << client->str() << "):" << rawMessage;
+            string message = ss.str();
+
+            cout << message << endl;
+            //thread pushThread([this,message]{this->msgQueue.push(message);});
+            this->msgQueue.push(message);
+
+            if (rawMessage.compare(0, strlen("_0x8_connection_close")-1, "_0x8_connection_close") == 0) {
+                //client->connMutex.lock();
+                client->disconnect();
+            } else if (rawMessage.compare(0, strlen("_0x9_ping")-1, "_0xA_ping") == 0) {
+            } else if (rawMessage.compare(0, strlen("_0xA_pong")-1, "_0xA_pong") == 0) {
+            } else {
+            }
+            //pushThread.join();
         }
     }
-    client->disconnect();
 }
 

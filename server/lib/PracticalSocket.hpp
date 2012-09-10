@@ -23,6 +23,7 @@
 #include <string>            // For std::string
 #include <exception>         // For exception class
 
+#define SELECT_TIME 1
 
 /**
  *   Signals a problem with the execution of a socket call.
@@ -118,6 +119,9 @@ public:
    */
   static unsigned short resolveService(const std::string &service,
                                        const std::string &protocol = "tcp");
+
+  int hasData();
+  void close();
 
 private:
   // Prevent the user from trying to use value semantics on this object
@@ -247,6 +251,7 @@ public:
   TCPSocket *accept() throw(SocketException);
 
 private:
+  void setOpt() throw(SocketException);
   void setListen(int queueLen) throw(SocketException);
 };
 

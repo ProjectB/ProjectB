@@ -8,11 +8,22 @@
 #ifndef SERVER_H_
 #define SERVER_H_
 
+#include <atomic>
+#include <thread>
+#include "GameServer.hpp"
+#include "lib/PracticalSocket.hpp"
+
 class Server {
+    std::thread mainThread;
+    std::atomic<bool> isRunning;
+    GameServer * gs;
+    TCPServerSocket * servSocket;
 	unsigned short port;
+	void run();
 public:
 	Server(unsigned short port);
-	void run();
+	void start();
+	void stop();
 };
 
 
