@@ -177,6 +177,16 @@ string ClientConnection::translatePacket(char buffer[RCVBUFSIZE])
       if(_SWSSDEBUG) cout << "text frame" << endl;
       //text frame
     }
+  else if((firstByte & 0xF) == 0x2)
+    {
+      if(_SWSSDEBUG) cout << "binary frame" << endl;
+      return "binary frame";
+    }
+  else if((firstByte & 0xF) >= 0x3 && (firstByte & 0xF) <= 0x7)
+    {
+      if(_SWSSDEBUG) cout << "control frame: " << hex << (unsigned int)(firstByte & 0xF) << endl;
+      return "control frame";
+    }
   else if((firstByte & 0xF) == 0x8)
     {
       //connection close
@@ -195,10 +205,14 @@ string ClientConnection::translatePacket(char buffer[RCVBUFSIZE])
       if(_SWSSDEBUG) cout << "pong" << endl;
       return "_0xA_pong";
     }
+  else if((firstByte & 0xF) >= 0xB && (firstByte & 0xF) <= 0xF)
+    {
+      if(_SWSSDEBUG) cout << "control: " << hex << (unsigned int)(firstByte & 0xF) << endl;
+      return "control frame";
+    }
   else
     {
-      if(_SWSSDEBUG) cout << "control: " << (unsigned int)(firstByte & 0xF) << endl;
-      return "control frame";
+      return "error on frame nibble";
     }
 
 
