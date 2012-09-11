@@ -10,7 +10,17 @@
 
 #include <string>
 #include <thread>
+#include <vector>
 #include "lib/PracticalSocket.hpp"
+
+enum FrameType {
+    TEXT,
+    BIN,
+    CONTROL,
+    CLOSE,
+    PING,
+    PONG
+};
 
 class ClientConnection {
 public:
@@ -26,14 +36,14 @@ public:
     bool isConnected();
     void disconnect();
     void sendMsg(std::string message);
-    std::string receiveMsg();
+    void receiveMsg(std::vector<std::string>& msgs);
     int hasData();
 
 private:
     TCPSocket* sock;
     bool answerWSClient(std::string msg);
-    std::string translatePacket(char buffer[]);
     std::string createPacket(std::string str);
+    void updateRcv(unsigned int& pos, void *buffer);
 
 };
 

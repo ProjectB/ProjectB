@@ -7,6 +7,7 @@
 #include <sstream>
 #include <cstring>
 
+#include "defs.hpp"
 #include "GameServer.hpp"
 //#include "MultithreadQueue.hpp"
 
@@ -69,30 +70,34 @@ void GameServer::runClient(ClientConnection * client) {
     time_t rawtime;
     struct tm * timeinfo;
 
+    vector<string> msgs;
     while (client->isConnected()) {
-        string rawMessage = client->receiveMsg();
+        client->receiveMsg(msgs);
 
-        time(&rawtime);
-        timeinfo = localtime(&rawtime);
-        string timeStr(asctime(timeinfo));
-        timeStr.erase(timeStr.length() - 1, timeStr.length() - 1);
-
-        stringstream ss;
-        ss << timeStr << ":Client(" << client->str() << "):" << rawMessage;
-        string message = ss.str();
-
-        cout << message << endl;
-
-        if (rawMessage.compare(0, strlen("_0x8_connection_close"), "_0x8_connection_close") == 0) {
-            client->disconnect();
-        } else if (rawMessage.compare(0, strlen("_0x9_ping"), "_0xA_ping") == 0) {
-            //client->disconnect();
-        } else if (rawMessage.compare(0, strlen("_0xA_pong"), "_0xA_pong") == 0) {
-            //client->disconnect();
+        for (vector<string>::iterator it = msgs.begin(); it != msgs.end(); it++) {
+            string rawMessage = *it;
+            stringstream ss("");
+            if (_TIME_DEBUG) {
+                time(&rawtime);
+                timeinfo = localtime(&rawtime);
+                string timeStr(asctime(timeinfo));
+                timeStr.erase(timeStr.length() - 1, timeStr.length() - 1);
+                ss << timeStr << ":";
+            }
+            if (_CLIENT_DEBUG)
+                ss << "Client(" << client->str() << "):";
+            if (_MSG_DEBUG) {
+                ss << rawMessage;
+                string message = ss.str();
+                cout << message << endl;
+                this->msgQueue.push(message);
+            }
+            if (rawMessage.compare(0, strlen("_0x8_connection_close"), "_0x8_connection_close") == 0) {
+                client->disconnect();
+            }
         }
-        else {
-            this->msgQueue.push(message);
-        }
+
+        msgs.clear();
     }
 }
 
