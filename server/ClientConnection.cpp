@@ -141,25 +141,29 @@ string ClientConnection::translatePacket(char buffer[RCVBUFSIZE])
 {
 
   string message;
-  char firstByte = buffer[0];
-  char secondByte = buffer[1];
-  char mask[4];
+  unsigned char firstByte = buffer[0];
+  unsigned char secondByte = buffer[1];
+  unsigned char mask[4];
   int payloadLen;
   int maskOffset; //payload data starting byte may change because of payload length
   bool boolMask;
   bool finalMessage;
 
-  //.......SORCERY
+  if(_BYTES)
+    {
+      cout << "Bytes: " << hex << (unsigned int)firstByte << " and " << (unsigned int)secondByte << endl;
+    }
+
   if(firstByte < 0x80)
     {
       if(_SWSSDEBUG) cout << "finalMessage false" << endl;
       //not the final message
-      finalMessage = true;
+      finalMessage = false;
     }
   else
     {
       if(_SWSSDEBUG) cout << "finalMessage true" << endl;
-      finalMessage = false;
+      finalMessage = true;
     }
 
   //primeiros 4 bits
@@ -191,20 +195,24 @@ string ClientConnection::translatePacket(char buffer[RCVBUFSIZE])
       if(_SWSSDEBUG) cout << "pong" << endl;
       return "_0xA_pong";
     }
+  else
+    {
+      if(_SWSSDEBUG) cout << "control: " << (unsigned int)(firstByte & 0xF) << endl;
+      return "control frame";
+    }
 
 
-  /* SORCERY, BE CAREFUL: IF FALSE THEN TRUE :D */
   if(secondByte < 0x80)
     {
       //not masked
       if(_SWSSDEBUG) cout << "boolMask false" << endl;
-      boolMask = true;
+      boolMask = false;
     }
   else
     {
       if(_SWSSDEBUG) cout << "boolMask true" << endl;
       //masked
-      boolMask = false;
+      boolMask = true;
     }
 
   payloadLen = (int)(secondByte & 0x7F);
