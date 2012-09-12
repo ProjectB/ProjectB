@@ -43,18 +43,19 @@ var canvas, ctx, sprites, lp,
     }
     function moveShip() {
         if (rightKey) {
-            ship_x += 10;
-            srcX = 83;
+            ship_x += 5;
         } else if (leftKey) {
-            ship_x -= 10;
-            srcX = 156;
+            ship_x -= 5;
         }
     }
     function drawShip() {
-      ctx.drawImage(sprites,srcX,srcY,ship_w,ship_h,ship_x,ship_y,ship_w,ship_h);
-      if (rightKey == false || leftKey == false) {
         srcX = 10;
-      }
+    	if (rightKey)
+            srcX = 83;
+        else if (leftKey)
+            srcX = 156;
+
+        ctx.drawImage(sprites,srcX,srcY,ship_w,ship_h,ship_x,ship_y,ship_w,ship_h);
     }
     function loop() {
         clearCanvas();
