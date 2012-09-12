@@ -26,8 +26,6 @@ void GameServer::run() {
             ClientConnection * client = clientQueue.pop();
             clients.push_back(client);
 
-            cout << "SERVER: new client " << client->str() << endl;
-
             thread t = thread([this, client] {this->runClient(client);});
             t.detach();
         }
@@ -39,6 +37,7 @@ void GameServer::run() {
         // broadcast
         for (vector<ClientConnection *>::iterator it = clients.begin(); it != clients.end();) {
             if (!(*it)->isConnected()) {
+                delete(*it);
                 it = clients.erase(it);
                 continue;
             }
@@ -67,31 +66,13 @@ void GameServer::start() {
 }
 
 void GameServer::runClient(ClientConnection * client) {
-    time_t rawtime;
-    struct tm * timeinfo;
-
     vector<string> msgs;
     while (client->isConnected()) {
         client->receiveMsg(msgs);
 
         for (vector<string>::iterator it = msgs.begin(); it != msgs.end(); it++) {
             string rawMessage = *it;
-            stringstream ss("");
-            if (_TIME_DEBUG) {
-                time(&rawtime);
-                timeinfo = localtime(&rawtime);
-                string timeStr(asctime(timeinfo));
-                timeStr.erase(timeStr.length() - 1, timeStr.length() - 1);
-                ss << timeStr << ":";
-            }
-            if (_CLIENT_DEBUG)
-                ss << "Client(" << client->str() << "):";
-            if (_MSG_DEBUG) {
-                ss << rawMessage;
-                string message = ss.str();
-                cout << message << endl;
-                this->msgQueue.push(message);
-            }
+            this->msgQueue.push(rawMessage);
             if (rawMessage.compare(0, strlen("_0x8_connection_close"), "_0x8_connection_close") == 0) {
                 client->disconnect();
             }

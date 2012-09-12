@@ -24,6 +24,7 @@ public:
 	Server(unsigned short port);
 	void start();
 	void stop();
+	void log(std::string msg);
 };
 
 

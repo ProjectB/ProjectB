@@ -18,22 +18,23 @@ ClientConnection::ClientConnection(int id, TCPSocket* sock) {
     this->id = id;
     this->sock = sock;
 
-    cout << "Handling client ";
     try {
         this->address = sock->getForeignAddress();
-        cout << this->address << ":";
     } catch (const SocketException& e) {
-        cerr << "Unable to get foreign address" << endl;
         this->address = "undefined";
+        if(_CLIENT_ERR_DEBUG) log("Unable to get foreign address");
     }
     try {
         this->port = sock->getForeignPort();
-        cout << this->port;
     } catch (const SocketException& e) {
-        cerr << "Unable to get foreign port" << endl;
         this->port = 0;
+        if(_CLIENT_ERR_DEBUG) log("Unable to get foreign port");
     }
-    cout << endl;
+    if(_CLIENT_DEBUG) {
+        stringstream debug;
+        debug << "Handling client " << this->str();
+        log(debug.str());
+    }
 
     char recvBuffer[RCVBUFSIZE];
     unsigned int recvMsgSize;
@@ -49,17 +50,16 @@ ClientConnection::ClientConnection(int id, TCPSocket* sock) {
         msg << recvBuffer;
     }
 
-    cout << "Answering client" << endl;
     if (answerWSClient(msg.str())) {
-        cout << "Connection established" << endl;
+        if(_CLIENT_DEBUG) log("Connection established");
     } else {
-        cout << "Fail to answer client" << endl;
-        delete sock;
-        this->sock = NULL;
+        if(_CLIENT_ERR_DEBUG) log("Fail to answer client");
+        disconnect();
     }
 }
 
 ClientConnection::~ClientConnection() {
+    if(_CLIENT_DEBUG) log("Connection finished");
     if (sock != NULL)
         delete sock;
 }
@@ -80,7 +80,7 @@ void ClientConnection::disconnect() {
 }
 
 string ClientConnection::str() {
-    stringstream ss("");
+    stringstream ss;
     ss << address << ":" << port;
     return ss.str();
 }
@@ -105,15 +105,10 @@ bool ClientConnection::answerWSClient(string msg) {
 
     key += "258EAFA5-E914-47DA-95CA-C5AB0DC85B11\0";
 
-    //cout << "key: " << key << endl;
-
     unsigned char answer[256];
     for (int i = 0; i < 256; i++)
         answer[i] = 0;
     sha1::calc((const void *) key.c_str(), (unsigned int) key.length(), answer);
-
-    //cout << "sha1: " << answer << endl;
-    //cout << "base64: " << base64::encode(answer, 20) << endl;
 
     string httpAnswer = "HTTP/1.1 101 Switching Protocols\r\n"
             "Upgrade: websocket\r\n"
@@ -131,15 +126,15 @@ void ClientConnection::sendMsg(string message) {
 }
 
 void ClientConnection::updateRcv(unsigned int& pos, void *buffer, bool block) {
-    if (pos + 1 == RCVBUFSIZE) {
+    pos = (pos + 1) % RCVBUFSIZE;
+
+    if (pos == 0) {
         memset(buffer, 0, RCVBUFSIZE);
         if (block)
             this->sock->recv(buffer, RCVBUFSIZE);
         else if (this->hasData())
             this->sock->recv(buffer, RCVBUFSIZE);
     }
-    pos = (pos + 1) % RCVBUFSIZE;
-//    printf("buffer[%d]=%x\n", pos, ((unsigned char *)buffer)[pos]);
 }
 
 /* receive packet from client's browser */
@@ -148,6 +143,7 @@ void ClientConnection::receiveMsg(vector<string>& msgs) {
     unsigned int pos;
 
     string message;
+    stringstream debugMsg;
     unsigned char firstByte;
     unsigned char secondByte;
     unsigned char mask[4];
@@ -157,19 +153,14 @@ void ClientConnection::receiveMsg(vector<string>& msgs) {
     bool textFrame;
     bool needContinuation;
 
-    cout << endl << endl;
-
     needContinuation = false;
-    pos = RCVBUFSIZE - 1;
+    pos = -1;
     updateRcv(pos, buffer);
     while (true) {
 
         firstByte = buffer[pos];
         updateRcv(pos, buffer);
         secondByte = buffer[pos];
-
-        if (_BYTES)
-            cout << "0x" << hex << (unsigned int) firstByte << " 0x" << (unsigned int) secondByte << endl;
 
         if ((firstByte & 0x70) != 0)
             return; // invalid frame
@@ -191,8 +182,14 @@ void ClientConnection::receiveMsg(vector<string>& msgs) {
             return;
         } else if ((firstByte & 0xF) == 0x1)
             textFrame = true;
-        else
+        else {
+            if (_CLIENT_ERR_DEBUG) {
+                stringstream debug;
+                debug << "INVALID_FRAME_TYPE:" << hex << (firstByte & 0xF);
+                log(debug.str());
+            }
             textFrame = false;
+        }
 
         if (secondByte < 0x80)
             boolMask = false;
@@ -202,22 +199,18 @@ void ClientConnection::receiveMsg(vector<string>& msgs) {
         // PAYLOAD
         payloadLen = (int) (secondByte & 0x7F);
 
-        if (payloadLen < 126) {
-            //do nothing
-            cout << "payload < 126: " << dec << payloadLen << endl;
-        } else if (payloadLen == 126) {
+        if (payloadLen < 126) { //do nothing
+        } else if (payloadLen == 126)
             for (int i = 0; i < 2; i++) {
                 updateRcv(pos, buffer);
                 payloadLen += buffer[pos];
             }
-            cout << "payload == 126: " << dec << payloadLen << endl;
-        } else { // (payloadLen == 127)
+        else
+            // (payloadLen == 127)
             for (int k = 0; k < 8; k++) {
                 updateRcv(pos, buffer);
                 payloadLen += buffer[pos];
             }
-            cout << "payload > 126: " << dec << payloadLen << endl;
-        }
 
         if (boolMask) {
             for (int i = 0; i < 4; i++) {
@@ -232,15 +225,17 @@ void ClientConnection::receiveMsg(vector<string>& msgs) {
             message.push_back(c);
         }
 
-        cout << "msg: " << message << endl;
-
         if (finalMessage) {
             needContinuation = false;
             if (textFrame)
                 msgs.push_back(message);
-            else
-                cout << "invalid:" << message << endl;
+            if (_CLIENT_MSG_DEBUG) {
+                debugMsg << "[0x" << hex << (unsigned int) firstByte << " 0x" << (unsigned int) secondByte << "] " << message;
+                log(debugMsg.str());
+                debugMsg.clear();
+            }
             message.clear();
+
         } else
             needContinuation = true;
 
@@ -268,4 +263,14 @@ string ClientConnection::createPacket(string str) {
 
 int ClientConnection::hasData(int sec, int usec) {
     return sock->hasData(sec, usec);
+}
+
+void ClientConnection::log(string msg) {
+    time_t rawtime;
+    struct tm * timeinfo;
+    time(&rawtime);
+    timeinfo = localtime(&rawtime);
+    string timeStr(asctime(timeinfo));
+    timeStr[timeStr.length()-1] = '\0';
+    cout << timeStr.substr(11, timeStr.length()) << ":" << "Client-" << this->id << ":" << msg << endl;
 }

@@ -9,10 +9,14 @@
 #define DEFS_HPP_
 
 const unsigned int RCVBUFSIZE = 256;
-#define _SWSSDEBUG 0
-#define _BYTES 1
-#define _TIME_DEBUG 0
-#define _CLIENT_DEBUG 0
-#define _MSG_DEBUG 1
+#define _SERVER_DEBUG 1
+#define _SERVER_ERR_DEBUG 1
+
+#define _GAMESERVER_DEBUG 1
+#define _GAMESERVER_ERR_DEBUG 1
+
+#define _CLIENT_DEBUG 1
+#define _CLIENT_MSG_DEBUG 0
+#define _CLIENT_ERR_DEBUG 1
 
 #endif /* DEFS_HPP_ */

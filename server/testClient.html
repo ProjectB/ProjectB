@@ -11,7 +11,7 @@
 
 //http://atomicrobotdesign.com/blog/web-development/how-to-use-sprite-sheets-with-html5-canvas/
 // mt bagunçado aprender a fazer classes em js!
-var canvas, ctx, sprites,
+var canvas, ctx, sprites, lp,
     width = 300,
     height = 300,
     rightKey = false,
@@ -20,58 +20,67 @@ var canvas, ctx, sprites,
     downKey = false,
     ship_x = (width / 2) - 25, ship_y = height - 85, ship_w = 65, ship_h = 85,
     srcX = 10, srcY = 0;
+    
+    function initCanvas() {
+	    canvas = document.getElementById('canvas');
+	    ctx = canvas.getContext('2d');
+	    sprites = new Image();
+	    sprites.src = 'res/ship.png';
+
+	}
+    
+    function startCanvas() {
+        isRunning = true;
+        lp = setInterval(loop, 1000/30);    	
+    }
+    
     function clearCanvas() {
-      ctx.clearRect(0,0,500,400);
+	    try {
+	        ctx.clearRect(0,0,width,height);
+	    } catch(err) {
+	        writeToScreen('<span style="color: red;">EXCEPTION:</span> ' + err.message);
+	    }
+    }
+    function moveShip() {
+        if (rightKey) {
+            ship_x += 10;
+            srcX = 83;
+        } else if (leftKey) {
+            ship_x -= 10;
+            srcX = 156;
+        }
     }
     function drawShip() {
-      if (rightKey) {
-        ship_x += 5;
-        srcX = 83;
-      } else if (leftKey) {
-        ship_x -= 5;
-        srcX = 156;
-      }
       ctx.drawImage(sprites,srcX,srcY,ship_w,ship_h,ship_x,ship_y,ship_w,ship_h);
       if (rightKey == false || leftKey == false) {
         srcX = 10;
       }
     }
     function loop() {
-      clearCanvas();
-      drawShip();
+        clearCanvas();
+        if (!isRunning) clearInterval(lp);
+        else drawShip();      
     }
-    function canvasStart() {
-      canvas = document.getElementById('canvas');
-      ctx = canvas.getContext('2d');
-      sprites = new Image();
-      sprites.src = 'res/ship.png';
-      setInterval(loop, 1000/30);
 
-    }
 
     //WEBSOCKETS
     var wsUri = "ws://localhost:8080/";
     var output;
     
     function init() {
+    	initCanvas();
         output = document.getElementById("output");
-
+        
+        testWebSocket();
+        
         document.onkeydown = handleKeyDown;
         document.onkeyup = handleKeyUp;
-
-        testWebSocket();
-    }
-
-    function handleKeyDown(evt) {
-        doSend("KEYDOWN: " + evt.keyCode );
-    }
-
-    function handleKeyUp(evt) {
-        doSend("KEYUP: " + evt.keyCode );
     }
 
     function testWebSocket() {
         websocket = new WebSocket(wsUri);
+        websocket.isConnected = false;
+        
         websocket.onopen = function(evt) {
             onOpen(evt)
         };
@@ -85,28 +94,35 @@ var canvas, ctx, sprites,
             onError(evt)
         };
     }
-
     
+    function handleKeyDown(evt) {
+        doSend("KEYDOWN: " + evt.keyCode );
+    }
+
+    function handleKeyUp(evt) {
+        doSend("KEYUP: " + evt.keyCode );
+    }
 
     function onOpen(evt) {
+        startCanvas();
         writeToScreen("CONNECTED");
-        doSend("WebSocket rocks");
+        websocket.isConnected = true;
     }
 
     function onClose(evt) {
-        writeToScreen("DISCONNECTED");
+    	clearCanvas();
+    	writeToScreen("DISCONNECTED");
+        websocket.isConnected = false;
+        isRunning = false;
     } 
 
     function onMessage(evt) {
         writeToScreen('<span style="color: blue;">RESPONSE: ' + evt.data+'</span>');
-	    var objDiv = document.getElementById("output");
-	    objDiv.scrollTop = objDiv.scrollHeight;
-	    if (evt.data == "KEYDOWN: 65") leftKey = true;
-	    else if (evt.data == "KEYUP: 65") leftKey = false;
-	    else if (evt.data == "KEYDOWN: 68") rightKey = true;
-	    else if (evt.data == "KEYUP: 68") rightKey = false;
-	    
-//        websocket.close();
+        if (evt.data == "KEYDOWN: 65") leftKey = true; 
+        else if (evt.data == "KEYUP: 65") leftKey = false;
+        else if (evt.data == "KEYDOWN: 68") rightKey = true;
+        else if (evt.data == "KEYUP: 68") rightKey = false;
+        moveShip();
     } 
 
     function onError(evt) {
@@ -114,8 +130,14 @@ var canvas, ctx, sprites,
     } 
 
     function doSend(message) {
+    	if(websocket.isConnected == true) {
         writeToScreen("SENT: " + message);
-        websocket.send(message);
+	        try {
+	            websocket.send(message);
+	        } catch(err) {
+	            writeToScreen('<span style="color: red;">EXCEPTION:</span> ' + err.message);
+	        }
+    	}
     } 
 
     function writeToScreen(message) {
@@ -123,26 +145,28 @@ var canvas, ctx, sprites,
   //      pre.style.wordWrap = "break-word";
         pre.innerHTML = message;
         output.appendChild(pre);
+        var objDiv = document.getElementById("output");
+        objDiv.scrollTop = objDiv.scrollHeight;
     }
 
     function sendInput(evt) {
-       writeToScreen("INPUT: "+ evt.keyCode);
-       doSend("input: " + evt.keyCode);
+        writeToScreen("INPUT: "+ evt.keyCode);
+        doSend("input: " + evt.keyCode);
     }
 
     window.onbeforeunload = function onWindowClose(event) { 
         websocket.close(); 
     } 
 
-    window.addEventListener("load", init, false);
 </script>
 
 </head>
-<body onload="canvasStart();">
-<h2>Aperte A e/ou D!</h2>
-<canvas id="canvas" style="border: none;" width="300" height="300"></canvas>
-<div id="output" style="height: 200px;width: 600px;border:1px solid #ccc;font:16px/20px Georgia, Garamond, Serif;overflow: auto;" readonly="readonly">
-</div>
+<body onload="init();">
+<h2>Aperte A ou D!</h2>
+<canvas id="canvas" style="border: 1px sold #ccc;" width="300" height="300"></canvas>
+<div id="output" style="height: 200px;width: 600px;border:1px solid #ccc;font:16px/20px Georgia, Garamond, Serif;overflow: auto;" readonly="readonly"></div>
+<button onclick="websocket.close();init();">Connect</button>
+<button onclick="websocket.close();">Disconnect</button>
 </body>
 </html>
 

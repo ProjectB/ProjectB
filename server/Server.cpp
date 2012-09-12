@@ -1,15 +1,16 @@
 #include <iostream>
 #include <cstdlib>
 #include <thread>
+#include <sstream>
 #include "ClientConnection.hpp"
 #include "GameServer.hpp"
 #include "Server.hpp"
 #include "lib/PracticalSocket.hpp"
+#include "defs.hpp"
 
 using namespace std;
 
-Server::Server(unsigned short port) :
-        isRunning() {
+Server::Server(unsigned short port) : isRunning() {
     gs = new GameServer();
     servSocket = new  TCPServerSocket(port);
     this->port = port;
@@ -26,10 +27,15 @@ void Server::start() {
 }
 
 void Server::run() {
-    isRunning = true;
-    cout << "Listening at port: " << port << endl;
-    try {
 
+    if (_SERVER_DEBUG) {
+        stringstream debug;
+        debug << "Listening at port: " << port;
+        log(debug.str());
+    }
+
+    isRunning = true;
+    try {
         gs->start();
         int id = 0;
 
@@ -43,9 +49,20 @@ void Server::run() {
         }
 
     } catch (SocketException & e) {
-        cerr << e.what() << endl;
+        if (_SERVER_ERR_DEBUG) log(e.what());
         exit(1);
     }
 
     gs->stop();
+    delete gs;
+}
+
+void Server::log(string msg) {
+    time_t rawtime;
+    struct tm * timeinfo;
+    time(&rawtime);
+    timeinfo = localtime(&rawtime);
+    string timeStr(asctime(timeinfo));
+    timeStr[timeStr.length()-1] = '\0';
+    cout << timeStr.substr(11, timeStr.length()) << ":" << "Server" << ":" << msg << endl;
 }

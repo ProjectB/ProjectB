@@ -14,7 +14,7 @@ obj/main.o: main.cpp
 obj/GameServer.o: GameServer.cpp GameServer.hpp MultithreadQueue.hpp
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 	
-obj/%.o: %.cpp %.hpp
+obj/%.o: %.cpp %.hpp defs.hpp
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 $(BIN): $(OBJ)
