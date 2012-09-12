@@ -120,7 +120,7 @@ public:
   static unsigned short resolveService(const std::string &service,
                                        const std::string &protocol = "tcp");
 
-  int hasData();
+  int hasData(int sec = 0, int usec = 0);
   void close();
 
 private:

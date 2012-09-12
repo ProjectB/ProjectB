@@ -36,7 +36,7 @@ void Server::run() {
         while(isRunning == true) {
             ClientConnection * client;
 
-            if (servSocket->hasData()) {
+            if (servSocket->hasData(0, 500)) {
                 client = new ClientConnection(id++, servSocket->accept());
                 gs->clientQueue.push(client);
             }

@@ -170,13 +170,13 @@ unsigned short Socket::resolveService(const string &service, const string &proto
         return ntohs(serv->s_port); /* Found port (network byte order) by name */
 }
 
-int Socket::hasData() {
+int Socket::hasData(int sec, int usec) {
     fd_set fds;
     struct timeval timeout;
 
     /* Set time limit. */
-    timeout.tv_sec = SELECT_TIME;
-    timeout.tv_usec = 0;
+    timeout.tv_sec = sec;
+    timeout.tv_usec = usec;
     /* Create a descriptor set containing our socket.  */
     FD_ZERO(&fds);
     FD_SET(sockDesc, &fds);

@@ -130,10 +130,13 @@ void ClientConnection::sendMsg(string message) {
     this->sock->send(msg.c_str(), strlen(msg.c_str()));
 }
 
-void ClientConnection::updateRcv(unsigned int& pos, void *buffer) {
+void ClientConnection::updateRcv(unsigned int& pos, void *buffer, bool block) {
     if (pos + 1 == RCVBUFSIZE) {
-        memset (buffer, 0, RCVBUFSIZE);
-        this->sock->recv(buffer, RCVBUFSIZE);
+        memset(buffer, 0, RCVBUFSIZE);
+        if (block)
+            this->sock->recv(buffer, RCVBUFSIZE);
+        else if (this->hasData())
+            this->sock->recv(buffer, RCVBUFSIZE);
     }
     pos = (pos + 1) % RCVBUFSIZE;
 //    printf("buffer[%d]=%x\n", pos, ((unsigned char *)buffer)[pos]);
@@ -144,31 +147,22 @@ void ClientConnection::receiveMsg(vector<string>& msgs) {
     unsigned char buffer[RCVBUFSIZE];
     unsigned int pos;
 
-
     string message;
     unsigned char firstByte;
     unsigned char secondByte;
     unsigned char mask[4];
     int payloadLen;
-    //int maskOffset; //payload data starting byte may change because of payload length
     bool boolMask;
     bool finalMessage;
     bool textFrame;
-    bool firstLoop;
     bool needContinuation;
 
-    pos = 0;
-    firstLoop = true;
-    needContinuation = false;
-    memset (buffer, 0, RCVBUFSIZE);
-    this->sock->recv(buffer, RCVBUFSIZE);
-  //  printf("buffer[%d]=%x\n", pos, buffer[pos]);
     cout << endl << endl;
-    while (true) {
 
-        if (!firstLoop)
-            updateRcv(pos, buffer);
-        firstLoop = false;
+    needContinuation = false;
+    pos = RCVBUFSIZE - 1;
+    updateRcv(pos, buffer, true);
+    while (true) {
 
         firstByte = buffer[pos];
         updateRcv(pos, buffer);
@@ -188,12 +182,13 @@ void ClientConnection::receiveMsg(vector<string>& msgs) {
 
         // 4 bits da direita do firstByte
         if ((firstByte & 0xF) == 0) {
-            if (!needContinuation) return; //invalid
+            if (!needContinuation)
+                return; //invalid
 
-        } else if((firstByte & 0xF) == 0x8) {
-          //connection close
-          msgs.push_back("_0x8_connection_close");
-          return;
+        } else if ((firstByte & 0xF) == 0x8) {
+            //connection close
+            msgs.push_back("_0x8_connection_close");
+            return;
         } else if ((firstByte & 0xF) == 0x1)
             textFrame = true;
         else
@@ -246,43 +241,16 @@ void ClientConnection::receiveMsg(vector<string>& msgs) {
             else
                 cout << "invalid:" << message << endl;
             message.clear();
-        }
-        else
+        } else
             needContinuation = true;
+
+        updateRcv(pos, buffer);
     }
 }
-
-/*
- unsigned char createByte(const string byteStr) {
- unsigned char byte = 0;
- if (byteStr.length() < 8) return 0;
-
- if (byteStr[0] == '1') byte |= 0x80;
- if (byteStr[0] == '1') byte |= 0x40;
- if (byteStr[0] == '1') byte |= 0x20;
- if (byteStr[0] == '1') byte |= 0x10;
- if (byteStr[0] == '1') byte |= 0x8;
- if (byteStr[0] == '1') byte |= 0x4;
- if (byteStr[0] == '1') byte |= 0x2;
- if (byteStr[0] == '1') byte |= 0x1;
-
- return byte;
- }
- */
 
 string ClientConnection::createPacket(string str) {
     vector<unsigned char> msg;
     int length = str.length();
-
-    /* hello
-     msg.push_back(0x81);
-     msg.push_back(0x05);
-     msg.push_back(0x48);
-     msg.push_back(0x65);
-     msg.push_back(0x6c);
-     msg.push_back(0x6c);
-     msg.push_back(0x6f);
-     */
 
     msg.push_back(0x81);
     if (length < 126)
@@ -298,6 +266,6 @@ string ClientConnection::createPacket(string str) {
     return string(msg.begin(), msg.end());
 }
 
-int ClientConnection::hasData() {
-    return sock->hasData();
+int ClientConnection::hasData(int sec, int usec) {
+    return sock->hasData(sec, usec);
 }

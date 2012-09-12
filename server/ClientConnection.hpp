@@ -37,13 +37,13 @@ public:
     void disconnect();
     void sendMsg(std::string message);
     void receiveMsg(std::vector<std::string>& msgs);
-    int hasData();
+    int hasData(int sec = 0, int usec = 0);
 
 private:
     TCPSocket* sock;
     bool answerWSClient(std::string msg);
     std::string createPacket(std::string str);
-    void updateRcv(unsigned int& pos, void *buffer);
+    void updateRcv(unsigned int& pos, void *buffer, bool block = false);
 
 };
 
