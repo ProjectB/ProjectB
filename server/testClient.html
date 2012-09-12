@@ -1,7 +1,52 @@
 <!DOCTYPE html>
+<html>
+
+<head>
 <meta charset="utf-8" />
 <title>WebSocket Test</title>
+
+<!--<script type="text/javascript" src="js/jquery-1.8.1.min.js"></script>-->
+
 <script language="javascript" type="text/javascript">
+var canvas, ctx, sprites,
+    width = 300,
+    height = 300,
+    rightKey = false,
+    leftKey = false,
+    upKey = false,
+    downKey = false,
+    ship_x = (width / 2) - 25, ship_y = height - 85, ship_w = 65, ship_h = 85,
+    srcX = 10, srcY = 0;
+    function clearCanvas() {
+      ctx.clearRect(0,0,500,400);
+    }
+    function drawShip() {
+      if (rightKey) {
+        ship_x += 5;
+        srcX = 83;
+      } else if (leftKey) {
+        ship_x -= 5;
+        srcX = 156;
+      }
+      ctx.drawImage(sprites,srcX,srcY,ship_w,ship_h,ship_x,ship_y,ship_w,ship_h);
+      if (rightKey == false || leftKey == false) {
+        srcX = 10;
+      }
+    }
+    function loop() {
+      clearCanvas();
+      drawShip();
+    }
+    function canvasStart() {
+      canvas = document.getElementById('canvas');
+      ctx = canvas.getContext('2d');
+      sprites = new Image();
+      sprites.src = 'res/ship.png';
+      setInterval(loop, 1000/30);
+
+    }
+
+    //WEBSOCKETS
     var wsUri = "ws://localhost:8080/";
     var output;
     
@@ -15,13 +60,10 @@
     }
 
     function handleKeyDown(evt) {
-        
-//       currentlyPressedKeys[event.keyCode] = true;
         doSend("KEYDOWN: " + evt.keyCode );
     }
 
     function handleKeyUp(evt) {
-        //currentlyPressedKeys[event.keyCode] = false;
         doSend("KEYUP: " + evt.keyCode );
     }
 
@@ -54,6 +96,13 @@
 
     function onMessage(evt) {
         writeToScreen('<span style="color: blue;">RESPONSE: ' + evt.data+'</span>');
+	    var objDiv = document.getElementById("output");
+	    objDiv.scrollTop = objDiv.scrollHeight;
+	    if (evt.data == "KEYDOWN: 65") leftKey = true;
+	    else if (evt.data == "KEYUP: 65") leftKey = false;
+	    else if (evt.data == "KEYDOWN: 68") rightKey = true;
+	    else if (evt.data == "KEYUP: 68") rightKey = false;
+	    
 //        websocket.close();
     } 
 
@@ -67,8 +116,8 @@
     } 
 
     function writeToScreen(message) {
-        var pre = document.createElement("p");
-        pre.style.wordWrap = "break-word";
+        var pre = document.createElement("div");
+  //      pre.style.wordWrap = "break-word";
         pre.innerHTML = message;
         output.appendChild(pre);
     }
@@ -82,9 +131,16 @@
         websocket.close(); 
     } 
 
-    window.addEventListener("load", init, false); 
+    window.addEventListener("load", init, false);
 </script>
 
-<h2>WebSocket Test</h2>
-<div id="output"></div>
+</head>
+<body onload="canvasStart();">
+<h2>Aperte A e/ou D!</h2>
+<canvas id="canvas" style="border: none;" width="300" height="300"></canvas>
+<div id="output" style="height: 200px;width: 600px;border:1px solid #ccc;font:16px/20px Georgia, Garamond, Serif;overflow: auto;" readonly="readonly">
+</div>
+</body>
+</html>
+
 </html>

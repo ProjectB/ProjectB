@@ -43,7 +43,7 @@ private:
     TCPSocket* sock;
     bool answerWSClient(std::string msg);
     std::string createPacket(std::string str);
-    void updateRcv(unsigned int& pos, void *buffer, bool block = false);
+    void updateRcv(unsigned int& pos, void *buffer, bool block = true);
 
 };
 

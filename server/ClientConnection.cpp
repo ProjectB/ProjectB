@@ -161,7 +161,7 @@ void ClientConnection::receiveMsg(vector<string>& msgs) {
 
     needContinuation = false;
     pos = RCVBUFSIZE - 1;
-    updateRcv(pos, buffer, true);
+    updateRcv(pos, buffer);
     while (true) {
 
         firstByte = buffer[pos];
@@ -244,7 +244,7 @@ void ClientConnection::receiveMsg(vector<string>& msgs) {
         } else
             needContinuation = true;
 
-        updateRcv(pos, buffer);
+        updateRcv(pos, buffer, false);
     }
 }
 
