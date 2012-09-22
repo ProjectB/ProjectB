@@ -10,13 +10,13 @@
 
 #include <atomic>
 #include <thread>
-#include "GameServer.hpp"
+#include "BomberServer.hpp"
 #include "lib/PracticalSocket.hpp"
 
 class Server {
     std::thread mainThread;
     std::atomic<bool> isRunning;
-    GameServer * gs;
+    BomberServer * bs;
     TCPServerSocket * servSocket;
 	unsigned short port;
 	void run();

@@ -29,10 +29,17 @@ public:
     std::vector<std::string> msgs;
 
     GameServer();
+    virtual ~GameServer();
 
     void start();
     void stop();
 
+protected:
+    void broadcast(std::string msg);
+    virtual void step() = 0;
+    virtual void onClientConnect(ClientConnection * client) = 0;
+    virtual void onClientDisconnect(ClientConnection * client) = 0;
+    virtual void onNewMessage(std::string msg) = 0;
 
 };
 

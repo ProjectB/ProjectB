@@ -3,15 +3,15 @@
 #include <thread>
 #include <sstream>
 #include "ClientConnection.hpp"
-#include "GameServer.hpp"
+#include "BomberServer.hpp"
 #include "Server.hpp"
 #include "lib/PracticalSocket.hpp"
 #include "defs.hpp"
 
 using namespace std;
 
-Server::Server(unsigned short port) : isRunning() {
-    gs = new GameServer();
+Server::Server(unsigned short port) {
+    bs = new BomberServer();
     servSocket = new  TCPServerSocket(port);
     this->port = port;
 }
@@ -36,7 +36,7 @@ void Server::run() {
 
     isRunning = true;
     try {
-        gs->start();
+        bs->start();
         int id = 0;
 
         while(isRunning == true) {
@@ -44,7 +44,7 @@ void Server::run() {
 
             if (servSocket->hasData(0, 500)) {
                 client = new ClientConnection(id++, servSocket->accept());
-                gs->clientQueue.push(client);
+                bs->clientQueue.push(client);
             }
         }
 
@@ -53,8 +53,8 @@ void Server::run() {
         exit(1);
     }
 
-    gs->stop();
-    delete gs;
+    bs->stop();
+    delete bs;
 }
 
 void Server::log(string msg) {

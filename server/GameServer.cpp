@@ -13,46 +13,63 @@
 
 using namespace std;
 
-GameServer::GameServer() :
-        isRunning() {
+GameServer::GameServer() {
+
+}
+
+GameServer::~GameServer() {
+    for (vector<ClientConnection *>::iterator it = clients.begin(); it != clients.end(); it++) {
+        if ((*it)->isConnected())
+            (*it)->disconnect();
+    }
+    for (vector<ClientConnection *>::iterator it = clients.begin(); it != clients.end();) {
+        delete(*it);
+        it = clients.erase(it);
+    }
+}
+
+void GameServer::broadcast(string msg) {
+    for (vector<ClientConnection *>::iterator it = clients.begin(); it != clients.end(); it++) {
+        (*it)->sendMsg(msg);
+    }
 }
 
 void GameServer::run() {
     isRunning = true;
 
     while (isRunning) {
-        // atuliza clientes
+        // novos clients
         while (!clientQueue.empty()) {
             ClientConnection * client = clientQueue.pop();
             clients.push_back(client);
 
             thread t = thread([this, client] {this->runClient(client);});
             t.detach();
+
+            onClientConnect(client);
         }
 
-        // atualiza estados
-        while (!msgQueue.empty())
-            msgs.push_back(msgQueue.pop());
+        // novas msgs
+        while (!msgQueue.empty()) {
+            string msg = msgQueue.pop();
+            msgs.push_back(msg);
+            onNewMessage(msg);
+        }
 
-        // broadcast
+        // check clients
         for (vector<ClientConnection *>::iterator it = clients.begin(); it != clients.end();) {
             if (!(*it)->isConnected()) {
+                onClientDisconnect(*it);
                 delete(*it);
                 it = clients.erase(it);
                 continue;
             }
-
-            for (vector<string>::iterator jt = msgs.begin(); jt != msgs.end(); jt++)
-                (*it)->sendMsg(*jt);
             it++;
         }
-        msgs.clear();
-    }
 
-    for (vector<ClientConnection *>::iterator it = clients.begin(); it != clients.end();) {
-        if ((*it)->isConnected())
-            (*it)->disconnect();
-        it = clients.erase(it);
+        step();
+
+        msgs.clear();
     }
 }
 
