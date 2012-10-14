@@ -12,26 +12,31 @@
 //http://atomicrobotdesign.com/blog/web-development/how-to-use-sprite-sheets-with-html5-canvas/
 // mt bagunçado aprender a fazer classes em js!
 var canvas, ctx, sprites, lp,
-    width = 300,
-    height = 300,
+    width = 640,
+    height = 480,
     rightKey = false,
     leftKey = false,
     upKey = false,
     downKey = false,
     ship_x = (width / 2) - 25, ship_y = height - 85, ship_w = 65, ship_h = 85,
     srcX = 10, srcY = 0;
+
+    function update() {
+        clearCanvas();
+        if (!isRunning) clearInterval(lp);
+        else drawShip();
+    }
     
     function initCanvas() {
 	    canvas = document.getElementById('canvas');
 	    ctx = canvas.getContext('2d');
-	    sprites = new Image();
-	    sprites.src = 'res/ship.png';
-
-	}
+	    ship = new Image();
+	    ship.src = 'res/ship.png';
+    }
     
     function startCanvas() {
         isRunning = true;
-        lp = setInterval(loop, 1000/30);    	
+        lp = setInterval(update, 1000/30);
     }
     
     function clearCanvas() {
@@ -41,13 +46,19 @@ var canvas, ctx, sprites, lp,
 	        writeToScreen('<span style="color: red;">EXCEPTION:</span> ' + err.message);
 	    }
     }
+
     function moveShip() {
         if (rightKey) {
             ship_x += 5;
         } else if (leftKey) {
             ship_x -= 5;
+        } else if(upKey) {
+            ship_y -= 5;
+        } else if(downKey) {
+            ship_y += 5;
         }
     }
+
     function drawShip() {
         srcX = 10;
     	if (rightKey)
@@ -55,12 +66,7 @@ var canvas, ctx, sprites, lp,
         else if (leftKey)
             srcX = 156;
 
-        ctx.drawImage(sprites,srcX,srcY,ship_w,ship_h,ship_x,ship_y,ship_w,ship_h);
-    }
-    function loop() {
-        clearCanvas();
-        if (!isRunning) clearInterval(lp);
-        else drawShip();      
+        ctx.drawImage(ship,srcX,srcY,ship_w,ship_h,ship_x,ship_y,ship_w/2,ship_h/2);
     }
 
 
@@ -115,20 +121,50 @@ var canvas, ctx, sprites, lp,
     	writeToScreen("DISCONNECTED");
         websocket.isConnected = false;
         isRunning = false;
-    } 
+    }
 
-    function onMessage(evt) {
+    function onMessage(evt){
+
+
+
         writeToScreen('<span style="color: blue;">RESPONSE: ' + evt.data+'</span>');
         if (evt.data == "KEYDOWN: 65") leftKey = true; 
         else if (evt.data == "KEYUP: 65") leftKey = false;
         else if (evt.data == "KEYDOWN: 68") rightKey = true;
         else if (evt.data == "KEYUP: 68") rightKey = false;
-        moveShip();
-    } 
+        else if(evt.data == "KEYDOWN: 87") upKey = true;
+        else if(evt.data == "KEYUP: 87") upKey = false;
+        else if(evt.data == "KEYDOWN: 83") downKey = true;
+        else if(evt.data == "KEYUP: 83") downKey = false;
+
+        if(evt.data 
+
+//moveShip();
+
+       if(leftKey) 
+       {
+         doSend("leftKey");
+       }
+
+       if(rightKey)
+       {
+         doSend("rightKey");
+       }
+
+       if(upKey)
+       {
+         doSend("upKey");
+       }
+
+       if(downKey)
+       {
+         doSend("downKey");
+       }
+    }
 
     function onError(evt) {
         writeToScreen('<span style="color: red;">ERROR:</span> ' + evt.data);
-    } 
+    }
 
     function doSend(message) {
     	if(websocket.isConnected == true) {
@@ -139,7 +175,7 @@ var canvas, ctx, sprites, lp,
 	            writeToScreen('<span style="color: red;">EXCEPTION:</span> ' + err.message);
 	        }
     	}
-    } 
+    }
 
     function writeToScreen(message) {
         var pre = document.createElement("div");
@@ -155,16 +191,16 @@ var canvas, ctx, sprites, lp,
         doSend("input: " + evt.keyCode);
     }
 
-    window.onbeforeunload = function onWindowClose(event) { 
+    window.onbeforeunload = function onWindowClose(event) {
         websocket.close(); 
-    } 
+    }
 
 </script>
 
 </head>
 <body onload="init();">
-<h2>Aperte A ou D!</h2>
-<canvas id="canvas" style="border: 1px sold #ccc;" width="300" height="300"></canvas>
+<h2>Aperte W, A, S ou D!</h2>
+<canvas id="canvas" style="border: 2.5px solid black;background: lime;" width=640 height=480></canvas>
 <div id="output" style="height: 200px;width: 600px;border:1px solid #ccc;font:16px/20px Georgia, Garamond, Serif;overflow: auto;" readonly="readonly"></div>
 <button onclick="websocket.close();init();">Connect</button>
 <button onclick="websocket.close();">Disconnect</button>
