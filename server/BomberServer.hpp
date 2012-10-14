@@ -10,6 +10,16 @@
 
 #include "GameServer.hpp"
 
+
+enum objType
+  {
+    square,
+    bomber
+  };
+
+typedef std::pair <std::pair<int,int>, objType> gameObj;
+typedef std::pair <gameObj, int> player;
+
 class BomberServer: public virtual GameServer {
 public:
     BomberServer();
@@ -20,21 +30,24 @@ private:
     void onClientDisconnect(ClientConnection * client);
     void onNewMessage(std::string msg);
 
-  gameState gs;
-  int width = 640;
-  int height = 480;
+  //  gameState gs;
+  int width;
+  int height;
+
+  std::vector<gameObj> objects;
+  std::vector<player> players;
+
   
 
 };
 
+/*
  private class gameState {
  public:
-   typedef pair <pair<int,int>, int> gameObj;
-   typedef pair <gameObj, int> player;
-   vector<gameObj> objects;
-   vector<player> players;
    
  private:
  }
+
+*/
 
 #endif /* BOMBERSERVER_HPP_ */

@@ -69,7 +69,7 @@ void GameServer::run() {
 
         step();
 
-        .clear();
+        msgs.clear();
     }
 }
 

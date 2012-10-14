@@ -125,6 +125,7 @@ var canvas, ctx, sprites, lp,
 
     function onMessage(evt){
 
+//alert((new String(evt.data)).search("client"));
 
 
         writeToScreen('<span style="color: blue;">RESPONSE: ' + evt.data+'</span>');
@@ -136,8 +137,6 @@ var canvas, ctx, sprites, lp,
         else if(evt.data == "KEYUP: 87") upKey = false;
         else if(evt.data == "KEYDOWN: 83") downKey = true;
         else if(evt.data == "KEYUP: 83") downKey = false;
-
-        if(evt.data 
 
 //moveShip();
 
