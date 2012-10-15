@@ -11,21 +11,17 @@
 
 //http://atomicrobotdesign.com/blog/web-development/how-to-use-sprite-sheets-with-html5-canvas/
 // mt bagunçado aprender a fazer classes em js!
-var canvas, ctx, sprites, lp,
-    width = 640,
-    height = 480,
+var canvas, ctx, sprites, lp, objs,
+    width = 440,
+    height = 440,
     rightKey = false,
     leftKey = false,
     upKey = false,
     downKey = false,
-    ship_x = (width / 2) - 25, ship_y = height - 85, ship_w = 65, ship_h = 85,
+    ship_x, ship_y, ship_w = 65, ship_h = 85,
     srcX = 10, srcY = 0;
 
-    function update() {
-        clearCanvas();
-        if (!isRunning) clearInterval(lp);
-        else drawShip();
-    }
+
     
     function initCanvas() {
 	    canvas = document.getElementById('canvas');
@@ -38,6 +34,15 @@ var canvas, ctx, sprites, lp,
         isRunning = true;
         lp = setInterval(update, 1000/30);
     }
+
+    function update() {
+        clearCanvas();
+        if (!isRunning) clearInterval(lp);
+        else {
+          drawShip();
+          drawObjs();
+        }
+    }
     
     function clearCanvas() {
 	    try {
@@ -48,6 +53,7 @@ var canvas, ctx, sprites, lp,
     }
 
     function moveShip() {
+/*
         if (rightKey) {
             ship_x += 5;
         } else if (leftKey) {
@@ -56,6 +62,17 @@ var canvas, ctx, sprites, lp,
             ship_y -= 5;
         } else if(downKey) {
             ship_y += 5;
+        }
+*/
+
+        if (rightKey) {
+           doSend("rightKey");
+        } else if (leftKey) {
+           doSend("leftKey");
+        } else if(upKey) {
+           doSend("upKey");
+        } else if(downKey) {
+           doSend("downKey");
         }
     }
 
@@ -67,6 +84,21 @@ var canvas, ctx, sprites, lp,
             srcX = 156;
 
         ctx.drawImage(ship,srcX,srcY,ship_w,ship_h,ship_x,ship_y,ship_w/2,ship_h/2);
+    }
+
+    function drawObjs() {
+        for(i=0; i < objs.length; i++) {
+            var obj = objs[i];
+            if(obj.type == "square") {
+                ctx.beginPath();
+                ctx.rect(obj.x, obj.y, obj.w, obj.h);
+                ctx.fillStyle = obj.fillStyle;
+                ctx.fill();
+                ctx.lineWidth = obj.lineWidth;
+                ctx.strokeStyle = obj.strokeStyle;
+                ctx.stroke();
+            }
+        }
     }
 
 
@@ -82,6 +114,8 @@ var canvas, ctx, sprites, lp,
         
         document.onkeydown = handleKeyDown;
         document.onkeyup = handleKeyUp;
+
+        objs = new Array();
     }
 
     function testWebSocket() {
@@ -103,11 +137,21 @@ var canvas, ctx, sprites, lp,
     }
     
     function handleKeyDown(evt) {
-        doSend("KEYDOWN: " + evt.keyCode );
+        if(evt.keyCode == 65) leftKey = true;
+        else if(evt.keyCode == 68) rightKey = true;
+        else if(evt.keyCode == 87) upKey = true;
+        else if(evt.keyCode == 83) downKey = true;
+
+        moveShip();
     }
 
     function handleKeyUp(evt) {
-        doSend("KEYUP: " + evt.keyCode );
+        if(evt.keyCode == 65) leftKey = false;
+        else if(evt.keyCode == 68) rightKey = false;
+        else if(evt.keyCode == 87) upKey = false;
+        else if(evt.keyCode == 83) downKey = false;
+
+        moveShip();
     }
 
     function onOpen(evt) {
@@ -125,41 +169,34 @@ var canvas, ctx, sprites, lp,
 
     function onMessage(evt){
 
-//alert((new String(evt.data)).search("client"));
+        writeToScreen('<span style="color: blue;">GOT MESSAGE: ' + evt.data+'</span>');
+		     
 
+        if((new String(evt.data)).search("sq") == 0){
+             //msg do tipo "sq_x_y_w_h"
+             pos = (new String(evt.data)).split("_");
+             var obj = {
+             type : "square",
+             x : parseInt(pos[1]),
+             y : parseInt(pos[2]),
+             w : parseInt(pos[3]),
+             h : parseInt(pos[4]),
+             fillStyle : '#000000',
+             lineWidth : 2,
+             strokeStyle : 'silver'
+             };
 
-        writeToScreen('<span style="color: blue;">RESPONSE: ' + evt.data+'</span>');
-        if (evt.data == "KEYDOWN: 65") leftKey = true; 
-        else if (evt.data == "KEYUP: 65") leftKey = false;
-        else if (evt.data == "KEYDOWN: 68") rightKey = true;
-        else if (evt.data == "KEYUP: 68") rightKey = false;
-        else if(evt.data == "KEYDOWN: 87") upKey = true;
-        else if(evt.data == "KEYUP: 87") upKey = false;
-        else if(evt.data == "KEYDOWN: 83") downKey = true;
-        else if(evt.data == "KEYUP: 83") downKey = false;
+             objs.push(obj);
+        }
+        else if((new String(evt.data)).search("bomber") == 0 )
+        {
+             //msg do tipo "bomber_x_y"
+             var pos = (new String(evt.data)).split("_");
+             ship_x = parseInt(pos[1]);
+             ship_y = parseInt(pos[2]);
 
-//moveShip();
-
-       if(leftKey) 
-       {
-         doSend("leftKey");
-       }
-
-       if(rightKey)
-       {
-         doSend("rightKey");
-       }
-
-       if(upKey)
-       {
-         doSend("upKey");
-       }
-
-       if(downKey)
-       {
-         doSend("downKey");
-       }
-    }
+        }
+     }
 
     function onError(evt) {
         writeToScreen('<span style="color: red;">ERROR:</span> ' + evt.data);
@@ -199,7 +236,7 @@ var canvas, ctx, sprites, lp,
 </head>
 <body onload="init();">
 <h2>Aperte W, A, S ou D!</h2>
-<canvas id="canvas" style="border: 2.5px solid black;background: lime;" width=640 height=480></canvas>
+<canvas id="canvas" style="border: 2.5px solid black;background: lime;" width=440 height=440></canvas>
 <div id="output" style="height: 200px;width: 600px;border:1px solid #ccc;font:16px/20px Georgia, Garamond, Serif;overflow: auto;" readonly="readonly"></div>
 <button onclick="websocket.close();init();">Connect</button>
 <button onclick="websocket.close();">Disconnect</button>

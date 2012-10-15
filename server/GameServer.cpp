@@ -52,7 +52,7 @@ void GameServer::run() {
         // novas msgs
         while (!msgQueue.empty()) {
             string msg = msgQueue.pop();
-            msgs.push_back(msg);
+	    //            msgs.push_back(msg);
             onNewMessage(msg);
         }
 
