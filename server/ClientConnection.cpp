@@ -36,6 +36,10 @@ ClientConnection::ClientConnection(int id, TCPSocket* sock) {
         log(debug.str());
     }
 
+    stringstream ssGuid;
+    ssGuid << this->address << this->port << this->id;
+    this->guid = ssGuid.str();
+
     char recvBuffer[RCVBUFSIZE];
     unsigned int recvMsgSize;
     stringstream msg;
@@ -255,6 +259,7 @@ string ClientConnection::createPacket(string str) {
         msg.push_back(length);
     }
 
+    cout << "length: " << length << endl;
     for (int i = 0; i < length; i++)
         msg.push_back(str[i]);
 

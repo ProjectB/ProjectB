@@ -25,6 +25,7 @@ enum FrameType {
 class ClientConnection {
 public:
     int id;
+    std::string guid;
     std::string address;
     unsigned short port;
     std::mutex connMutex;

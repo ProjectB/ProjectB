@@ -10,6 +10,7 @@
 
 #include <queue>
 #include <vector>
+#include <map>
 #include <string>
 #include <atomic>
 
@@ -24,9 +25,8 @@ private:
     void runClient(ClientConnection * client);
 public:
     MultithreadQueue<ClientConnection*> clientQueue;
-    MultithreadQueue<std::string> msgQueue;
-    std::vector<ClientConnection*> clients;
-    std::vector<std::string> msgs;
+    MultithreadQueue<std::pair<std::string, std::string>> guidMsgQueue;
+    std::map<std::string, ClientConnection*> clients;
 
     GameServer();
     virtual ~GameServer();
@@ -39,7 +39,7 @@ protected:
     virtual void step() = 0;
     virtual void onClientConnect(ClientConnection * client) = 0;
     virtual void onClientDisconnect(ClientConnection * client) = 0;
-    virtual void onNewMessage(std::string msg) = 0;
+    virtual void onNewMessage(std::string guid, std::string msg) = 0;
 
 };
 

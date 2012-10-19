@@ -18,19 +18,20 @@ GameServer::GameServer() {
 }
 
 GameServer::~GameServer() {
-    for (vector<ClientConnection *>::iterator it = clients.begin(); it != clients.end(); it++) {
-        if ((*it)->isConnected())
-            (*it)->disconnect();
+    for (map<string, ClientConnection *>::iterator it = clients.begin(); it != clients.end(); it++) {
+        if ((*it).second->isConnected())
+            (*it).second->disconnect();
     }
-    for (vector<ClientConnection *>::iterator it = clients.begin(); it != clients.end();) {
-        delete(*it);
+    for (map<string, ClientConnection *>::iterator it = clients.begin(); it != clients.end();) {
+        delete((*it).second);
         it = clients.erase(it);
     }
 }
 
 void GameServer::broadcast(string msg) {
-    for (vector<ClientConnection *>::iterator it = clients.begin(); it != clients.end(); it++) {
-        (*it)->sendMsg(msg);
+    for (map<string, ClientConnection *>::iterator it = clients.begin(); it != clients.end(); it++) {
+
+        (*it).second->sendMsg(msg);
     }
 }
 
@@ -41,7 +42,7 @@ void GameServer::run() {
         // novos clients
         while (!clientQueue.empty()) {
             ClientConnection * client = clientQueue.pop();
-            clients.push_back(client);
+            clients[client->guid] = client;
 
             thread t = thread([this, client] {this->runClient(client);});
             t.detach();
@@ -50,17 +51,16 @@ void GameServer::run() {
         }
 
         // novas msgs
-        while (!msgQueue.empty()) {
-            string msg = msgQueue.pop();
-	    //            msgs.push_back(msg);
-            onNewMessage(msg);
+        while (!guidMsgQueue.empty()) {
+            pair<string, string> guidMsg = guidMsgQueue.pop();
+            onNewMessage(guidMsg.first, guidMsg.second);
         }
 
         // check clients
-        for (vector<ClientConnection *>::iterator it = clients.begin(); it != clients.end();) {
-            if (!(*it)->isConnected()) {
-                onClientDisconnect(*it);
-                delete(*it);
+        for (map<string, ClientConnection *>::iterator it = clients.begin(); it != clients.end();) {
+            if (!(*it).second->isConnected()) {
+                onClientDisconnect((*it).second);
+                delete((*it).second);
                 it = clients.erase(it);
                 continue;
             }
@@ -68,8 +68,6 @@ void GameServer::run() {
         }
 
         step();
-
-        msgs.clear();
     }
 }
 
@@ -89,7 +87,7 @@ void GameServer::runClient(ClientConnection * client) {
 
         for (vector<string>::iterator it = msgs.begin(); it != msgs.end(); it++) {
             string rawMessage = *it;
-            this->msgQueue.push(rawMessage);
+            this->guidMsgQueue.push(pair<string,string>(client->guid, rawMessage));
             if (rawMessage.compare(0, strlen("_0x8_connection_close"), "_0x8_connection_close") == 0) {
                 client->disconnect();
             }

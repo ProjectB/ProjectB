@@ -170,7 +170,7 @@ var canvas, ctx, sprites, lp, objs,
     function onMessage(evt){
 
         writeToScreen('<span style="color: blue;">GOT MESSAGE: ' + evt.data+'</span>');
-		     
+		/*
 
         if((new String(evt.data)).search("sq") == 0){
              //msg do tipo "sq_x_y_w_h"
@@ -196,6 +196,7 @@ var canvas, ctx, sprites, lp, objs,
              ship_y = parseInt(pos[2]);
 
         }
+		*/
      }
 
     function onError(evt) {
@@ -236,7 +237,7 @@ var canvas, ctx, sprites, lp, objs,
 </head>
 <body onload="init();">
 <h2>Aperte W, A, S ou D!</h2>
-<canvas id="canvas" style="border: 2.5px solid black;background: lime;" width=440 height=440></canvas>
+<canvas id="canvas" style="border: 2.5px solid black;background: lime; visibility: hidden;" width=440 height=440></canvas>
 <div id="output" style="height: 200px;width: 600px;border:1px solid #ccc;font:16px/20px Georgia, Garamond, Serif;overflow: auto;" readonly="readonly"></div>
 <button onclick="websocket.close();init();">Connect</button>
 <button onclick="websocket.close();">Disconnect</button>
