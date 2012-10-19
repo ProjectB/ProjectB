@@ -39,8 +39,8 @@ var canvas, ctx, sprites, lp, objs,
         clearCanvas();
         if (!isRunning) clearInterval(lp);
         else {
-          drawShip();
-          drawObjs();
+          //drawShip();
+          drawObjs(objs);
         }
     }
     
@@ -86,7 +86,7 @@ var canvas, ctx, sprites, lp, objs,
         ctx.drawImage(ship,srcX,srcY,ship_w,ship_h,ship_x,ship_y,ship_w/2,ship_h/2);
     }
 
-    function drawObjs() {
+    function drawObjs(objs) {
         for(i=0; i < objs.length; i++) {
             var obj = objs[i];
             if(obj.type == "square") {
@@ -97,6 +97,14 @@ var canvas, ctx, sprites, lp, objs,
                 ctx.lineWidth = obj.lineWidth;
                 ctx.strokeStyle = obj.strokeStyle;
                 ctx.stroke();
+            }
+            else if (obj.type == "bomber") {
+                srcX = 10;
+                if (rightKey)
+                    srcX = 83;
+                else if (leftKey)
+                    srcX = 156;
+            	ctx.drawImage(ship,srcX,srcY,ship_w,ship_h,obj.x,obj.y,ship_w/2,ship_h/2);
             }
         }
     }
@@ -169,8 +177,42 @@ var canvas, ctx, sprites, lp, objs,
 
     function onMessage(evt){
 
+    	objs = [];
         writeToScreen('<span style="color: blue;">GOT MESSAGE: ' + evt.data+'</span>');
-		/*
+		
+        var msg = new String(evt.data);
+        var msgVect = msg.substr(1,msg.length-2).split("|");
+        for (var i = 0; i < msgVect.length;) {
+            if (msgVect[i] == "sq") {
+                var obj = {
+	                type : "square",
+	                x : parseInt(msgVect[++i]),
+	                y : parseInt(msgVect[++i]),
+	                w : parseInt(msgVect[++i]),
+	                h : parseInt(msgVect[++i]),
+	                fillStyle : '#000000',
+	                lineWidth : 2,
+	                strokeStyle : 'silver'
+                };
+                objs.push(obj);
+                i++;
+            }
+            else if(msgVect[i] == "bomber") {
+                var obj = {
+                    type : "bomber",
+                    x : parseInt(msgVect[++i]),
+                    y : parseInt(msgVect[++i]),
+                };
+                objs.push(obj);
+                i++;
+            }
+            else {
+            	writeToScreen('<span style="color: red;">ERROR:</span> Invalid object type.');
+            	return;
+            }    	
+        }
+       
+        /*
 
         if((new String(evt.data)).search("sq") == 0){
              //msg do tipo "sq_x_y_w_h"
@@ -236,11 +278,15 @@ var canvas, ctx, sprites, lp, objs,
 
 </head>
 <body onload="init();">
-<h2>Aperte W, A, S ou D!</h2>
-<canvas id="canvas" style="border: 2.5px solid black;background: lime; visibility: hidden;" width=440 height=440></canvas>
-<div id="output" style="height: 200px;width: 600px;border:1px solid #ccc;font:16px/20px Georgia, Garamond, Serif;overflow: auto;" readonly="readonly"></div>
-<button onclick="websocket.close();init();">Connect</button>
-<button onclick="websocket.close();">Disconnect</button>
+	<h2>Aperte W, A, S ou D!</h2>
+	<canvas id="canvas"
+		style="border: 2.5px solid black; background: lime; "
+		width=440 height=440></canvas>
+	<div id="output"
+		style="max-height: 1000px; height: 200px; width: 600px; border: 1px solid #ccc; font: 16px/20px Georgia, Garamond, Serif; overflow: auto;"
+		readonly="readonly"></div>
+	<button onclick="websocket.close();init();">Connect</button>
+	<button onclick="websocket.close();">Disconnect</button>
 </body>
 </html>
 

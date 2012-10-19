@@ -9,6 +9,8 @@
 #include <sstream>
 #include "BomberServer.hpp"
 
+#define FPS 30
+
 using namespace std;
 
 BomberServer::BomberServer() {
@@ -22,10 +24,10 @@ BomberServer::~BomberServer() {
 
 void BomberServer::step() {
     //server roda a 120fps
-    this_thread::sleep_for(chrono::milliseconds(1000 / 30));
-    //string msg  = gs.getMsg();
+    this_thread::sleep_for(chrono::milliseconds(1000 / FPS));
+    string msg  = gs.getMsg();
     //cout << msg << endl;
-    //broadcast(msg);
+    broadcast(msg);
 }
 
 void BomberServer::onClientConnect(ClientConnection * client) {
@@ -34,7 +36,7 @@ void BomberServer::onClientConnect(ClientConnection * client) {
     broadcast(sgsm.str());
 
     client->sendMsg(gs.getMsg());
-    //gs.players[client->guid] = GenObject(bomber, 1, 0, BLOCK_SIZE, BLOCK_SIZE);
+    gs.players[client->guid] = GenObject(client->guid, bomber, 1, 0, BLOCK_SIZE, BLOCK_SIZE);
 }
 
 void BomberServer::onClientDisconnect(ClientConnection * client) {
@@ -42,8 +44,7 @@ void BomberServer::onClientDisconnect(ClientConnection * client) {
     sgsm << "client " << client->id << " disconnected" << endl;
     broadcast(sgsm.str());
 
-    map<string, GenObject>::iterator it = gs.players.find(client->guid);
-    gs.players.erase(it);
+    gs.players.erase(client->guid);
 }
 
 void BomberServer::onNewMessage(string guid, string msg) {

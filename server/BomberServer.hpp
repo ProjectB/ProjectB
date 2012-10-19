@@ -22,15 +22,19 @@ class BomberServer: public virtual GameServer {
 
     class GenObject {
     public:
+        std::string guid;
         objType type;
         int x, y, height, width;
 
+
         GenObject() {
+            guid = "";
             type = none;
             x = y = height = width = -1;
         }
 
-        GenObject(objType type, int x, int y, int height, int width) {
+        GenObject(std::string id, objType type, int x, int y, int height, int width) {
+            this->guid = id;
             this->type = type;
             this->x = x;
             this->y = y;
@@ -41,11 +45,12 @@ class BomberServer: public virtual GameServer {
 
     class GameState {
     public:
-        int width, height, xPoint, yPoint, xMove, yMove;
+        int width, height, xPoint, yPoint, xMove, yMove, n;
         std::vector<GenObject> fixedObjects;
         std::map<std::string, GenObject> players;
 
         GameState() {
+            n = 0;
             height = width = 11*BLOCK_SIZE;
             xPoint = BLOCK_SIZE;
             yPoint = BLOCK_SIZE;
@@ -84,7 +89,9 @@ class BomberServer: public virtual GameServer {
         }
 
         void newObject(int x, int y, int w, int h, objType type) {
-            GenObject square(type, x, y, w, h);
+            std::stringstream ss;
+            ss << (n++);
+            GenObject square(ss.str(), type, x, y, w, h);
             fixedObjects.push_back(square);
         }
 
@@ -93,9 +100,9 @@ class BomberServer: public virtual GameServer {
             std::stringstream ss;
             ss << SEPARATOR;
             for(std::vector<GenObject>::iterator it = fixedObjects.begin(); it != fixedObjects.end(); it++)
-                ss << (*it).type << SEPARATOR << (*it).x << SEPARATOR << (*it).y << SEPARATOR << (*it).width << SEPARATOR << (*it).height << SEPARATOR;
+                ss << (((*it).type == square)?"sq":"invalid") << SEPARATOR << (*it).x << SEPARATOR << (*it).y << SEPARATOR << (*it).width << SEPARATOR << (*it).height << SEPARATOR;
             for(std::map<std::string, GenObject>::iterator it = players.begin(); it != players.end(); it++)
-                ss << (*it).second.type << SEPARATOR << (*it).second.x << SEPARATOR << (*it).second.y;
+                ss << (((*it).second.type == bomber)?"bomber":"invalid") << SEPARATOR << (*it).second.x << SEPARATOR << (*it).second.y << SEPARATOR;
             return ss.str();
         }
     };

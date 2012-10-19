@@ -63,7 +63,7 @@ ClientConnection::ClientConnection(int id, TCPSocket* sock) {
 }
 
 ClientConnection::~ClientConnection() {
-    if(_CLIENT_DEBUG) log("Connection finished");
+    //if(_CLIENT_DEBUG) log("Client disposed");
     if (sock != NULL)
         delete sock;
 }
@@ -81,6 +81,7 @@ void ClientConnection::disconnect() {
     delete sock;
     sock = NULL;
     connMutex.unlock();
+    if(_CLIENT_DEBUG) log("Connection finished");
 }
 
 string ClientConnection::str() {
@@ -126,7 +127,8 @@ bool ClientConnection::answerWSClient(string msg) {
 
 void ClientConnection::sendMsg(string message) {
     string msg = createPacket(message);
-    this->sock->send(msg.c_str(), strlen(msg.c_str()));
+    if (this->isConnected())
+        this->sock->send(msg.c_str(), strlen(msg.c_str()));
 }
 
 void ClientConnection::updateRcv(unsigned int& pos, void *buffer, bool block) {
@@ -254,12 +256,14 @@ string ClientConnection::createPacket(string str) {
     msg.push_back(0x81);
     if (length < 126)
         msg.push_back(length);
-    else {
+    else if (length < 65536){
         msg.push_back(126);
-        msg.push_back(length);
+        msg.push_back(length >> 8);
+        msg.push_back(length & 0xff);
     }
+    else
+        return "ERROR LENGTH";
 
-    cout << "length: " << length << endl;
     for (int i = 0; i < length; i++)
         msg.push_back(str[i]);
 

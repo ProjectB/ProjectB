@@ -57,14 +57,12 @@ void GameServer::run() {
         }
 
         // check clients
-        for (map<string, ClientConnection *>::iterator it = clients.begin(); it != clients.end();) {
+        for (map<string, ClientConnection *>::iterator it = clients.begin(); it != clients.end(); it++) {
             if (!(*it).second->isConnected()) {
                 onClientDisconnect((*it).second);
                 delete((*it).second);
-                it = clients.erase(it);
-                continue;
+                clients.erase((*it).first);
             }
-            it++;
         }
 
         step();
