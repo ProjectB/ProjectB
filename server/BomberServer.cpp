@@ -14,7 +14,6 @@
 using namespace std;
 
 BomberServer::BomberServer() {
-
 }
 
 BomberServer::~BomberServer() {
@@ -23,7 +22,6 @@ BomberServer::~BomberServer() {
 }
 
 void BomberServer::step() {
-    //server roda a 120fps
     this_thread::sleep_for(chrono::milliseconds(1000 / FPS));
     string msg  = gs.getMsg();
     //cout << msg << endl;
@@ -56,6 +54,5 @@ void BomberServer::onNewMessage(string guid, string msg) {
         gs.players[guid].y -= gs.yMove;
     else if (msg.compare("downKey") == 0)
         gs.players[guid].y += gs.yMove;
-
 }
 
