@@ -22,10 +22,13 @@ BomberServer::~BomberServer() {
 }
 
 void BomberServer::step() {
-    this_thread::sleep_for(chrono::milliseconds(1000 / FPS));
-    string msg  = gs.getMsg();
+    this_thread::sleep_for(chrono::milliseconds(1000 / FPS));    
+    string msg  = gs.getMsg(false);
+
+    
     //cout << msg << endl;
-    broadcast(msg);
+    if(msg.compare("|") != 0)
+      broadcast(msg);
 }
 
 void BomberServer::onClientConnect(ClientConnection * client) {
@@ -33,8 +36,8 @@ void BomberServer::onClientConnect(ClientConnection * client) {
     sgsm << "client " << client->id << " connected" << endl;
     broadcast(sgsm.str());
 
-    client->sendMsg(gs.getMsg());
     gs.players[client->guid] = GenObject(client->guid, bomber, 1, 0, BLOCK_SIZE, BLOCK_SIZE);
+    client->sendMsg(gs.getMsg(true));
 }
 
 void BomberServer::onClientDisconnect(ClientConnection * client) {
@@ -55,4 +58,3 @@ void BomberServer::onNewMessage(string guid, string msg) {
     else if (msg.compare("downKey") == 0)
         gs.players[guid].y += gs.yMove;
 }
-
