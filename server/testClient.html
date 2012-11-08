@@ -11,7 +11,7 @@
 
 //http://atomicrobotdesign.com/blog/web-development/how-to-use-sprite-sheets-with-html5-canvas/
 // mt bagunçado aprender a fazer classes em js!
-var canvas, ctx, sprites, lp, objs,
+var canvas, ctx, sprites, lp,
     width = 440,
     height = 440,
     rightKey = false,
@@ -19,7 +19,8 @@ var canvas, ctx, sprites, lp, objs,
     upKey = false,
     downKey = false,
     ship_x, ship_y, ship_w = 65, ship_h = 85,
-    srcX = 10, srcY = 0;
+    srcX = 10, srcY = 0,
+    objs = [];
 
 
     
@@ -177,7 +178,6 @@ var canvas, ctx, sprites, lp, objs,
 
     function onMessage(evt){
 
-    	objs = [];
         writeToScreen('<span style="color: blue;">GOT MESSAGE: ' + evt.data+'</span>');
 		
         var msg = new String(evt.data);
@@ -198,12 +198,26 @@ var canvas, ctx, sprites, lp, objs,
                 i++;
             }
             else if(msgVect[i] == "bomber") {
+                var k=0;
                 var obj = {
                     type : "bomber",
+		    id : msgVect[++i],
                     x : parseInt(msgVect[++i]),
                     y : parseInt(msgVect[++i]),
                 };
+
+		for(var j=0; j < objs.length; j++) {
+                 if(objs[j].type == "bomber") {
+                   if(objs[j].id == obj.id) {
+                     k++;
+                     objs[j].x = obj.x;
+                     objs[j].y = obj.y;
+                   }
+                 }
+                }
+                if(k==0) {
                 objs.push(obj);
+                }
                 i++;
             }
             else {

@@ -49,6 +49,8 @@ class BomberServer: public virtual GameServer {
       std::vector<GenObject> oldFixedObjects, lastFixedObjects, fixedObjects;
       std::map<std::string, GenObject> oldPlayers, lastPlayers, players;
 
+
+
         GameState() {
             n = 0;
             height = width = 11*BLOCK_SIZE;
@@ -94,77 +96,108 @@ class BomberServer: public virtual GameServer {
             GenObject square(ss.str(), type, x, y, w, h);
             fixedObjects.push_back(square);
         }
-
-
-      //refatora essa merda dps! :D
+      
         std::string getMsg(bool first) {
-            std::stringstream ss;
-            ss << SEPARATOR;
+	  std::string str;
+	  str += SEPARATOR;
+	  
+	  updateOld();
 
-	    // atualiza ultimo snapshot
-	    oldFixedObjects.clear();
-	    oldPlayers.clear();
+	  str += updateLast(first);
 
-	    if(!lastFixedObjects.empty())
-	      for(std::vector<GenObject>::iterator it = lastFixedObjects.begin(); it != lastFixedObjects.end(); it++)
-		{
-		  oldFixedObjects.push_back(*it);
-		}
-	    
-	    if(!lastPlayers.empty())
-	      for(std::map<std::string, GenObject>::iterator it = lastPlayers.begin(); it != lastPlayers.end(); it++)
-		{
-		  oldPlayers = lastPlayers;
-		}
-	    
-	    //cria a mensagem, criando um snapshot
-
-	    lastFixedObjects.clear();
-	    lastPlayers.clear();
-
-            for(std::vector<GenObject>::iterator it = fixedObjects.begin(); it != fixedObjects.end(); it++)
-	      {
-		if(first)
-		 ss << (((*it).type == square)?"sq":"invalid") << SEPARATOR << (*it).x << SEPARATOR << (*it).y << SEPARATOR << (*it).width << SEPARATOR << (*it).height << SEPARATOR;
-		lastFixedObjects.push_back(*it);
-	      }
-            for(std::map<std::string, GenObject>::iterator it = players.begin(); it != players.end(); it++)
-	      {
-		if(first)
-		  ss << (((*it).second.type == bomber)?"bomber":"invalid") << SEPARATOR << (*it).second.x << SEPARATOR << (*it).second.y << SEPARATOR;
-		lastPlayers = players;
-
-	      }
-
-	    if(!first) {
-	      for(unsigned int i=0; i < fixedObjects.size(); i++)
-		for(unsigned int j=0; j < oldFixedObjects.size(); j++)
-		  //compara os guids dos 2 objects
-		  if(oldFixedObjects[j].guid.compare(fixedObjects[i].guid) == 0)
-		    if(oldFixedObjects[j].type != fixedObjects[i].type ||
-		       oldFixedObjects[j].x != fixedObjects[i].x ||
-		       oldFixedObjects[j].y != fixedObjects[i].y ||
-		       oldFixedObjects[j].height != fixedObjects[i].height ||
-		       oldFixedObjects[j].width != fixedObjects[i].width) 
-		      {
-			ss << ((fixedObjects[i].type == square)?"sq":"invalid") << SEPARATOR << fixedObjects[i].x << SEPARATOR << fixedObjects[i].y << SEPARATOR << fixedObjects[i].width << SEPARATOR << fixedObjects[i].height << SEPARATOR;
-		      }
-	      
-	      
-	      for(std::map<std::string, GenObject>::iterator it = players.begin(); it != players.end(); it++)
-		for(std::map<std::string, GenObject>::iterator oit = oldPlayers.begin(); oit != oldPlayers.end(); oit++)
-		  if((*oit).first.compare((*it).first) == 0)
-		    if((*oit).second.type != (*it).second.type ||
-		       (*oit).second.x != (*it).second.x ||
-		       (*oit).second.y != (*it).second.y)
-		      {
-			ss << (((*it).second.type == bomber)?"bomber":"invalid") << SEPARATOR << (*it).second.x << SEPARATOR << (*it).second.y << SEPARATOR;
-		      }
-	    }
-	    
-	    return ss.str();
+	  if(!first) {
+	    str += msgFixedObjects();
+	    str += msgPlayers();
+	  }
+	  
+	  
+	  return str;
         }
       
+      void updateOld()
+      {
+	// atualiza ultimo snapshot
+	oldFixedObjects.clear();
+	oldPlayers.clear();
+	
+	if(!lastFixedObjects.empty())
+	  for(std::vector<GenObject>::iterator it = lastFixedObjects.begin(); it != lastFixedObjects.end(); it++)
+	    {
+	      oldFixedObjects.push_back(*it);
+	    }
+	
+	if(!lastPlayers.empty())
+	  for(std::map<std::string, GenObject>::iterator it = lastPlayers.begin(); it != lastPlayers.end(); it++)
+	    {
+	      oldPlayers = lastPlayers;
+	    }
+      }
+
+      std::string updateLast(bool first)
+      {
+	std::stringstream ss;
+	//cria a mensagem, criando um snapshot
+  
+	lastFixedObjects.clear();
+	lastPlayers.clear();
+	
+	for(std::vector<GenObject>::iterator it = fixedObjects.begin(); it != fixedObjects.end(); it++)
+	  {
+	    if(first)
+	      ss << (((*it).type == square)?"sq":"invalid") << SEPARATOR << (*it).x << SEPARATOR << (*it).y << SEPARATOR << (*it).width << SEPARATOR << (*it).height << SEPARATOR;
+	    
+	    lastFixedObjects.push_back(*it);
+	  }
+	
+	for(std::map<std::string, GenObject>::iterator it = players.begin(); it != players.end(); it++)
+	  {
+	    if(first)
+	      ss << (((*it).second.type == bomber)?"bomber":"invalid") << SEPARATOR << (*it).second.guid << SEPARATOR << (*it).second.x << SEPARATOR << (*it).second.y << SEPARATOR;
+	    
+	    lastPlayers = players;
+	  }
+
+	return ss.str();
+      }
+
+
+      
+      std::string msgFixedObjects()
+      {
+	std::stringstream ss;
+
+	for(unsigned int i=0; i < fixedObjects.size(); i++)
+	  for(unsigned int j=0; j < oldFixedObjects.size(); j++)
+	    //compara os guids dos 2 objects
+	    if(oldFixedObjects[j].guid.compare(fixedObjects[i].guid) == 0)
+	      if(oldFixedObjects[j].type != fixedObjects[i].type ||
+		 oldFixedObjects[j].x != fixedObjects[i].x ||
+		 oldFixedObjects[j].y != fixedObjects[i].y ||
+		 oldFixedObjects[j].height != fixedObjects[i].height ||
+		 oldFixedObjects[j].width != fixedObjects[i].width) 
+		{
+		  ss << ((fixedObjects[i].type == square)?"sq":"invalid") << SEPARATOR << fixedObjects[i].x << SEPARATOR << fixedObjects[i].y << SEPARATOR << fixedObjects[i].width << SEPARATOR << fixedObjects[i].height << SEPARATOR;
+		}
+	
+	return ss.str();
+      }
+      
+      std::string msgPlayers()
+      {
+	std::stringstream ss;
+
+	for(std::map<std::string, GenObject>::iterator it = players.begin(); it != players.end(); it++)
+	  for(std::map<std::string, GenObject>::iterator oit = oldPlayers.begin(); oit != oldPlayers.end(); oit++)
+	    if((*oit).first.compare((*it).first) == 0)
+	      if((*oit).second.type != (*it).second.type ||
+		 (*oit).second.x != (*it).second.x ||
+		 (*oit).second.y != (*it).second.y)
+		{
+		  ss << (((*it).second.type == bomber)?"bomber":"invalid") << SEPARATOR << (*it).second.guid << SEPARATOR << (*it).second.x << SEPARATOR << (*it).second.y << SEPARATOR;
+		}
+
+	return ss.str();
+      }
       
     };
 

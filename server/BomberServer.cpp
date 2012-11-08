@@ -28,7 +28,10 @@ void BomberServer::step() {
     
     //cout << msg << endl;
     if(msg.compare("|") != 0)
-      broadcast(msg);
+      {
+	std::cout << msg << std::endl;
+	broadcast(msg);
+      }
 }
 
 void BomberServer::onClientConnect(ClientConnection * client) {
@@ -58,3 +61,4 @@ void BomberServer::onNewMessage(string guid, string msg) {
     else if (msg.compare("downKey") == 0)
         gs.players[guid].y += gs.yMove;
 }
+
