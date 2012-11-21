@@ -41,6 +41,20 @@ class BomberServer: public virtual GameServer {
             this->height = height;
             this->width = width;
         }
+
+        std::string getMsg() {
+            std::stringstream ss;
+            if (type == square)
+                ss << "sq" << SEPARATOR << x << SEPARATOR << y << SEPARATOR << width << SEPARATOR << height;
+            else if (type == bomber)
+                ss << "bomber" << SEPARATOR << guid << SEPARATOR << x << SEPARATOR << y;
+            else
+                ss << "invalid";
+
+            ss << SEPARATOR;
+
+            return ss.str();
+        }
     };
 
     class GameState {
@@ -144,7 +158,7 @@ class BomberServer: public virtual GameServer {
 	for(std::vector<GenObject>::iterator it = fixedObjects.begin(); it != fixedObjects.end(); it++)
 	  {
 	    if(first)
-	      ss << (((*it).type == square)?"sq":"invalid") << SEPARATOR << (*it).x << SEPARATOR << (*it).y << SEPARATOR << (*it).width << SEPARATOR << (*it).height << SEPARATOR;
+	      ss << (*it).getMsg();
 	    
 	    lastFixedObjects.push_back(*it);
 	  }
@@ -152,7 +166,7 @@ class BomberServer: public virtual GameServer {
 	for(std::map<std::string, GenObject>::iterator it = players.begin(); it != players.end(); it++)
 	  {
 	    if(first)
-	      ss << (((*it).second.type == bomber)?"bomber":"invalid") << SEPARATOR << (*it).second.guid << SEPARATOR << (*it).second.x << SEPARATOR << (*it).second.y << SEPARATOR;
+	      ss << (*it).second.getMsg();
 	    
 	    lastPlayers = players;
 	  }
@@ -176,7 +190,7 @@ class BomberServer: public virtual GameServer {
 		 oldFixedObjects[j].height != fixedObjects[i].height ||
 		 oldFixedObjects[j].width != fixedObjects[i].width) 
 		{
-		  ss << ((fixedObjects[i].type == square)?"sq":"invalid") << SEPARATOR << fixedObjects[i].x << SEPARATOR << fixedObjects[i].y << SEPARATOR << fixedObjects[i].width << SEPARATOR << fixedObjects[i].height << SEPARATOR;
+		  ss << fixedObjects[i].getMsg();
 		}
 	
 	return ss.str();
@@ -193,7 +207,7 @@ class BomberServer: public virtual GameServer {
 		 (*oit).second.x != (*it).second.x ||
 		 (*oit).second.y != (*it).second.y)
 		{
-		  ss << (((*it).second.type == bomber)?"bomber":"invalid") << SEPARATOR << (*it).second.guid << SEPARATOR << (*it).second.x << SEPARATOR << (*it).second.y << SEPARATOR;
+		  ss << (*it).second.getMsg();
 		}
 
 	return ss.str();
