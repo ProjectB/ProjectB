@@ -23,7 +23,7 @@ GameServer::~GameServer() {
             (*it).second->disconnect();
     }
     for (map<string, ClientConnection *>::iterator it = clients.begin(); it != clients.end();) {
-        delete((*it).second);
+        delete ((*it).second);
         it = clients.erase(it);
     }
 }
@@ -60,7 +60,7 @@ void GameServer::run() {
         for (map<string, ClientConnection *>::iterator it = clients.begin(); it != clients.end(); it++) {
             if (!(*it).second->isConnected()) {
                 onClientDisconnect((*it).second);
-                delete((*it).second);
+                delete ((*it).second);
                 clients.erase((*it).first);
             }
         }
@@ -85,7 +85,7 @@ void GameServer::runClient(ClientConnection * client) {
 
         for (vector<string>::iterator it = msgs.begin(); it != msgs.end(); it++) {
             string rawMessage = *it;
-            this->guidMsgQueue.push(pair<string,string>(client->guid, rawMessage));
+            this->guidMsgQueue.push(pair<string, string>(client->guid, rawMessage));
             if (rawMessage.compare(0, strlen("_0x8_connection_close"), "_0x8_connection_close") == 0) {
                 client->disconnect();
             }

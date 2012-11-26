@@ -21,18 +21,13 @@ BomberServer::~BomberServer() {
     gs.players.clear();
 }
 
-void BomberServer::step() {
-    this_thread::sleep_for(chrono::milliseconds(1000 / FPS));    
-    string msg  = gs.getMsg(false);
-
-    
-    //cout << msg << endl;
-    if(msg.compare("|") != 0)
-      {
-	std::cout << msg << std::endl;
-	broadcast(msg);
-      }
-}
+/* Todas as funções a seguir rodam em um mesmo frame temporal, na seguinte ordem:
+ *
+ * 1. onClientConnect       - uma vez para cada cliente que se conectou nesse frame
+ * 2. onNewMessage          - uma vez para cada mensagem recebida nesse frame
+ * 3. onClientDisconnect    - uma vez para cada cliente que se conectou nesse frame
+ * 4. step                  - uma única vez
+ */
 
 void BomberServer::onClientConnect(ClientConnection * client) {
     stringstream sgsm;
@@ -62,3 +57,13 @@ void BomberServer::onNewMessage(string guid, string msg) {
         gs.players[guid].y += gs.yMove;
 }
 
+void BomberServer::step() {
+    this_thread::sleep_for(chrono::milliseconds(1000 / FPS));
+    string msg = gs.getMsg(false);
+
+    //cout << msg << endl;
+    if (msg.compare("|") != 0) {
+        std::cout << msg << std::endl;
+        broadcast(msg);
+    }
+}

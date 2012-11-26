@@ -8,7 +8,7 @@
 #ifndef DEFS_HPP_
 #define DEFS_HPP_
 
-const unsigned int RCVBUFSIZE = 256;
+#define RCVBUFSIZE = 256;
 #define _SERVER_DEBUG 1
 #define _SERVER_ERR_DEBUG 1
 
