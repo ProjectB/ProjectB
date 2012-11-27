@@ -8,7 +8,12 @@
 #ifndef DEFS_HPP_
 #define DEFS_HPP_
 
-#define RCVBUFSIZE = 256;
+#define FPS 30
+
+#define BLOCK_SIZE 40
+#define SEPARATOR "|"
+
+#define RCVBUFSIZE 256
 #define _SERVER_DEBUG 1
 #define _SERVER_ERR_DEBUG 1
 

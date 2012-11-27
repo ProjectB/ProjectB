@@ -1,20 +1,12 @@
-#include <queue>
-#include <mutex>
-#include <vector>
-#include <string>
-#include <iostream>
-#include <thread>
-#include <sstream>
-#include <cstring>
 
 #include "defs.hpp"
 #include "GameServer.hpp"
-//#include "MultithreadQueue.hpp"
 
 using namespace std;
 
-GameServer::GameServer() {
-
+GameServer::GameServer(int port) {
+    server = new Server(port);
+    server->start();
 }
 
 GameServer::~GameServer() {
@@ -26,6 +18,8 @@ GameServer::~GameServer() {
         delete ((*it).second);
         it = clients.erase(it);
     }
+    server->stop();
+    delete server;
 }
 
 void GameServer::broadcast(string msg) {
@@ -40,8 +34,8 @@ void GameServer::run() {
 
     while (isRunning) {
         // novos clients
-        while (!clientQueue.empty()) {
-            ClientConnection * client = clientQueue.pop();
+        while (!server->clientQueue.empty()) {
+            ClientConnection * client = server->clientQueue.pop();
             clients[client->guid] = client;
 
             thread t = thread([this, client] {this->runClient(client);});

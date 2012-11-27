@@ -13,7 +13,14 @@
 #include <map>
 #include <string>
 #include <atomic>
+#include <iostream>
+#include <sstream>
+#include <mutex>
+#include <vector>
+#include <thread>
+#include <cstring>
 
+#include "Server.hpp"
 #include "MultithreadQueue.hpp"
 #include "ClientConnection.hpp"
 
@@ -24,11 +31,12 @@ private:
     void run();
     void runClient(ClientConnection * client);
 public:
-    MultithreadQueue<ClientConnection*> clientQueue;
+
     MultithreadQueue<std::pair<std::string, std::string>> guidMsgQueue;
     std::map<std::string, ClientConnection*> clients;
 
     GameServer();
+    GameServer(int port);
     virtual ~GameServer();
 
     void start();
@@ -40,6 +48,7 @@ protected:
     virtual void onClientConnect(ClientConnection * client) = 0;
     virtual void onClientDisconnect(ClientConnection * client) = 0;
     virtual void onNewMessage(std::string guid, std::string msg) = 0;
+    Server * server;
 
 };
 

@@ -8,9 +8,16 @@
 #ifndef CLIENTCONNECTION_H_
 #define CLIENTCONNECTION_H_
 
+#include <iostream>
+#include <algorithm>
+#include <iterator>
+#include <sstream>
 #include <string>
-#include <thread>
 #include <vector>
+#include <cstdlib>
+#include <cstring>
+#include <thread>
+
 #include "lib/PracticalSocket.hpp"
 
 enum FrameType {

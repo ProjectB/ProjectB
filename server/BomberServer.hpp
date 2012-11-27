@@ -8,11 +8,10 @@
 #ifndef BOMBERSERVER_HPP_
 #define BOMBERSERVER_HPP_
 
-#include "GameServer.hpp"
+#include <iostream>
 #include <sstream>
-
-#define BLOCK_SIZE 40
-#define SEPARATOR "|"
+#include "defs.hpp"
+#include "GameServer.hpp"
 
 enum objType {
     none, square, bomber
@@ -202,14 +201,15 @@ class BomberServer: public virtual GameServer {
 
 public:
     BomberServer();
+    BomberServer(int port);
     virtual ~BomberServer();
 private:
+    GameState gs;
+
     void step();
     void onClientConnect(ClientConnection * client);
     void onClientDisconnect(ClientConnection * client);
     void onNewMessage(std::string guid, std::string msg);
-
-    GameState gs;
 
 };
 

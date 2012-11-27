@@ -11,10 +11,10 @@ all: $(BIN)
 obj/main.o: main.cpp
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
-obj/GameServer.o: GameServer.cpp GameServer.hpp MultithreadQueue.hpp
-	$(CXX) $(CXXFLAGS) -c $< -o $@
+#obj/GameServer.o: GameServer.cpp GameServer.hpp MultithreadQueue.hpp
+#	$(CXX) $(CXXFLAGS) -c $< -o $@
 	
-obj/%.o: %.cpp %.hpp defs.hpp
+obj/%.o: %.cpp %.hpp defs.hpp MultithreadQueue.hpp
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 $(BIN): $(OBJ)

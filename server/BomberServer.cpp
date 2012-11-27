@@ -5,15 +5,14 @@
  *      Author: ricardo
  */
 
-#include <iostream>
-#include <sstream>
+#include "defs.hpp"
 #include "BomberServer.hpp"
-
-#define FPS 30
 
 using namespace std;
 
-BomberServer::BomberServer() {
+
+BomberServer::BomberServer(int port) :
+        GameServer(port) {
 }
 
 BomberServer::~BomberServer() {

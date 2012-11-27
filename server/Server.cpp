@@ -1,17 +1,12 @@
-#include <iostream>
-#include <cstdlib>
-#include <thread>
-#include <sstream>
-#include "ClientConnection.hpp"
-#include "BomberServer.hpp"
+
+#include "defs.hpp"
 #include "Server.hpp"
 #include "lib/PracticalSocket.hpp"
-#include "defs.hpp"
+
 
 using namespace std;
 
 Server::Server(unsigned short port) {
-    bs = new BomberServer();
     servSocket = new  TCPServerSocket(port);
     this->port = port;
 }
@@ -36,7 +31,6 @@ void Server::run() {
 
     isRunning = true;
     try {
-        bs->start();
         int id = 0;
 
         while(isRunning == true) {
@@ -44,7 +38,7 @@ void Server::run() {
 
             if (servSocket->hasData(0, 500)) {
                 client = new ClientConnection(id++, servSocket->accept());
-                bs->clientQueue.push(client);
+                clientQueue.push(client);
             }
         }
 
@@ -52,9 +46,6 @@ void Server::run() {
         if (_SERVER_ERR_DEBUG) log(e.what());
         exit(1);
     }
-
-    bs->stop();
-    delete bs;
 }
 
 void Server::log(string msg) {

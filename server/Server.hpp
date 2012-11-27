@@ -9,14 +9,18 @@
 #define SERVER_H_
 
 #include <atomic>
+#include <iostream>
+#include <cstdlib>
 #include <thread>
-#include "BomberServer.hpp"
+#include <sstream>
+
+#include "MultithreadQueue.hpp"
+#include "ClientConnection.hpp"
 #include "lib/PracticalSocket.hpp"
 
 class Server {
     std::thread mainThread;
     std::atomic<bool> isRunning;
-    BomberServer * bs;
     TCPServerSocket * servSocket;
 	unsigned short port;
 	void run();
@@ -25,6 +29,7 @@ public:
 	void start();
 	void stop();
 	void log(std::string msg);
+	MultithreadQueue<ClientConnection*> clientQueue;
 };
 
 

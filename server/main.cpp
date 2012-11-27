@@ -1,6 +1,6 @@
 #include <cstdlib>
 #include <iostream>
-#include "Server.hpp"
+#include "BomberServer.hpp"
 
 using namespace std;
 
@@ -15,8 +15,8 @@ int main(int argc, char *argv[]) {
     if (argc >= 2)
         port = atoi(argv[1]);
 
-    Server server(port);
-    server.start();
+    BomberServer * bs = new BomberServer(port);
+    bs->start();
 
     cout << "Type 'help' to list available commands" << endl;
 
@@ -31,7 +31,8 @@ int main(int argc, char *argv[]) {
     }
 
     cout << "Closing..." << endl;
-    server.stop();
+    bs->stop();
+    delete bs;
 
     return 0;
 }

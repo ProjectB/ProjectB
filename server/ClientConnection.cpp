@@ -1,16 +1,8 @@
-#include <iostream>
-#include <algorithm>
-#include <iterator>
-#include <sstream>
-#include <string>
-#include <vector>
-#include <cstdlib>
-#include <cstring>
+#include "defs.hpp"
 #include "lib/PracticalSocket.hpp"
-#include "ClientConnection.hpp"
 #include "lib/sha1.hpp"
 #include "lib/base64.hpp"
-#include "defs.hpp"
+#include "ClientConnection.hpp"
 
 using namespace std;
 
