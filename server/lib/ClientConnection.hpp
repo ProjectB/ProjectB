@@ -18,7 +18,7 @@
 #include <cstring>
 #include <thread>
 
-#include "lib/PracticalSocket.hpp"
+#include "util/PracticalSocket.hpp"
 
 enum FrameType {
     TEXT,

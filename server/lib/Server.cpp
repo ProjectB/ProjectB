@@ -1,7 +1,7 @@
 
 #include "defs.hpp"
 #include "Server.hpp"
-#include "lib/PracticalSocket.hpp"
+#include "util/PracticalSocket.hpp"
 
 
 using namespace std;

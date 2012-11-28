@@ -10,8 +10,11 @@
 
 #include <iostream>
 #include <sstream>
-#include "defs.hpp"
-#include "GameServer.hpp"
+#include "lib/GameServer.hpp"
+
+#define FPS 30
+#define BLOCK_SIZE 40
+#define SEPARATOR "|"
 
 enum objType {
     none, square, bomber

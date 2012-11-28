@@ -5,7 +5,6 @@
  *      Author: ricardo
  */
 
-#include "defs.hpp"
 #include "BomberServer.hpp"
 
 using namespace std;
@@ -61,7 +60,7 @@ void BomberServer::step() {
     string msg = gs.getMsg(false);
 
     //cout << msg << endl;
-    if (msg.compare("|") != 0) {
+    if (msg.compare(SEPARATOR) != 0) {
         std::cout << msg << std::endl;
         broadcast(msg);
     }

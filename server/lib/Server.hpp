@@ -16,7 +16,7 @@
 
 #include "MultithreadQueue.hpp"
 #include "ClientConnection.hpp"
-#include "lib/PracticalSocket.hpp"
+#include "util/PracticalSocket.hpp"
 
 class Server {
     std::thread mainThread;
