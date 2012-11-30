@@ -37,25 +37,26 @@ void GameServer::run() {
         while (!server->clientQueue.empty()) {
             ClientConnection * client = server->clientQueue.pop();
             clients[client->guid] = client;
-
-            thread t = thread([this, client] {server->runClient(client);});
-            t.detach();
-
             onClientConnect(client);
-        }
-
-        // novas msgs
-        while (!server->guidMsgQueue.empty()) {
-            pair<string, string> guidMsg = server->guidMsgQueue.pop();
-            onNewMessage(guidMsg.first, guidMsg.second);
+            client->start();
         }
 
         // check clients
         for (map<string, ClientConnection *>::iterator it = clients.begin(); it != clients.end(); it++) {
-            if (!(*it).second->isConnected()) {
-                onClientDisconnect((*it).second);
-                delete ((*it).second);
+            ClientConnection * client = (*it).second;
+            // disconnect
+            if (!client->isConnected()) {
+                client->stop();
+                onClientDisconnect(client);
+                delete (client);
                 clients.erase((*it).first);
+            }
+            else {
+                // novas msgs
+                while (!client->msgQueue.empty()) {
+                    string msg = client->msgQueue.pop();
+                    onNewMessage(client->guid, msg);
+                }
             }
         }
 

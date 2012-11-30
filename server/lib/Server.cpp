@@ -57,20 +57,3 @@ void Server::log(string msg) {
     timeStr[timeStr.length()-1] = '\0';
     cout << timeStr.substr(11, timeStr.length()) << ":" << "Server" << ":" << msg << endl;
 }
-
-void Server::runClient(ClientConnection * client) {
-    vector<string> msgs;
-    while (client->isConnected()) {
-        client->receiveMsg(msgs);
-
-        for (vector<string>::iterator it = msgs.begin(); it != msgs.end(); it++) {
-            string rawMessage = *it;
-            this->guidMsgQueue.push(pair<string, string>(client->guid, rawMessage));
-            if (rawMessage.compare(0, strlen("_0x8_connection_close"), "_0x8_connection_close") == 0) {
-                client->disconnect();
-            }
-        }
-
-        msgs.clear();
-    }
-}

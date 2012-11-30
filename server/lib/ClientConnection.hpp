@@ -8,6 +8,7 @@
 #ifndef CLIENTCONNECTION_H_
 #define CLIENTCONNECTION_H_
 
+#include <atomic>
 #include <iostream>
 #include <algorithm>
 #include <iterator>
@@ -18,6 +19,7 @@
 #include <cstring>
 #include <thread>
 
+#include "MultithreadQueue.hpp"
 #include "util/PracticalSocket.hpp"
 
 enum FrameType {
@@ -36,6 +38,7 @@ public:
     std::string address;
     unsigned short port;
     std::mutex connMutex;
+    MultithreadQueue<std::string> msgQueue;
 
     ClientConnection(int id, TCPSocket* sock);
     ~ClientConnection();
@@ -46,13 +49,19 @@ public:
     void sendMsg(std::string message);
     void receiveMsg(std::vector<std::string>& msgs);
     int hasData(int sec = 0, int usec = 0);
+    void start();
+    void stop();
+
 
 private:
+    std::thread mainThread;
+    std::atomic<bool> isRunning;
     TCPSocket* sock;
     bool answerWSClient(std::string msg);
     std::string createPacket(std::string str);
     void updateRcv(unsigned int& pos, void *buffer, bool block = true);
     void log(std::string msg);
+    void run();
 
 };
 

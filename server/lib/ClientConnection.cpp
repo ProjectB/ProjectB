@@ -275,3 +275,30 @@ void ClientConnection::log(string msg) {
     timeStr[timeStr.length()-1] = '\0';
     cout << timeStr.substr(11, timeStr.length()) << ":" << "Client-" << this->id << ":" << msg << endl;
 }
+
+void ClientConnection::run() {
+    vector<string> msgs;
+    isRunning = true;
+    while (isConnected() && isRunning) {
+        receiveMsg(msgs);
+
+        for (vector<string>::iterator it = msgs.begin(); it != msgs.end(); it++) {
+            string rawMessage = *it;
+            msgQueue.push(rawMessage);
+            if (rawMessage.compare(0, strlen("_0x8_connection_close"), "_0x8_connection_close") == 0) {
+                disconnect();
+            }
+        }
+
+        msgs.clear();
+    }
+}
+
+void ClientConnection::stop() {
+    isRunning = false;
+    mainThread.join();
+}
+
+void ClientConnection::start() {
+    mainThread = thread([this] {this->run();});
+}

@@ -31,7 +31,6 @@ public:
     void stop();
     void log(std::string msg);
     MultithreadQueue<ClientConnection*> clientQueue;
-    MultithreadQueue<std::pair<std::string, std::string>> guidMsgQueue;
     void runClient(ClientConnection * client);
 };
 
