@@ -30,14 +30,14 @@ BomberServer::~BomberServer() {
 void BomberServer::onClientConnect(ClientConnection * client) {
     // client connected
     gs.players[client->guid] = GenObject(client->guid, bomber, 1, 0, BLOCK_SIZE, BLOCK_SIZE);
-    broadcast(gs.players[client->guid].getMsg());
+    broadcast(gs.players[client->guid].getMsg(true));
 
-    client->sendMsg(gs.getMsg(true));
+    client->sendMsg(gs.getMsg(false));
 }
 
 void BomberServer::onClientDisconnect(ClientConnection * client) {
     // client disconnect
-    broadcast(gs.players[client->guid].getRemoveMsg());
+    broadcast(gs.players[client->guid].getMsg(true, true));
 
     gs.players.erase(client->guid);
 }
@@ -58,7 +58,7 @@ void BomberServer::onNewMessage(string guid, string msg) {
 
 void BomberServer::step() {
     this_thread::sleep_for(chrono::milliseconds(1000 / FPS));
-    string msg = gs.getMsg(false);
+    string msg = gs.getMsg();
 
     //cout << msg << endl;
     if (msg.compare(SEPARATOR) != 0) {

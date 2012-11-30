@@ -62,12 +62,12 @@
             fixedObjects.push_back(square);
         }
 
-        std::string getMsg(bool first) {
+        std::string getMsg(bool onlyDiff = true) {
             std::string str;
             str += SEPARATOR;
 
-            str += msgFixedObjects(first);
-            str += msgPlayers(first);
+            str += msgFixedObjects(onlyDiff);
+            str += msgPlayers(onlyDiff);
 
             for (std::map<std::string, GenObject>::iterator it = players.begin(); it != players.end(); it++)
                 (*it).second.hasChanges = false;
@@ -75,21 +75,21 @@
             return str;
         }
 
-        std::string msgFixedObjects(bool first) {
+        std::string msgFixedObjects(bool onlyDiff) {
             std::stringstream ss;
 
             for (unsigned int i = 0; i < fixedObjects.size(); i++)
-                if (fixedObjects[i].hasChanges || first)
+                if (fixedObjects[i].hasChanges || !onlyDiff)
                     ss << fixedObjects[i].getMsg();
 
             return ss.str();
         }
 
-        std::string msgPlayers(bool first) {
+        std::string msgPlayers(bool onlyDiff) {
             std::stringstream ss;
 
             for (std::map<std::string, GenObject>::iterator it = players.begin(); it != players.end(); it++)
-                if ((*it).second.hasChanges || first)
+                if ((*it).second.hasChanges || !onlyDiff)
                     ss << (*it).second.getMsg();
 
             return ss.str();

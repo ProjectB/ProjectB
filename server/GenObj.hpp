@@ -37,34 +37,33 @@
                 hasChanges = false;
         }
 
-        std::string getMsg() {
+        std::string getMsg(bool withFirstSeparator = false, bool remove = false) {
             std::stringstream ss;
-            switch(type) {
-                case square:
-                    ss << "sq" << SEPARATOR << x << SEPARATOR << y << SEPARATOR << width << SEPARATOR << height;
-                    break;
-                case bomber:
-                    ss << "bomber" << SEPARATOR << guid << SEPARATOR << x << SEPARATOR << y;
-                    break;
-                default:
-                    ss << "invalid";
-                    break;
-            }
-            ss << SEPARATOR;
-            return ss.str();
-        }
+            if (withFirstSeparator)
+                ss << SEPARATOR;
 
-        std::string getRemoveMsg() {
-            std::stringstream ss;
-            switch(type) {
-//                case square:
- //                   break;
-                case bomber:
-                    ss << "delete" << SEPARATOR << "bomber" << SEPARATOR << guid;
-                    break;
-                default:
-                    ss << "invalid";
-                    break;
+            if (remove) {
+                switch(type) {
+                    case bomber:
+                        ss << "bomber" << SEPARATOR << guid << SEPARATOR << "delete";
+                        break;
+                    default:
+                        ss << "invalid";
+                        break;
+                }
+            }
+            else {
+                switch(type) {
+                    case square:
+                        ss << "sq" << SEPARATOR << x << SEPARATOR << y << SEPARATOR << width << SEPARATOR << height;
+                        break;
+                    case bomber:
+                        ss << "bomber" << SEPARATOR << guid << SEPARATOR << x << SEPARATOR << y;
+                        break;
+                    default:
+                        ss << "invalid";
+                        break;
+                }
             }
             ss << SEPARATOR;
             return ss.str();
