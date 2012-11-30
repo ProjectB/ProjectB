@@ -19,18 +19,20 @@
 #include "util/PracticalSocket.hpp"
 
 class Server {
+private:
     std::thread mainThread;
     std::atomic<bool> isRunning;
     TCPServerSocket * servSocket;
-	unsigned short port;
-	void run();
+    unsigned short port;
+    void run();
 public:
-	Server(unsigned short port);
-	void start();
-	void stop();
-	void log(std::string msg);
-	MultithreadQueue<ClientConnection*> clientQueue;
+    Server(unsigned short port);
+    void start();
+    void stop();
+    void log(std::string msg);
+    MultithreadQueue<ClientConnection*> clientQueue;
+    MultithreadQueue<std::pair<std::string, std::string>> guidMsgQueue;
+    void runClient(ClientConnection * client);
 };
-
 
 #endif /* SERVER_H_ */

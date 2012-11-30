@@ -23,11 +23,10 @@ public:
 private:
     GameState gs;
 
-    void step();
     void onClientConnect(ClientConnection * client);
     void onClientDisconnect(ClientConnection * client);
     void onNewMessage(std::string guid, std::string msg);
-
+    void step();
 };
 
 #endif /* BOMBERSERVER_HPP_ */

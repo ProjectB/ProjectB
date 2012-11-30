@@ -29,10 +29,7 @@ private:
     std::thread mainThread;
     std::atomic<bool> isRunning;
     void run();
-    void runClient(ClientConnection * client);
 public:
-
-    MultithreadQueue<std::pair<std::string, std::string>> guidMsgQueue;
     std::map<std::string, ClientConnection*> clients;
 
     GameServer();
