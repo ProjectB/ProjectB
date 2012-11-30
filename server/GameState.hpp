@@ -13,8 +13,8 @@
     class GameState {
     public:
         int width, height, xPoint, yPoint, xMove, yMove, n;
-        std::vector<GenObject> oldFixedObjects, lastFixedObjects, fixedObjects;
-        std::map<std::string, GenObject> oldPlayers, lastPlayers, players;
+        std::vector<GenObject> fixedObjects;
+        std::map<std::string, GenObject> players;
 
         GameState() {
             n = 0;
@@ -66,88 +66,31 @@
             std::string str;
             str += SEPARATOR;
 
-            updateOld();
+            str += msgFixedObjects(first);
+            str += msgPlayers(first);
 
-            str += updateLast(first);
-
-            if (!first) {
-                str += msgFixedObjects();
-                str += msgPlayers();
-            }
+            for (std::map<std::string, GenObject>::iterator it = players.begin(); it != players.end(); it++)
+                (*it).second.hasChanges = false;
 
             return str;
         }
 
-        void updateOld() {
-            // atualiza ultimo snapshot
-            oldFixedObjects.clear();
-            oldPlayers.clear();
-
-            if (!lastFixedObjects.empty())
-                for (std::vector<GenObject>::iterator it = lastFixedObjects.begin(); it != lastFixedObjects.end();
-                        it++) {
-                    oldFixedObjects.push_back(*it);
-                }
-
-            if (!lastPlayers.empty())
-                for (std::map<std::string, GenObject>::iterator it = lastPlayers.begin(); it != lastPlayers.end();
-                        it++) {
-                    oldPlayers = lastPlayers;
-                }
-        }
-
-        std::string updateLast(bool first) {
-            std::stringstream ss;
-            //cria a mensagem, criando um snapshot
-
-            lastFixedObjects.clear();
-            lastPlayers.clear();
-
-            for (std::vector<GenObject>::iterator it = fixedObjects.begin(); it != fixedObjects.end(); it++) {
-                if (first)
-                    ss << (*it).getMsg();
-
-                lastFixedObjects.push_back(*it);
-            }
-
-            for (std::map<std::string, GenObject>::iterator it = players.begin(); it != players.end(); it++) {
-                if (first)
-                    ss << (*it).second.getMsg();
-
-                lastPlayers = players;
-            }
-
-            return ss.str();
-        }
-
-        std::string msgFixedObjects() {
+        std::string msgFixedObjects(bool first) {
             std::stringstream ss;
 
             for (unsigned int i = 0; i < fixedObjects.size(); i++)
-                for (unsigned int j = 0; j < oldFixedObjects.size(); j++)
-                    //compara os guids dos 2 objects
-                    if (oldFixedObjects[j].guid.compare(fixedObjects[i].guid) == 0)
-                        if (oldFixedObjects[j].type != fixedObjects[i].type || oldFixedObjects[j].x != fixedObjects[i].x
-                                || oldFixedObjects[j].y != fixedObjects[i].y
-                                || oldFixedObjects[j].height != fixedObjects[i].height
-                                || oldFixedObjects[j].width != fixedObjects[i].width) {
-                            ss << fixedObjects[i].getMsg();
-                        }
+                if (fixedObjects[i].hasChanges || first)
+                    ss << fixedObjects[i].getMsg();
 
             return ss.str();
         }
 
-        std::string msgPlayers() {
+        std::string msgPlayers(bool first) {
             std::stringstream ss;
 
             for (std::map<std::string, GenObject>::iterator it = players.begin(); it != players.end(); it++)
-                for (std::map<std::string, GenObject>::iterator oit = oldPlayers.begin(); oit != oldPlayers.end();
-                        oit++)
-                    if ((*oit).first.compare((*it).first) == 0)
-                        if ((*oit).second.type != (*it).second.type || (*oit).second.x != (*it).second.x
-                                || (*oit).second.y != (*it).second.y) {
-                            ss << (*it).second.getMsg();
-                        }
+                if ((*it).second.hasChanges || first)
+                    ss << (*it).second.getMsg();
 
             return ss.str();
         }

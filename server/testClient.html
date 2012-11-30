@@ -201,12 +201,12 @@ var canvas, ctx, sprites, lp,
                 var k=0;
                 var obj = {
                     type : "bomber",
-		    id : msgVect[++i],
+                        id : msgVect[++i],
                     x : parseInt(msgVect[++i]),
                     y : parseInt(msgVect[++i]),
                 };
 
-		for(var j=0; j < objs.length; j++) {
+                for(var j=0; j < objs.length; j++) {
                  if(objs[j].type == "bomber") {
                    if(objs[j].id == obj.id) {
                      k++;
@@ -219,6 +219,9 @@ var canvas, ctx, sprites, lp,
                 objs.push(obj);
                 }
                 i++;
+            }
+            else if(msgVect[i] == "delete") {
+                
             }
             else {
             	writeToScreen('<span style="color: red;">ERROR:</span> Invalid object type.');

@@ -28,31 +28,32 @@ BomberServer::~BomberServer() {
  */
 
 void BomberServer::onClientConnect(ClientConnection * client) {
-    stringstream sgsm;
-    sgsm << "client " << client->id << " connected" << endl;
-    broadcast(sgsm.str());
-
+    // client connected
     gs.players[client->guid] = GenObject(client->guid, bomber, 1, 0, BLOCK_SIZE, BLOCK_SIZE);
+    broadcast(gs.players[client->guid].getMsg());
+
     client->sendMsg(gs.getMsg(true));
 }
 
 void BomberServer::onClientDisconnect(ClientConnection * client) {
-    stringstream sgsm;
-    sgsm << "client " << client->id << " disconnected" << endl;
-    broadcast(sgsm.str());
+    // client disconnect
+    broadcast(gs.players[client->guid].getRemoveMsg());
 
     gs.players.erase(client->guid);
 }
 
 void BomberServer::onNewMessage(string guid, string msg) {
     if (msg.compare("leftKey") == 0)
-        gs.players[guid].x -= gs.xMove;
+        gs.players[guid].Move(-gs.xMove, 0);
+
     else if (msg.compare("rightKey") == 0)
-        gs.players[guid].x += gs.xMove;
+        gs.players[guid].Move(gs.xMove, 0);
+
     else if (msg.compare("upKey") == 0)
-        gs.players[guid].y -= gs.yMove;
+        gs.players[guid].Move(0, -gs.yMove);
+
     else if (msg.compare("downKey") == 0)
-        gs.players[guid].y += gs.yMove;
+        gs.players[guid].Move(0, gs.yMove);
 }
 
 void BomberServer::step() {

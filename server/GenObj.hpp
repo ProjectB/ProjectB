@@ -15,11 +15,13 @@
         std::string guid;
         objType type;
         int x, y, height, width;
+        bool hasChanges;
 
         GenObject() {
             guid = "";
             type = none;
             x = y = height = width = -1;
+            hasChanges = true;
         }
 
         GenObject(std::string id, objType type, int x, int y, int height, int width) {
@@ -29,20 +31,49 @@
             this->y = y;
             this->height = height;
             this->width = width;
+            if(type == bomber)
+                hasChanges = true;
+            else
+                hasChanges = false;
         }
 
         std::string getMsg() {
             std::stringstream ss;
-            if (type == square)
-                ss << "sq" << SEPARATOR << x << SEPARATOR << y << SEPARATOR << width << SEPARATOR << height;
-            else if (type == bomber)
-                ss << "bomber" << SEPARATOR << guid << SEPARATOR << x << SEPARATOR << y;
-            else
-                ss << "invalid";
-
+            switch(type) {
+                case square:
+                    ss << "sq" << SEPARATOR << x << SEPARATOR << y << SEPARATOR << width << SEPARATOR << height;
+                    break;
+                case bomber:
+                    ss << "bomber" << SEPARATOR << guid << SEPARATOR << x << SEPARATOR << y;
+                    break;
+                default:
+                    ss << "invalid";
+                    break;
+            }
             ss << SEPARATOR;
-
             return ss.str();
+        }
+
+        std::string getRemoveMsg() {
+            std::stringstream ss;
+            switch(type) {
+//                case square:
+ //                   break;
+                case bomber:
+                    ss << "delete" << SEPARATOR << "bomber" << SEPARATOR << guid;
+                    break;
+                default:
+                    ss << "invalid";
+                    break;
+            }
+            ss << SEPARATOR;
+            return ss.str();
+        }
+
+        void Move(int x, int y) {
+            hasChanges = true;
+            this->x += x;
+            this->y += y;
         }
     };
 
