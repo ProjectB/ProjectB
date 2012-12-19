@@ -95,6 +95,31 @@
             return ss.str();
         }
 
+      //fixed collision test. Possible problems with 2 moving objects (crossing each other)
+      //false = collision happens, true otherwise
+      bool collisionTest(int x, int y, int w, int h) {
+	for(unsigned int i=0; i < fixedObjects.size(); i++)
+	  if(fixedObjects[i].type == square)
+	    {
+	      if(intersects(x, x+w, fixedObjects[i].x, fixedObjects[i].x + fixedObjects[i].width) &&
+		 intersects(y, y+h, fixedObjects[i].y, fixedObjects[i].y + fixedObjects[i].height)) 
+		{
+		  printf("DEBUG: %d %d %d %d -- %d %d %d %d\n", x, x+w, fixedObjects[i].x, fixedObjects[i].x + fixedObjects[i].width, y, y+h, fixedObjects[i].y, fixedObjects[i].y + fixedObjects[i].height);
+		  return false;
+		}
+	    }
+	return true;
+      }
+
+    private:
+      
+      //true = objects intersect, false otherwise
+      bool intersects(int x1, int x2, int y1, int y2)
+      {
+	if(x1 >= y1 && x1 <= y2) return true;
+	if(x2 >= y1 && x2 <= y2) return true;
+	return false;
+      }
     };
 
 #endif /* GAMESSTATE_HPP_ */

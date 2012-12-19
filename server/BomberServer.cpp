@@ -43,17 +43,27 @@ void BomberServer::onClientDisconnect(ClientConnection * client) {
 }
 
 void BomberServer::onNewMessage(string guid, string msg) {
-    if (msg.compare("leftKey") == 0)
-        gs.players[guid].Move(-gs.xMove, 0);
-
-    else if (msg.compare("rightKey") == 0)
-        gs.players[guid].Move(gs.xMove, 0);
-
-    else if (msg.compare("upKey") == 0)
-        gs.players[guid].Move(0, -gs.yMove);
-
-    else if (msg.compare("downKey") == 0)
-        gs.players[guid].Move(0, gs.yMove);
+  if (msg.compare("leftKey") == 0) {
+    if(gs.collisionTest(gs.players[guid].x - gs.xMove, gs.players[guid].y, gs.players[guid].width, gs.players[guid].height))
+      gs.players[guid].Move(-gs.xMove, 0);
+    else printf("DEBUG: LEFTKEY COLLISION\n");
+  }
+  
+  else if (msg.compare("rightKey") == 0) {
+      if(gs.collisionTest(gs.players[guid].x + gs.xMove, gs.players[guid].y, gs.players[guid].width, gs.players[guid].height))
+      gs.players[guid].Move(gs.xMove, 0);
+    else printf("DEBUG: RIGHTKEY COLLISION\n");
+  }
+  else if (msg.compare("upKey") == 0) {
+    if(gs.collisionTest(gs.players[guid].x, gs.players[guid].y - gs.yMove, gs.players[guid].width, gs.players[guid].height))
+      gs.players[guid].Move(0, -gs.yMove);
+    else printf("DEBUG: UPKEY COLLISION\n");
+  }
+  else if (msg.compare("downKey") == 0) {
+    if(gs.collisionTest(gs.players[guid].x, gs.players[guid].y + gs.yMove, gs.players[guid].width, gs.players[guid].height))
+      gs.players[guid].Move(0, gs.yMove);
+    else printf("DEBUG: DOWNKEY COLLISION\n");
+  }
 }
 
 void BomberServer::step() {
@@ -66,3 +76,6 @@ void BomberServer::step() {
         broadcast(msg);
     }
 }
+
+
+
