@@ -2,7 +2,7 @@
 #include "defs.hpp"
 #include "Server.hpp"
 #include "util/PracticalSocket.hpp"
-
+#include "Logger.hpp"
 
 using namespace std;
 
@@ -46,14 +46,4 @@ void Server::run() {
         if (_SERVER_ERR_DEBUG) log(e.what());
         exit(1);
     }
-}
-
-void Server::log(string msg) {
-    time_t rawtime;
-    struct tm * timeinfo;
-    time(&rawtime);
-    timeinfo = localtime(&rawtime);
-    string timeStr(asctime(timeinfo));
-    timeStr[timeStr.length()-1] = '\0';
-    cout << timeStr.substr(11, timeStr.length()) << ":" << "Server" << ":" << msg << endl;
 }

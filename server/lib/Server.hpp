@@ -18,7 +18,7 @@
 #include "ClientConnection.hpp"
 #include "util/PracticalSocket.hpp"
 
-class Server {
+class Server : public Logger {
 private:
     std::thread mainThread;
     std::atomic<bool> isRunning;
@@ -29,7 +29,6 @@ public:
     Server(unsigned short port);
     void start();
     void stop();
-    void log(std::string msg);
     MultithreadQueue<ClientConnection*> clientQueue;
     void runClient(ClientConnection * client);
 };

@@ -21,6 +21,7 @@
 
 #include "MultithreadQueue.hpp"
 #include "util/PracticalSocket.hpp"
+#include "Logger.hpp"
 
 enum FrameType {
     TEXT,
@@ -31,7 +32,7 @@ enum FrameType {
     PONG
 };
 
-class ClientConnection {
+class ClientConnection : public Logger {
 public:
     int id;
     std::string guid;
@@ -60,7 +61,6 @@ private:
     bool answerWSClient(std::string msg);
     std::string createPacket(std::string str);
     void updateRcv(unsigned int& pos, void *buffer, bool block = true);
-    void log(std::string msg);
     void run();
 
 };

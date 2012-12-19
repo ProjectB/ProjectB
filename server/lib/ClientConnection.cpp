@@ -266,16 +266,6 @@ int ClientConnection::hasData(int sec, int usec) {
     return sock->hasData(sec, usec);
 }
 
-void ClientConnection::log(string msg) {
-    time_t rawtime;
-    struct tm * timeinfo;
-    time(&rawtime);
-    timeinfo = localtime(&rawtime);
-    string timeStr(asctime(timeinfo));
-    timeStr[timeStr.length()-1] = '\0';
-    cout << timeStr.substr(11, timeStr.length()) << ":" << "Client-" << this->id << ":" << msg << endl;
-}
-
 void ClientConnection::run() {
     vector<string> msgs;
     isRunning = true;
