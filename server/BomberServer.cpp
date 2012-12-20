@@ -28,10 +28,10 @@ BomberServer::~BomberServer() {
 
 void BomberServer::onClientConnect(ClientConnection * client) {
     // client connected
-    gs.players[client->guid] = GenObject(client->guid, bomber, 1, 0, BLOCK_SIZE, BLOCK_SIZE);
-    broadcast(gs.players[client->guid].getMsg(true));
-
-    client->sendMsg(gs.getMsg(false));
+  gs.players[client->guid] = GenObject(client->guid, bomber, 1, 0, BOMBER_HEIGHT, BOMBER_WIDTH);
+  broadcast(gs.players[client->guid].getMsg(true));
+  
+  client->sendMsg(gs.getMsg(false));
 }
 
 void BomberServer::onClientDisconnect(ClientConnection * client) {
