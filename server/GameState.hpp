@@ -130,7 +130,7 @@ public:
         else if (msg.compare("downKey") == 0)
             ydif = yMove;
 
-        printf("(%d,%d) (%d,%d) (%d,%d) (%d,%d)\n", players[guid].x, players[guid].y, players[guid].x + players[guid].width, players[guid].y, players[guid].x + players[guid].width, players[guid].y + players[guid].height, players[guid].x, players[guid].y + players[guid].height);
+        printf("bomber: topleft(%d,%d) topright(%d,%d) bottomright(%d,%d) bottomleft(%d,%d)\n", players[guid].x, players[guid].y, players[guid].x + players[guid].width, players[guid].y, players[guid].x + players[guid].width, players[guid].y + players[guid].height, players[guid].x, players[guid].y + players[guid].height);
 
         if (collisionTest(players[guid].x + xdif, players[guid].y + ydif, players[guid].width, players[guid].height))
             players[guid].Move(xdif, ydif);
@@ -141,27 +141,158 @@ public:
   //collision test for fixed objects. Possible problems with 2 moving objects (crossing each other)
   //false = collision happens, true otherwise
   bool collisionTest(int x, int y, int w, int h) {
+    /* outside screen */
     if(x < 0 || y < 0 || x > SCREEN_WIDTH - w || y > SCREEN_HEIGHT - h) return false;
-    for (unsigned int i = 0; i < fixedObjects.size(); i++)
+
+    int px,py;
+    int n;
+    int leastDist=-1;
+    int centerx, centery;
+    int a;
+
+    /* find nearest object */
+    for (unsigned int i = 0; i < fixedObjects.size(); i++) {
       if (fixedObjects[i].type == square) {
-        if (intersects(x, x + w, fixedObjects[i].x, fixedObjects[i].x + fixedObjects[i].width)
-            && intersects(y, y + h, fixedObjects[i].y, fixedObjects[i].y + fixedObjects[i].height)) {
-          return false;
-        }
+	if(leastDist<0) {
+	  leastDist = distance(x,y,fixedObjects[i].x + fixedObjects[i].width, fixedObjects[i].y + fixedObjects[i].height);
+	  n = i;
+	} 
+	else if((a = distance(x,y,fixedObjects[i].x + fixedObjects[i].width, fixedObjects[i].y + fixedObjects[i].height)) < leastDist)
+	  {
+	    n = i;
+	    leastDist = a;
+	  }
       }
+    }
+
+    centerx = fixedObjects[n].x + fixedObjects[n].width/2;
+    centery = fixedObjects[n].y + fixedObjects[n].height/2;
+    
+    /* find nearest point to the center of the object */
+    leastDist = distance(x,y,centerx,centery);
+    px=x;
+    py=y;
+    
+    if((a = distance(x+w,y, centerx,centery))< leastDist){
+      px = x+w;
+      leastDist = a;
+    }
+    if((a = distance(x+w, y+h, centerx,centery)) < leastDist) {
+      px = x+w;
+      py = y+h;
+      leastDist = a;
+    }
+    if((a = distance(x,y+h, centerx,centery)) < leastDist) {
+      px = x;
+      py = y+h;
+    }
+    
+    /* if the nearest point is farther than the radius of the object */
+    if(distance(px,py,centerx, centery) > distance(fixedObjects[n].x, fixedObjects[n].y, centerx, centery)) {
+      printf("DEBUG: FARTHER THAN POSSIBLE\n");
+      return true;
+    }
+    
+    /* 8 points of interest of the object */
+    /* top */
+    int p1x = centerx;
+    int p1y = fixedObjects[n].y;
+    
+    /* right */
+    int p2x = fixedObjects[n].x + fixedObjects[n].width;
+    int p2y = centery;
+    
+    /* bottom */
+    int p3x = centerx;
+    int p3y = fixedObjects[n].y + fixedObjects[n].height;
+    
+    /* left */
+    int p4x = fixedObjects[n].x;
+    int p4y = centery;
+
+    /* top left */
+    int p5x = fixedObjects[n].x;
+    int p5y = fixedObjects[n].y;
+    
+    /* top right */
+    int p6x = fixedObjects[n].x + fixedObjects[n].width;
+    int p6y = fixedObjects[n].y;
+    
+    /* bottom left */
+    int p7x = fixedObjects[n].x;
+    int p7y = fixedObjects[n].y + fixedObjects[n].height;
+
+    /* bottom right */
+    int p8x = fixedObjects[n].x + fixedObjects[n].width;
+    int p8y = fixedObjects[n].y + fixedObjects[n].height;
+    
+    
+    /* find the nearest PoI */
+    int obx,oby;
+    
+    obx=p1x;
+    oby=p1y;
+    
+    if(distance(px,py,p2x,p2y) < distance(px,py,obx,oby)) {
+      obx = p2x;
+      oby = p2y;
+    }
+    
+    if(distance(px,py,p3x,p3y) < distance(px,py,obx,oby)) {
+      obx = p3x;
+      oby = p3y;
+    }
+    
+    if(distance(px,py,p4x,p4y) < distance(px,py,obx,oby)) {
+      obx = p4x;
+      oby = p4y;
+    }
+
+    if(distance(px,py,p5x,p5y) < distance(px,py,obx,oby)) {
+      obx = p5x;
+      oby = p5y;
+    }
+    
+    if(distance(px,py,p6x,p6y) < distance(px,py,obx,oby)) {
+      obx = p6x;
+      oby = p6y;
+    }
+    
+    if(distance(px,py,p7x,p7y) < distance(px,py,obx,oby)) {
+      obx = p7x;
+      oby = p7y;
+    }
+    
+    if(distance(px,py,p8x,p8y) < distance(px,py,obx,oby)) {
+      obx = p8x;
+      oby = p8y;
+    }
+
+
+    printf("bomber(%d,%d,%d,%d) -- p(%d,%d) -- center[%d](%d,%d) -- PoI(%d,%d) -- bottom(%d,%d) -- top(%d,%d).\n", x,y,w,h, px,py, n,centerx,centery, obx,oby, x,y+h, centerx, centery + fixedObjects[n].height/2);
+    printf("both distances: %d ---- %d.\n", distance(px,py,centerx,centery), distance(obx,oby,centerx,centery));
+    
+    /* if the distance point-center is less than or equal to the distance to the nearest PoI, then we have a collision */
+    if(distance(px,py,centerx, centery) <= distance(obx,oby,centerx,centery)) {
+      printf("DEBUG: COLLISION ENDED!\n");
+      return false;
+    }
+    
+    printf("end\n");
+    
+    
     return true;
   }
+
   
 private:
 
-  //true = objects intersect, false otherwise
-  bool intersects(int x1, int x2, int y1, int y2) {
-    if (x1 >= y1 && x1 <= y2)
-      return true;
-    if (x2 >= y1 && x2 <= y2)
-      return true;
-    return false;
-  }
+/* squared distance from point x to point y. */
+int distance(int x1, int x2, int y1, int y2)
+{
+  int a = (x1 - y1)*(x1 - y1) + (x2 - y2)*(x2 - y2);
+  if (a < 0) return -a;
+  return a;
+}
 };
-
 #endif /* GAMESSTATE_HPP_ */
