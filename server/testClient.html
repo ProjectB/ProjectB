@@ -1,32 +1,36 @@
 <!DOCTYPE html>
 <html>
-
 <head>
 <meta charset="utf-8" />
 <title>WebSocket Test</title>
-
 <!--<script type="text/javascript" src="js/jquery-1.8.1.min.js"></script>
 
 //http://atomicrobotdesign.com/blog/web-development/how-to-use-sprite-sheets-with-html5-canvas/
 // mt bagunçado aprender a fazer classes em js!
 -->
-
 <script type="text/javascript" src="js/gameClient.js"></script>
 <script language="javascript" type="text/javascript">
+    
 </script>
-
 </head>
 <body onload="init();">
-	<h2>Aperte W, A, S ou D!</h2>
-	<canvas id="canvas"
-		style="border: 2.5px solid black; background: lime; "
-		width=440 height=440></canvas>
-	<div id="output"
-		style="max-height: 1000px; height: 200px; width: 600px; border: 1px solid #ccc; font: 16px/20px Georgia, Garamond, Serif; overflow: auto;"
-		readonly="readonly"></div>
-	<button onclick="websocket.close();init();">Connect</button>
-	<button onclick="websocket.close();">Disconnect</button>
+    <h2>Aperte W, A, S ou D!</h2>
+    <div>
+        <canvas id="canvas" style="border: 2.5px solid black; background: lime;" width=440 height=440></canvas>
+        <div style="float: right; border: 1px solid #000; padding: 2px 2px 2px 2px;">
+            fps:
+            <div id="fps" style="height: 20px; width: 30px; border: 1px solid #ccc; font: 16px/20px Georgia, Garamond, Serif;"></div>
+            mps:
+            <div id="mps" style="height: 20px; width: 30px; border: 1px solid #ccc; font: 16px/20px Georgia, Garamond, Serif;"></div>
+        </div>
+    </div>
+    <div>
+        <div id="output"
+            style="max-height: 1000px; height: 200px; width: 600px; border: 1px solid #ccc; font: 16px/20px Georgia, Garamond, Serif; overflow: auto;"
+            readonly="readonly"></div>
+        <button onclick="websocket.close();init();">Connect</button>
+        <button onclick="websocket.close();">Disconnect</button>
+    </div>
 </body>
 </html>
-
 </html>
