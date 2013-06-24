@@ -31,7 +31,7 @@ void BomberServer::onClientConnect(ClientConnection * client) {
   gs.players[client->guid] = GenObject(client->guid, bomber, 1, 0, BOMBER_HEIGHT, BOMBER_WIDTH);
   broadcast(gs.players[client->guid].getMsg(true));
   
-  client->sendMsg(gs.getMsg(false));
+  client->sendMsg(gs.generateDifStateMessage(false));
 }
 
 void BomberServer::onClientDisconnect(ClientConnection * client) {
@@ -47,11 +47,10 @@ void BomberServer::onNewMessage(string guid, string msg) {
 
 void BomberServer::step() {
     this_thread::sleep_for(chrono::milliseconds(1000 / FPS));
-    string msg = gs.getMsg();
+    string msg = gs.generateDifStateMessage();
 
-    //cout << msg << endl;
     if (msg.compare(SEPARATOR) != 0) {
-        //std::cout << msg << std::endl;
+        //cout << "step: " << msg << std::endl;
         broadcast(msg);
     }
 }

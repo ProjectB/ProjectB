@@ -85,12 +85,12 @@ public:
         printf("OBJECT CREATED: number %d: (%d,%d) (%d,%d) (%d,%d) (%d,%d)\n", n-1, x, y, x+w, y, x+w, y+h, x, y+h);
     }
 
-    std::string getMsg(bool onlyDiff = true) {
+    std::string generateDifStateMessage(bool onlyDiff = true) {
         std::string str;
         str += SEPARATOR;
 
-        str += msgFixedObjects(onlyDiff);
-        str += msgPlayers(onlyDiff);
+        str += generateFixedObjectsDifStateMessage(onlyDiff);
+        str += generatePlayersDifStateMessage(onlyDiff);
 
         for (std::map<std::string, GenObject>::iterator it = players.begin(); it != players.end(); it++)
             (*it).second.hasChanges = false;
@@ -98,7 +98,7 @@ public:
         return str;
     }
 
-    std::string msgFixedObjects(bool onlyDiff) {
+    std::string generateFixedObjectsDifStateMessage(bool onlyDiff) {
         std::stringstream ss;
 
         for (unsigned int i = 0; i < fixedObjects.size(); i++)
@@ -108,7 +108,7 @@ public:
         return ss.str();
     }
 
-    std::string msgPlayers(bool onlyDiff) {
+    std::string generatePlayersDifStateMessage(bool onlyDiff) {
         std::stringstream ss;
 
         for (std::map<std::string, GenObject>::iterator it = players.begin(); it != players.end(); it++)
@@ -132,10 +132,14 @@ public:
 
         printf("bomber: topleft(%d,%d) topright(%d,%d) bottomright(%d,%d) bottomleft(%d,%d)\n", players[guid].x, players[guid].y, players[guid].x + players[guid].width, players[guid].y, players[guid].x + players[guid].width, players[guid].y + players[guid].height, players[guid].x, players[guid].y + players[guid].height);
 
+
+        players[guid].Move(xdif, ydif);
+        /*
         if (collisionTest(players[guid].x + xdif, players[guid].y + ydif, players[guid].width, players[guid].height))
             players[guid].Move(xdif, ydif);
         else
             printf("DEBUG: COLLISION\n");
+        */
     }
   
   //collision test for fixed objects. Possible problems with 2 moving objects (crossing each other)

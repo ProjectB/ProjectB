@@ -135,7 +135,7 @@ void ClientConnection::updateRcv(unsigned int& pos, void *buffer, bool block) {
     }
 }
 
-/* receive packet from client's browser */
+/* receive and translate packet from client's browser */
 void ClientConnection::receiveMsg(vector<string>& msgs) {
     unsigned char buffer[RCVBUFSIZE];
     unsigned int pos;
