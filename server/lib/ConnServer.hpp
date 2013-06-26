@@ -5,8 +5,8 @@
  *      Author: ricardo
  */
 
-#ifndef GAMESERVER_H_
-#define GAMESERVER_H_
+#ifndef CONNSERVER_H_
+#define CONNSERVER_H_
 
 #include <queue>
 #include <vector>
@@ -24,17 +24,21 @@
 #include "MultithreadQueue.hpp"
 #include "ClientConnection.hpp"
 
-class GameServer {
+class ConnServer {
 private:
     std::thread mainThread;
+    std::thread stepThread;
     std::atomic<bool> isRunning;
+    int clientsOnline;
+
+    //long
     void run();
 public:
     std::map<std::string, ClientConnection*> clients;
 
-    GameServer();
-    GameServer(int port);
-    virtual ~GameServer();
+    ConnServer();
+    ConnServer(int port);
+    virtual ~ConnServer();
 
     void start();
     void stop();
@@ -49,4 +53,4 @@ protected:
 
 };
 
-#endif /* GAMESERVER_H_ */
+#endif /* CONNSERVER_H_ */

@@ -11,10 +11,10 @@
 #include <iostream>
 #include <sstream>
 #include "defs.hpp"
-#include "lib/GameServer.hpp"
+#include "lib/ConnServer.hpp"
 #include "GameState.hpp"
 
-class BomberServer: public virtual GameServer {
+class BomberServer: public virtual ConnServer {
 
 public:
     BomberServer();
