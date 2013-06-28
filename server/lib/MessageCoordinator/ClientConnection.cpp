@@ -1,7 +1,7 @@
-#include "defs.hpp"
-#include "util/PracticalSocket.hpp"
-#include "util/sha1.hpp"
-#include "util/base64.hpp"
+#include "../defs.hpp"
+#include "../util/PracticalSocket.hpp"
+#include "../util/sha1.hpp"
+#include "../util/base64.hpp"
 #include "ClientConnection.hpp"
 
 using namespace std;

@@ -5,18 +5,22 @@
  *      Author: ricardo
  */
 
-#include "BomberServer.hpp"
+#include "GameServer.hpp"
 
 using namespace std;
 
-BomberServer::BomberServer(int port) :
+/*
+GameServer::GameServer(int port) :
 		ConnServer(port) {
 }
+*/
 
-BomberServer::~BomberServer() {
+/*
+GameServer::~GameServer() {
 	gs.fixedObjects.clear();
 	gs.players.clear();
 }
+*/
 
 /* Todas as funções a seguir rodam em um mesmo frame temporal, na seguinte ordem:
  *
@@ -26,26 +30,27 @@ BomberServer::~BomberServer() {
  * 4. step                  - uma única vez
  */
 
-void BomberServer::onClientConnect(ClientConnection * client) {
+void GameServer::onClientConnect(ClientConnection * client) {
 	// client connected
 	gs.players[client->guid] = GenObject(client->guid, bomber, 1, 0, BOMBER_HEIGHT, BOMBER_WIDTH);
-	broadcast(gs.players[client->guid].getMsg(true));
+	//broadcast(gs.players[client->guid].getMsg(true));
 
 	client->sendMsg(gs.generateDifStateMessage(false));
 }
 
-void BomberServer::onClientDisconnect(ClientConnection * client) {
+void GameServer::onClientDisconnect(ClientConnection * client) {
 	// client disconnect
-	broadcast(gs.players[client->guid].getMsg(true, true));
+	//broadcast(gs.players[client->guid].getMsg(true, true));
 
 	gs.players.erase(client->guid);
 }
 
-void BomberServer::onNewMessage(string guid, string msg) {
+void GameServer::onNewMessage(string guid, string msg) {
 	gs.update(guid, msg);
 }
 
-void BomberServer::step() {
+/*
+void GameServer::step() {
 	this_thread::sleep_for(chrono::milliseconds(1000 / FPS));
 	string msg = gs.generateDifStateMessage();
 
@@ -54,4 +59,4 @@ void BomberServer::step() {
 		broadcast(msg);
 	}
 }
-
+*/

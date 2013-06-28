@@ -5,28 +5,28 @@
  *      Author: ricardo
  */
 
-#ifndef BOMBERSERVER_HPP_
-#define BOMBERSERVER_HPP_
+#ifndef GAMESERVER_HPP_
+#define GAMESERVER_HPP_
 
 #include <iostream>
 #include <sstream>
-#include "defs.hpp"
-#include "lib/ConnServer.hpp"
+#include "../defs.hpp"
 #include "GameState.hpp"
 
-class BomberServer: public virtual ConnServer {
+class GameServer {
 
 public:
-    BomberServer();
-    BomberServer(int port);
-    virtual ~BomberServer();
+	GameServer();
+	virtual GameServer(int port);
+    virtual ~GameServer();
 private:
     GameState gs;
 
     void onClientConnect(ClientConnection * client);
     void onClientDisconnect(ClientConnection * client);
     void onNewMessage(std::string guid, std::string msg);
-    void step();
+
+    virtual void step();
 };
 
-#endif /* BOMBERSERVER_HPP_ */
+#endif /* GAMESERVER_HPP_ */

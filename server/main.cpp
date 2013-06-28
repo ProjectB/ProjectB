@@ -1,6 +1,6 @@
 #include <cstdlib>
 #include <iostream>
-#include "BomberServer.hpp"
+#include "lib/GameServer/BomberServer.hpp"
 
 using namespace std;
 

@@ -19,9 +19,9 @@
 #include <cstring>
 #include <thread>
 
-#include "MultithreadQueue.hpp"
-#include "util/PracticalSocket.hpp"
-#include "Logger.hpp"
+#include "../MultithreadQueue.hpp"
+#include "../util/PracticalSocket.hpp"
+#include "../Logger.hpp"
 
 enum FrameType {
     TEXT,

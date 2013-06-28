@@ -5,7 +5,7 @@
  *      Author: ricardo
  */
 
-#include "defs.hpp"
+#include "../defs.hpp"
 
 #ifndef GENOBJ_HPP_
 #define GENOBJ_HPP_

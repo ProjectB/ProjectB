@@ -1,14 +1,14 @@
 /*
- * GamesState.hpp
+ * GameState.hpp
  *
  *  Created on: Nov 28, 2012
  *      Author: ricardo
  */
-#include "defs.hpp"
+#include "../defs.hpp"
 #include "GenObj.hpp"
 
-#ifndef GAMESSTATE_HPP_
-#define GAMESSTATE_HPP_
+#ifndef GAMESTATE_HPP_
+#define GAMESTATE_HPP_
 
 class GameState {
 public:
@@ -82,7 +82,11 @@ public:
         ss << (n++);
         GenObject square(ss.str(), type, x, y, w, h);
         fixedObjects.push_back(square);
-        printf("OBJECT CREATED: number %d: (%d,%d) (%d,%d) (%d,%d) (%d,%d)\n", n-1, x, y, x+w, y, x+w, y+h, x, y+h);
+        std::cout << "OBJECT CREATED: number" << n-1 << ": (" << x << "," << y << ")";
+        std::cout << " (" << x+w << "," << y << ")";
+        std::cout << " (" << x+w << "," << y+h << ")";
+        std::cout << " (" << x << "," << y+h << ")" << std::endl;
+        //printf("OBJECT CREATED: number %d: (%d,%d) (%d,%d) (%d,%d) (%d,%d)\n", n-1, x, y, x+w, y, x+w, y+h, x, y+h);
     }
 
     std::string generateDifStateMessage(bool onlyDiff = true) {
@@ -130,7 +134,10 @@ public:
         else if (msg.compare("downKey") == 0)
             ydif = yMove;
 
-        printf("bomber: topleft(%d,%d) topright(%d,%d) bottomright(%d,%d) bottomleft(%d,%d)\n", players[guid].x, players[guid].y, players[guid].x + players[guid].width, players[guid].y, players[guid].x + players[guid].width, players[guid].y + players[guid].height, players[guid].x, players[guid].y + players[guid].height);
+        std::cout << "bomber: topleft(" << players[guid].x << "," << players[guid].y << ") topright(" << players[guid].x + players[guid].width;
+        std::cout << "," << players[guid].y << ") bottomright(" << players[guid].x + players[guid].width << "," << players[guid].y + players[guid].height;
+        std::cout << ") bottomleft(" << players[guid].x << "," << players[guid].y + players[guid].height << ")" << std::endl;
+        //printf("bomber: topleft(%d,%d) topright(%d,%d) bottomright(%d,%d) bottomleft(%d,%d)\n", players[guid].x, players[guid].y, players[guid].x + players[guid].width, players[guid].y, players[guid].x + players[guid].width, players[guid].y + players[guid].height, players[guid].x, players[guid].y + players[guid].height);
 
 
         players[guid].Move(xdif, ydif);
@@ -193,7 +200,8 @@ public:
     
     /* if the nearest point is farther than the radius of the object */
     if(distance(px,py,centerx, centery) > distance(fixedObjects[n].x, fixedObjects[n].y, centerx, centery)) {
-      printf("DEBUG: FARTHER THAN POSSIBLE\n");
+    	std::cout << "DEBUG: FARTHER THAN POSSIBLE" << std::endl;
+      //printf("DEBUG: FARTHER THAN POSSIBLE\n");
       return true;
     }
     
@@ -273,16 +281,21 @@ public:
     }
 
 
-    printf("bomber(%d,%d,%d,%d) -- p(%d,%d) -- center[%d](%d,%d) -- PoI(%d,%d) -- bottom(%d,%d) -- top(%d,%d).\n", x,y,w,h, px,py, n,centerx,centery, obx,oby, x,y+h, centerx, centery + fixedObjects[n].height/2);
-    printf("both distances: %d ---- %d.\n", distance(px,py,centerx,centery), distance(obx,oby,centerx,centery));
+    std::cout << "bomber(" << x << "," << y << "," << w << "," << h << ") -- p(" << px << "," << py << ") -- center[" << n << "](" << centerx << "," << centery;
+    std::cout << ") -- PoI(" << obx << "," << oby << ") -- bottom(" << x << "," << y+h << ") -- top(" << centerx << "," << centery + fixedObjects[n].height/2 << ")." << std::endl;
+    std::cout << "both distances: " << distance(px, py, centerx, centery) << " ---- " << distance(obx, oby, centerx, centery) << "." << std::endl;
+    //printf("bomber(%d,%d,%d,%d) -- p(%d,%d) -- center[%d](%d,%d) -- PoI(%d,%d) -- bottom(%d,%d) -- top(%d,%d).\n", x,y,w,h, px,py, n,centerx,centery, obx,oby, x,y+h, centerx, centery + fixedObjects[n].height/2);
+    //printf("both distances: %d ---- %d.\n", distance(px,py,centerx,centery), distance(obx,oby,centerx,centery));
     
     /* if the distance point-center is less than or equal to the distance to the nearest PoI, then we have a collision */
     if(distance(px,py,centerx, centery) <= distance(obx,oby,centerx,centery)) {
-      printf("DEBUG: COLLISION ENDED!\n");
+    	std::cout << "DEBUG: COLLISION ENDED!" << std::endl;
+      //printf("DEBUG: COLLISION ENDED!\n");
       return false;
     }
     
-    printf("end\n");
+    std::cout << "end" << std::endl;
+    //printf("end\n");
     
     
     return true;
@@ -299,4 +312,4 @@ int distance(int x1, int x2, int y1, int y2)
   return a;
 }
 };
-#endif /* GAMESSTATE_HPP_ */
+#endif /* GAMESTATE_HPP_ */
