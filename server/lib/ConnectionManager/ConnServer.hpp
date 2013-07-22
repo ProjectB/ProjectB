@@ -14,23 +14,31 @@
 #include <thread>
 #include <sstream>
 
+#include "../defs.hpp"
 #include "../MultithreadQueue.hpp"
 #include "ClientConnection.hpp"
 #include "../util/PracticalSocket.hpp"
+#include "Message.hpp"
 
 class ConnServer : public Logger {
 private:
     std::thread mainThread;
     std::atomic<bool> isRunning;
-    TCPServerSocket * servSocket;
     unsigned short port;
+    TCPServerSocket * servSocket;
+
     void run();
 public:
+    static MultithreadQueue<ClientConnection*> clientQueue;
+
+
     ConnServer(unsigned short port);
     void start();
     void stop();
-    MultithreadQueue<ClientConnection*> clientQueue;
     void runClient(ClientConnection * client);
+    static bool isClientQueueEmpty();
+
+protected:
 };
 
 #endif /* CONNSERVER_H_ */

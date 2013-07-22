@@ -8,8 +8,10 @@
 #ifndef SERVER_HPP_
 #define SERVER_HPP_
 
+#include "Logger.hpp"
+#include "util/PracticalSocket.hpp"
 
-class Server : public Logger {
+class Server {
 private:
     TCPServerSocket * servSocket;
     unsigned short port;

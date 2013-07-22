@@ -4,6 +4,12 @@
  *  Created on: Nov 28, 2012
  *      Author: ricardo
  */
+
+#include <vector>
+#include <map>
+
+
+
 #include "../defs.hpp"
 #include "GenObj.hpp"
 
@@ -82,11 +88,13 @@ public:
         ss << (n++);
         GenObject square(ss.str(), type, x, y, w, h);
         fixedObjects.push_back(square);
-        std::cout << "OBJECT CREATED: number" << n-1 << ": (" << x << "," << y << ")";
-        std::cout << " (" << x+w << "," << y << ")";
-        std::cout << " (" << x+w << "," << y+h << ")";
-        std::cout << " (" << x << "," << y+h << ")" << std::endl;
-        //printf("OBJECT CREATED: number %d: (%d,%d) (%d,%d) (%d,%d) (%d,%d)\n", n-1, x, y, x+w, y, x+w, y+h, x, y+h);
+        if (_GAMESTATE_DEBUG == 1) {
+        	std::cout << "OBJECT CREATED: number" << n-1 << ": (" << x << "," << y << ")";
+        	std::cout << " (" << x+w << "," << y << ")";
+        	std::cout << " (" << x+w << "," << y+h << ")";
+        	std::cout << " (" << x << "," << y+h << ")" << std::endl;
+        	//printf("OBJECT CREATED: number %d: (%d,%d) (%d,%d) (%d,%d) (%d,%d)\n", n-1, x, y, x+w, y, x+w, y+h, x, y+h);
+        }
     }
 
     std::string generateDifStateMessage(bool onlyDiff = true) {
@@ -134,11 +142,12 @@ public:
         else if (msg.compare("downKey") == 0)
             ydif = yMove;
 
-        std::cout << "bomber: topleft(" << players[guid].x << "," << players[guid].y << ") topright(" << players[guid].x + players[guid].width;
-        std::cout << "," << players[guid].y << ") bottomright(" << players[guid].x + players[guid].width << "," << players[guid].y + players[guid].height;
-        std::cout << ") bottomleft(" << players[guid].x << "," << players[guid].y + players[guid].height << ")" << std::endl;
-        //printf("bomber: topleft(%d,%d) topright(%d,%d) bottomright(%d,%d) bottomleft(%d,%d)\n", players[guid].x, players[guid].y, players[guid].x + players[guid].width, players[guid].y, players[guid].x + players[guid].width, players[guid].y + players[guid].height, players[guid].x, players[guid].y + players[guid].height);
-
+        if (_GAMESTATE_DEBUG == 1) {
+			std::cout << "bomber: topleft(" << players[guid].x << "," << players[guid].y << ") topright(" << players[guid].x + players[guid].width;
+			std::cout << "," << players[guid].y << ") bottomright(" << players[guid].x + players[guid].width << "," << players[guid].y + players[guid].height;
+			std::cout << ") bottomleft(" << players[guid].x << "," << players[guid].y + players[guid].height << ")" << std::endl;
+			//printf("bomber: topleft(%d,%d) topright(%d,%d) bottomright(%d,%d) bottomleft(%d,%d)\n", players[guid].x, players[guid].y, players[guid].x + players[guid].width, players[guid].y, players[guid].x + players[guid].width, players[guid].y + players[guid].height, players[guid].x, players[guid].y + players[guid].height);
+        }
 
         players[guid].Move(xdif, ydif);
         /*

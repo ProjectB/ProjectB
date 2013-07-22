@@ -22,6 +22,7 @@
 #include "../MultithreadQueue.hpp"
 #include "../util/PracticalSocket.hpp"
 #include "../Logger.hpp"
+#include "Message.hpp"
 
 enum FrameType {
     TEXT,
@@ -39,7 +40,8 @@ public:
     std::string address;
     unsigned short port;
     std::mutex connMutex;
-    MultithreadQueue<std::string> msgQueue;
+    MultithreadQueue<Message> msgQueue;
+    unsigned int messageCounter;
 
     ClientConnection(int id, TCPSocket* sock);
     ~ClientConnection();
@@ -48,7 +50,7 @@ public:
     bool isConnected();
     void disconnect();
     void sendMsg(std::string message);
-    void receiveMsg(std::vector<std::string>& msgs);
+    void receiveMsg(std::vector<Message>& msgs);
     int hasData(int sec = 0, int usec = 0);
     void start();
     void stop();

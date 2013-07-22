@@ -5,6 +5,7 @@
  *      Author: kodo
  */
 
+#include "Server.hpp"
 
 Server::Server(unsigned short port) {
     servSocket = new  TCPServerSocket(port);

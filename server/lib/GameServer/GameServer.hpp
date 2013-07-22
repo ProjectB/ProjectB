@@ -12,19 +12,32 @@
 #include <sstream>
 #include "../defs.hpp"
 #include "GameState.hpp"
+#include "../ConnectionManager/ClientConnection.hpp"
+#include "../ConnectionManager/Message.hpp"
+#include "../ConnectionManager/ConnServer.hpp"
 
-class GameServer {
-
+class GameServer{
 public:
 	GameServer();
-	virtual GameServer(int port);
     virtual ~GameServer();
+
+    void start();
+    void stop();
 private:
     GameState gs;
+    std::thread mainThread;
+    std::thread stepThread;
+    std::map<std::string, ClientConnection*> clients;
+    MultithreadQueue<Message*> messageQueue;
 
+    bool isRunning;
+
+    void receiveClientMessages(ClientConnection *);
     void onClientConnect(ClientConnection * client);
     void onClientDisconnect(ClientConnection * client);
-    void onNewMessage(std::string guid, std::string msg);
+    void onNewMessage(Message* m);
+    void broadcast(std::string msg);
+    void run();
 
     virtual void step();
 };

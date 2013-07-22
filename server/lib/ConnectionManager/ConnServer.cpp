@@ -1,11 +1,12 @@
-#include "../defs.hpp"
 #include "ConnServer.hpp"
-#include "../util/PracticalSocket.hpp"
-#include "../Logger.hpp"
 
 using namespace std;
 
+//static variable assignment
+MultithreadQueue<ClientConnection*> ConnServer::clientQueue;
+
 ConnServer::ConnServer(unsigned short port) {
+	isRunning = false;
     servSocket = new  TCPServerSocket(port);
     this->port = port;
 }
@@ -45,4 +46,8 @@ void ConnServer::run() {
         if (_SERVER_ERR_DEBUG) log(e.what());
         exit(1);
     }
+}
+
+bool ConnServer::isClientQueueEmpty() {
+	return clientQueue.empty();
 }

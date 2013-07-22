@@ -19,6 +19,7 @@
 #define _CLIENT_MSG_DEBUG 0
 #define _CLIENT_ERR_DEBUG 1
 
+#define _GAMESTATE_DEBUG 0
 
 /************ GAME DEFINES ************/
 
