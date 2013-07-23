@@ -14,12 +14,9 @@ GameServer::GameServer() {
 	isRunning = false;
 }
 
-
 GameServer::~GameServer() {
 	gs.fixedObjects.clear();
 	gs.players.clear();
-
-	cout << "delete" << std::endl;
 
 	for (map<string, ClientConnection *>::iterator it = clients.begin(); it != clients.end(); it++) {
 		if ((*it).second->isConnected())
@@ -32,15 +29,14 @@ GameServer::~GameServer() {
 	}
 }
 
-
 void GameServer::broadcast(string msg) {
     for (map<string, ClientConnection *>::iterator it = clients.begin(); it != clients.end(); it++) {
         (*it).second->sendMsg(msg);
     }
 }
 
-
 void GameServer::start() {
+	isRunning = true;
 	mainThread = thread([this] {this->run();});
 	stepThread = thread([this] {this->step();});
 }
@@ -48,11 +44,10 @@ void GameServer::start() {
 void GameServer::stop() {
 	isRunning = false;
     mainThread.join();
+    stepThread.join();
 }
 
 void GameServer::run() {
-    isRunning = true;
-
     while (isRunning) {
     	// novos clients
     	while(!ConnServer::isClientQueueEmpty()) {
@@ -88,10 +83,12 @@ void GameServer::receiveClientMessages(ClientConnection * client) {
         client->receiveMsg(msgs);
 
         for (vector<Message>::iterator it = msgs.begin(); it != msgs.end(); it++) {
-            messageQueue.push(&(*it));
-            cout << "pushed: " << pushCounter << std::endl;
             if ((*it).getMessage().compare(0, strlen("_0x8_connection_close"), "_0x8_connection_close") == 0) {
                 client->disconnect();
+            }
+            else
+            {
+            	messageQueue.push(&(*it));
             }
         }
 
@@ -131,14 +128,12 @@ void GameServer::onNewMessage(Message* m) {
 }
 
 void GameServer::step() {
-
-	while(true)
+	while(isRunning)
 	{
 		if(!clients.empty()) {
 			string msg = gs.generateDifStateMessage();
 
 			if (msg.compare(SEPARATOR) != 0) {
-				//cout << "step: " << msg << std::endl;
 				broadcast(msg);
 			}
 		}

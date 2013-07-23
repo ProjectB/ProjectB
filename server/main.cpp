@@ -42,6 +42,7 @@ int main(int argc, char *argv[]) {
     cout << "Cleaning..." << endl;
     delete gs;
     delete cs;
+    cout << "Clean!" << endl;
 
     return 0;
 }
