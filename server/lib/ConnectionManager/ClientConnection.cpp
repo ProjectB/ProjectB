@@ -121,6 +121,7 @@ bool ClientConnection::answerWSClient(string msg) {
 
 void ClientConnection::sendMsg(string message) {
 	string msg = createPacket(message);
+
 	if (this->isConnected())
 		this->sock->send(msg.c_str(), strlen(msg.c_str()));
 }
@@ -250,20 +251,22 @@ void ClientConnection::receiveMsg(vector<Message>& msgs) {
 
 string ClientConnection::createPacket(string str) {
 	vector<unsigned char> msg;
-	int length = str.length();
+	unsigned int length = str.length();
 
 	msg.push_back(0x81);
 	if (length < 126)
 		msg.push_back(length);
 	else if (length < 65536){
-		msg.push_back(126);
+		msg.push_back((unsigned int)126);
 		msg.push_back(length >> 8);
 		msg.push_back(length & 0xff);
 	}
-	else
-		return "ERROR LENGTH";
+	else {
+		std::cout << "ERROR LENGTH" << std::endl;
+		exit(1);
+	}
 
-	for (int i = 0; i < length; i++)
+	for (unsigned int i = 0; i < length; i++)
 		msg.push_back(str[i]);
 
 	return string(msg.begin(), msg.end());

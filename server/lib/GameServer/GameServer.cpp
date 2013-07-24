@@ -110,15 +110,17 @@ void GameServer::receiveClientMessages(ClientConnection * client) {
 
 void GameServer::onClientConnect(ClientConnection * client) {
 	// client connected
-	gs.players[client->guid] = GenObject(client->guid, bomber, 1, 0, BOMBER_HEIGHT, BOMBER_WIDTH);
-	broadcast(gs.players[client->guid].getMsg(true));
+	GenObject gObj = GenObject(client->guid, Bomber, 1, 0, BOMBER_HEIGHT, BOMBER_WIDTH);
 
-	client->sendMsg(gs.generateDifStateMessage(false));
+	client->sendMsg(gObj.generateObjectActionMessage((ObjectAction)Add));
+
+	client->sendMsg(gs.generateDifStateMessage(true));
+	gs.players[client->guid] = gObj;
 }
 
 void GameServer::onClientDisconnect(ClientConnection * client) {
 	// client disconnect
-	broadcast(gs.players[client->guid].getMsg(true, true));
+	broadcast(gs.players[client->guid].generateObjectActionMessage((ObjectAction)Delete));
 
 	gs.players.erase(client->guid);
 }
@@ -131,9 +133,9 @@ void GameServer::step() {
 	while(isRunning)
 	{
 		if(!clients.empty()) {
-			string msg = gs.generateDifStateMessage();
+			string msg = gs.generateDifStateMessage(false);
 
-			if (msg.compare(SEPARATOR) != 0) {
+			if (!msg.empty()) {
 				broadcast(msg);
 			}
 		}

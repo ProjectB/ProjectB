@@ -23,8 +23,12 @@
 
 /************ GAME DEFINES ************/
 
-enum objType {
-    none, square, bomber
+enum ObjType {
+    None, Square, Bomber
+};
+
+enum ObjectAction {
+	Add, Update, Delete
 };
 
 #define FPS 30

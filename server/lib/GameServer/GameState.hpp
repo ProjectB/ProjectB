@@ -18,7 +18,8 @@
 
 class GameState {
 public:
-    int width, height, xPoint, yPoint, xMove, yMove, n;
+    int width, height, xPoint, yPoint, xMove, yMove;
+    unsigned int n;
     std::vector<GenObject> fixedObjects;
     std::map<std::string, GenObject> players;
 
@@ -31,59 +32,59 @@ public:
         yMove = BLOCK_SIZE / 10;
 
 
-        newObject(2 * xPoint, 2 * yPoint, xPoint - 2, yPoint - 2,square);
-        newObject(2 * xPoint, 4 * yPoint, xPoint - 2, yPoint - 2,square);
-        newObject(2 * xPoint, 6 * yPoint, xPoint - 2, yPoint - 2,square);
-        newObject(2 * xPoint, 8 * yPoint, xPoint - 2, yPoint - 2,square);
+        newObject(2 * xPoint, 2 * yPoint, xPoint - 2, yPoint - 2,Square);
+        newObject(2 * xPoint, 4 * yPoint, xPoint - 2, yPoint - 2,Square);
+        newObject(2 * xPoint, 6 * yPoint, xPoint - 2, yPoint - 2,Square);
+        newObject(2 * xPoint, 8 * yPoint, xPoint - 2, yPoint - 2,Square);
 
-        newObject(4 * xPoint, 2 * yPoint, xPoint - 2, yPoint - 2,square);
-        newObject(4 * xPoint, 4 * yPoint, xPoint - 2, yPoint - 2,square);
-        newObject(4 * xPoint, 6 * yPoint, xPoint - 2, yPoint - 2,square);
-        newObject(4 * xPoint, 8 * yPoint, xPoint - 2, yPoint - 2,square);
+        newObject(4 * xPoint, 2 * yPoint, xPoint - 2, yPoint - 2,Square);
+        newObject(4 * xPoint, 4 * yPoint, xPoint - 2, yPoint - 2,Square);
+        newObject(4 * xPoint, 6 * yPoint, xPoint - 2, yPoint - 2,Square);
+        newObject(4 * xPoint, 8 * yPoint, xPoint - 2, yPoint - 2,Square);
 
-        newObject(6 * xPoint, 2 * yPoint, xPoint - 2, yPoint - 2,square);
-        newObject(6 * xPoint, 4 * yPoint, xPoint - 2, yPoint - 2,square);
-        newObject(6 * xPoint, 6 * yPoint, xPoint - 2, yPoint - 2,square);
-        newObject(6 * xPoint, 8 * yPoint, xPoint - 2, yPoint - 2,square);
+        newObject(6 * xPoint, 2 * yPoint, xPoint - 2, yPoint - 2,Square);
+        newObject(6 * xPoint, 4 * yPoint, xPoint - 2, yPoint - 2,Square);
+        newObject(6 * xPoint, 6 * yPoint, xPoint - 2, yPoint - 2,Square);
+        newObject(6 * xPoint, 8 * yPoint, xPoint - 2, yPoint - 2,Square);
 
-        newObject(8 * xPoint, 2 * yPoint, xPoint - 2, yPoint - 2,square);
-        newObject(8 * xPoint, 4 * yPoint, xPoint - 2, yPoint - 2,square);
-        newObject(8 * xPoint, 6 * yPoint, xPoint - 2, yPoint - 2,square);
-        newObject(8 * xPoint, 8 * yPoint, xPoint - 2, yPoint - 2,square);
+        newObject(8 * xPoint, 2 * yPoint, xPoint - 2, yPoint - 2,Square);
+        newObject(8 * xPoint, 4 * yPoint, xPoint - 2, yPoint - 2,Square);
+        newObject(8 * xPoint, 6 * yPoint, xPoint - 2, yPoint - 2,Square);
+        newObject(8 * xPoint, 8 * yPoint, xPoint - 2, yPoint - 2,Square);
 
         /* 5 x 5
-        newObject(xPoint, yPoint, xPoint - 2, yPoint - 2, square);
-        newObject(xPoint, 3 * yPoint, xPoint - 2, yPoint - 2, square);
-        newObject(xPoint, 5 * yPoint, xPoint - 2, yPoint - 2, square);
-        newObject(xPoint, 7 * yPoint, xPoint - 2, yPoint - 2, square);
-        newObject(xPoint, 9 * yPoint, xPoint - 2, yPoint - 2, square);
+        newObject(xPoint, yPoint, xPoint - 2, yPoint - 2, Square);
+        newObject(xPoint, 3 * yPoint, xPoint - 2, yPoint - 2, Square);
+        newObject(xPoint, 5 * yPoint, xPoint - 2, yPoint - 2, Square);
+        newObject(xPoint, 7 * yPoint, xPoint - 2, yPoint - 2, Square);
+        newObject(xPoint, 9 * yPoint, xPoint - 2, yPoint - 2, Square);
 
-        newObject(3 * xPoint, yPoint, xPoint - 2, yPoint - 2, square);
-        newObject(3 * xPoint, 3 * yPoint, xPoint - 2, yPoint - 2, square);
-        newObject(3 * xPoint, 5 * yPoint, xPoint - 2, yPoint - 2, square);
-        newObject(3 * xPoint, 7 * yPoint, xPoint - 2, yPoint - 2, square);
-        newObject(3 * xPoint, 9 * yPoint, xPoint - 2, yPoint - 2, square);
+        newObject(3 * xPoint, yPoint, xPoint - 2, yPoint - 2, Square);
+        newObject(3 * xPoint, 3 * yPoint, xPoint - 2, yPoint - 2, Square);
+        newObject(3 * xPoint, 5 * yPoint, xPoint - 2, yPoint - 2, Square);
+        newObject(3 * xPoint, 7 * yPoint, xPoint - 2, yPoint - 2, Square);
+        newObject(3 * xPoint, 9 * yPoint, xPoint - 2, yPoint - 2, Square);
 
-        newObject(5 * xPoint, yPoint, xPoint - 2, yPoint - 2, square);
-        newObject(5 * xPoint, 3 * yPoint, xPoint - 2, yPoint - 2, square);
-        newObject(5 * xPoint, 5 * yPoint, xPoint - 2, yPoint - 2, square);
-        newObject(5 * xPoint, 7 * yPoint, xPoint - 2, yPoint - 2, square);
-        newObject(5 * xPoint, 9 * yPoint, xPoint - 2, yPoint - 2, square);
+        newObject(5 * xPoint, yPoint, xPoint - 2, yPoint - 2, Square);
+        newObject(5 * xPoint, 3 * yPoint, xPoint - 2, yPoint - 2, Square);
+        newObject(5 * xPoint, 5 * yPoint, xPoint - 2, yPoint - 2, Square);
+        newObject(5 * xPoint, 7 * yPoint, xPoint - 2, yPoint - 2, Square);
+        newObject(5 * xPoint, 9 * yPoint, xPoint - 2, yPoint - 2, Square);
 
-        newObject(7 * xPoint, yPoint, xPoint - 2, yPoint - 2, square);
-        newObject(7 * xPoint, 3 * yPoint, xPoint - 2, yPoint - 2, square);
-        newObject(7 * xPoint, 5 * yPoint, xPoint - 2, yPoint - 2, square);
-        newObject(7 * xPoint, 7 * yPoint, xPoint - 2, yPoint - 2, square);
-        newObject(7 * xPoint, 9 * yPoint, xPoint - 2, yPoint - 2, square);
-        newObject(9 * xPoint, yPoint, xPoint - 2, yPoint - 2, square);
-        newObject(9 * xPoint, 3 * yPoint, xPoint - 2, yPoint - 2, square);
-        newObject(9 * xPoint, 5 * yPoint, xPoint - 2, yPoint - 2, square);
-        newObject(9 * xPoint, 7 * yPoint, xPoint - 2, yPoint - 2, square);
-        newObject(9 * xPoint, 9 * yPoint, xPoint - 2, yPoint - 2, square);
+        newObject(7 * xPoint, yPoint, xPoint - 2, yPoint - 2, Square);
+        newObject(7 * xPoint, 3 * yPoint, xPoint - 2, yPoint - 2, Square);
+        newObject(7 * xPoint, 5 * yPoint, xPoint - 2, yPoint - 2, Square);
+        newObject(7 * xPoint, 7 * yPoint, xPoint - 2, yPoint - 2, Square);
+        newObject(7 * xPoint, 9 * yPoint, xPoint - 2, yPoint - 2, Square);
+        newObject(9 * xPoint, yPoint, xPoint - 2, yPoint - 2, Square);
+        newObject(9 * xPoint, 3 * yPoint, xPoint - 2, yPoint - 2, Square);
+        newObject(9 * xPoint, 5 * yPoint, xPoint - 2, yPoint - 2, Square);
+        newObject(9 * xPoint, 7 * yPoint, xPoint - 2, yPoint - 2, Square);
+        newObject(9 * xPoint, 9 * yPoint, xPoint - 2, yPoint - 2, Square);
         */
     }
 
-    void newObject(int x, int y, int w, int h, objType type) {
+    void newObject(int x, int y, int w, int h, ObjType type) {
         std::stringstream ss;
         ss << (n++);
         GenObject square(ss.str(), type, x, y, w, h);
@@ -97,35 +98,53 @@ public:
         }
     }
 
-    std::string generateDifStateMessage(bool onlyDiff = true) {
+    std::string generateDifStateMessage(bool firstDiff = false) {
         std::string str;
-        str += SEPARATOR;
 
-        str += generateFixedObjectsDifStateMessage(onlyDiff);
-        str += generatePlayersDifStateMessage(onlyDiff);
+        //TODO: LOCK fixedOBjects + players WHILE DOING DIFF STATE
+        str += generateFixedObjectsDifStateMessage(firstDiff);
+        str += generatePlayersDifStateMessage(firstDiff);
 
-        for (std::map<std::string, GenObject>::iterator it = players.begin(); it != players.end(); it++)
-            (*it).second.hasChanges = false;
 
         return str;
     }
 
-    std::string generateFixedObjectsDifStateMessage(bool onlyDiff) {
+    std::string generateFixedObjectsDifStateMessage(bool firstDiff) {
         std::stringstream ss;
 
-        for (unsigned int i = 0; i < fixedObjects.size(); i++)
-            if (fixedObjects[i].hasChanges || !onlyDiff)
-                ss << fixedObjects[i].getMsg();
+        if(firstDiff) {
+        	for (unsigned int i = 0; i < fixedObjects.size(); i++) {
+        		ss << fixedObjects[i].generateObjectActionMessage((ObjectAction)Add) << SEPARATOR;
+        	}
+        }
+        else {
+        	for (unsigned int i = 0; i < fixedObjects.size(); i++) {
+        		if(fixedObjects[i].hasChanges) {
+        			ss << fixedObjects[i].generateObjectActionMessage((ObjectAction)Update) << SEPARATOR;
+        			fixedObjects[i].hasChanges = false;
+        		}
+        	}
+        }
 
         return ss.str();
     }
 
-    std::string generatePlayersDifStateMessage(bool onlyDiff) {
+    std::string generatePlayersDifStateMessage(bool firstDiff) {
         std::stringstream ss;
 
-        for (std::map<std::string, GenObject>::iterator it = players.begin(); it != players.end(); it++)
-            if ((*it).second.hasChanges || !onlyDiff)
-                ss << (*it).second.getMsg();
+        if(firstDiff) {
+        	for (std::map<std::string, GenObject>::iterator it = players.begin(); it != players.end(); it++) {
+        		ss << (*it).second.generateObjectActionMessage((ObjectAction)Add) << SEPARATOR;
+        	}
+        }
+        else {
+        	for (std::map<std::string, GenObject>::iterator it = players.begin(); it != players.end(); it++) {
+        		if((*it).second.hasChanges) {
+        			ss << (*it).second.generateObjectActionMessage((ObjectAction)Update) << SEPARATOR;
+        			(*it).second.hasChanges = false;
+        		}
+        	}
+        }
 
         return ss.str();
     }
@@ -172,7 +191,7 @@ public:
 
     /* find nearest object */
     for (unsigned int i = 0; i < fixedObjects.size(); i++) {
-      if (fixedObjects[i].type == square) {
+      if (fixedObjects[i].type == Square) {
 	if(leastDist<0) {
 	  leastDist = distance(x,y,fixedObjects[i].x + fixedObjects[i].width, fixedObjects[i].y + fixedObjects[i].height);
 	  n = i;
