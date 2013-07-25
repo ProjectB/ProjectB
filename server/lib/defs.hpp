@@ -35,7 +35,7 @@ enum ObjectAction {
 #define BLOCK_SIZE 38
 #define BOMBER_WIDTH 32
 #define BOMBER_HEIGHT 42
-#define SEPARATOR "|"
+#define SEPARATOR '|'
 #define SCREEN_WIDTH 440
 #define SCREEN_HEIGHT 440
 
