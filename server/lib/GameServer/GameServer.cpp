@@ -15,9 +15,6 @@ GameServer::GameServer() {
 }
 
 GameServer::~GameServer() {
-	gs.fixedObjects.clear();
-	gs.players.clear();
-
 	for (map<string, ClientConnection *>::iterator it = clients.begin(); it != clients.end(); it++) {
 		if ((*it).second->isConnected())
 			(*it).second->disconnect();
@@ -30,9 +27,13 @@ GameServer::~GameServer() {
 }
 
 void GameServer::broadcast(string msg) {
-    for (map<string, ClientConnection *>::iterator it = clients.begin(); it != clients.end(); it++) {
-        (*it).second->sendMsg(msg);
-    }
+    for (map<string, ClientConnection *>::iterator it = clients.begin(); it != clients.end(); it++)
+        sendMessageToClient((*it).second->guid, msg);
+}
+
+void GameServer::sendMessageToClient(std::string clientGuid, std::string msg) {
+	if(!msg.empty())
+		clients[clientGuid]->sendMsg(msg);
 }
 
 void GameServer::start() {
@@ -110,11 +111,11 @@ void GameServer::receiveClientMessages(ClientConnection * client) {
 
 void GameServer::onClientConnect(ClientConnection * client) {
 	// client connected
-	GenObject gObj = GenObject(client->guid, Bomber, 1, 0, BOMBER_HEIGHT, BOMBER_WIDTH);
+	GenObject gObj = gs.createPlayer(1, 0, BOMBER_WIDTH, BOMBER_HEIGHT, client->guid);
 
-	client->sendMsg(gObj.generateObjectActionMessage((ObjectAction)Add));
+	sendMessageToClient(client->guid, gObj.generateObjectActionMessage((ObjectAction)Add) + SEPARATOR);
 
-	client->sendMsg(gs.generateDifStateMessage(true));
+	sendMessageToClient(client->guid, gs.generateDifStateMessage(true));
 	gs.players[client->guid] = gObj;
 }
 
@@ -134,6 +135,10 @@ void GameServer::step() {
 	{
 		if(!clients.empty()) {
 			string msg = gs.generateDifStateMessage(false);
+			string aux = gs.updateNPObjects();
+			if(!aux.empty())
+				std::cout << "update >> " << aux << std::endl;
+			msg += aux;
 
 			if (!msg.empty()) {
 				broadcast(msg);

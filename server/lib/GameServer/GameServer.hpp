@@ -36,6 +36,7 @@ private:
     void onClientConnect(ClientConnection * client);
     void onClientDisconnect(ClientConnection * client);
     void onNewMessage(Message* m);
+    void sendMessageToClient(std::string clientGuid, std::string msg);
     void broadcast(std::string msg);
     void run();
 

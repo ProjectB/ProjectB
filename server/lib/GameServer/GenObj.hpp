@@ -17,26 +17,29 @@ public:
 	ObjType type;
 	int x, y, height, width;
 	bool hasChanges;
+	unsigned int timeInFrames; //temporary! for bombs!
 
 	GenObject() {
 		guid = "";
 		type = None;
 		x = y = height = width = -1;
 		hasChanges = true;
+		timeInFrames = 0;
 	}
 
-	GenObject(std::string id, ObjType type, int x, int y, int height, int width) {
+	GenObject(std::string id, ObjType type, int x, int y, int width, int height) {
 		this->guid = id;
 		this->type = type;
 		this->x = x;
 		this->y = y;
 		this->height = height;
 		this->width = width;
-		if(type == Bomber)
-			hasChanges = true;
-		else
-			hasChanges = false;
+		this->hasChanges = false;
+		if(type == (ObjType)Bomb)
+			timeInFrames = 100;
 	}
+
+
 
 	/* Create a message that describe the action to be taken by the javascript client.
 	 * Message schema should be:
@@ -51,47 +54,20 @@ public:
 
 		switch(act) {
 		case Add:
-			ss << "A" << SEPARATOR << guid << SEPARATOR << getType() << SEPARATOR << x << SEPARATOR << y << SEPARATOR << width << SEPARATOR << height;
+			ss << "[A]" << getType() << ':' << guid << ';' << x << ';' << y << ';'<< width << ';' << height;
 			break;
 		case Update:
-			ss << "U" << SEPARATOR << guid << SEPARATOR << x << SEPARATOR << y;
+			ss << "[U]" << guid << ';' << x << ';' << y;
 			break;
 		case Delete:
-			ss << "D" << SEPARATOR << guid;
+			ss << "[D]" << guid;
 			break;
 		default:
-			ss << "invalid";
+			ss << "";
 			break;
 		}
 
 		return ss.str();
-/*
-		if (remove) {
-			switch(type) {
-			case bomber:
-				ss << "bomber" << SEPARATOR << guid << SEPARATOR << "delete";
-				break;
-			default:
-				ss << "invalid";
-				break;
-			}
-		}
-		else {
-			switch(type) {
-			case square:
-				ss << "sq" << SEPARATOR << x << SEPARATOR << y << SEPARATOR << width << SEPARATOR << height;
-				break;
-			case bomber:
-				ss << "bomber" << SEPARATOR << guid << SEPARATOR << x << SEPARATOR << y;
-				break;
-			default:
-				ss << "invalid";
-				break;
-			}
-		}
-		ss << SEPARATOR;
-		return ss.str();
-		*/
 	}
 
 	void Move(int x, int y) {
@@ -107,6 +83,9 @@ public:
 			break;
 		case Bomber:
 			return "Bomber";
+			break;
+		case Bomb:
+			return "Bomb";
 			break;
 		default:
 			return "None";

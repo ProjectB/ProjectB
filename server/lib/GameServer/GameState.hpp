@@ -18,79 +18,64 @@
 
 class GameState {
 public:
-	int width, height, xPoint, yPoint, xMove, yMove;
+	int width, height, xMove, yMove;
 	unsigned int n;
-	std::vector<GenObject> fixedObjects;
+	std::vector<GenObject> recentlyCreatedObjects;
+	std::vector<GenObject> NPObject; //Non-playable/player Object
 	std::map<std::string, GenObject> players;
 
 	GameState() {
 		n = 0;
 		height = width = 11 * BLOCK_SIZE;
-		xPoint = BLOCK_SIZE;
-		yPoint = BLOCK_SIZE;
-		xMove = BLOCK_SIZE / 10;
-		yMove = BLOCK_SIZE / 10;
+		xMove = 4;
+		yMove = 4;
 
 
-		newObject(2 * xPoint, 2 * yPoint, xPoint - 2, yPoint - 2,Square);
-		newObject(2 * xPoint, 4 * yPoint, xPoint - 2, yPoint - 2,Square);
-		newObject(2 * xPoint, 6 * yPoint, xPoint - 2, yPoint - 2,Square);
-		newObject(2 * xPoint, 8 * yPoint, xPoint - 2, yPoint - 2,Square);
+		newNPObject(2 * BLOCK_SIZE, 2 * BLOCK_SIZE, BLOCK_SIZE - 2, BLOCK_SIZE - 2,Square);
+		newNPObject(2 * BLOCK_SIZE, 4 * BLOCK_SIZE, BLOCK_SIZE - 2, BLOCK_SIZE - 2,Square);
+		newNPObject(2 * BLOCK_SIZE, 6 * BLOCK_SIZE, BLOCK_SIZE - 2, BLOCK_SIZE - 2,Square);
+		newNPObject(2 * BLOCK_SIZE, 8 * BLOCK_SIZE, BLOCK_SIZE - 2, BLOCK_SIZE - 2,Square);
 
-		newObject(4 * xPoint, 2 * yPoint, xPoint - 2, yPoint - 2,Square);
-		newObject(4 * xPoint, 4 * yPoint, xPoint - 2, yPoint - 2,Square);
-		newObject(4 * xPoint, 6 * yPoint, xPoint - 2, yPoint - 2,Square);
-		newObject(4 * xPoint, 8 * yPoint, xPoint - 2, yPoint - 2,Square);
+		newNPObject(4 * BLOCK_SIZE, 2 * BLOCK_SIZE, BLOCK_SIZE - 2, BLOCK_SIZE - 2,Square);
+		newNPObject(4 * BLOCK_SIZE, 4 * BLOCK_SIZE, BLOCK_SIZE - 2, BLOCK_SIZE - 2,Square);
+		newNPObject(4 * BLOCK_SIZE, 6 * BLOCK_SIZE, BLOCK_SIZE - 2, BLOCK_SIZE - 2,Square);
+		newNPObject(4 * BLOCK_SIZE, 8 * BLOCK_SIZE, BLOCK_SIZE - 2, BLOCK_SIZE - 2,Square);
 
-		newObject(6 * xPoint, 2 * yPoint, xPoint - 2, yPoint - 2,Square);
-		newObject(6 * xPoint, 4 * yPoint, xPoint - 2, yPoint - 2,Square);
-		newObject(6 * xPoint, 6 * yPoint, xPoint - 2, yPoint - 2,Square);
-		newObject(6 * xPoint, 8 * yPoint, xPoint - 2, yPoint - 2,Square);
+		newNPObject(6 * BLOCK_SIZE, 2 * BLOCK_SIZE, BLOCK_SIZE - 2, BLOCK_SIZE - 2,Square);
+		newNPObject(6 * BLOCK_SIZE, 4 * BLOCK_SIZE, BLOCK_SIZE - 2, BLOCK_SIZE - 2,Square);
+		newNPObject(6 * BLOCK_SIZE, 6 * BLOCK_SIZE, BLOCK_SIZE - 2, BLOCK_SIZE - 2,Square);
+		newNPObject(6 * BLOCK_SIZE, 8 * BLOCK_SIZE, BLOCK_SIZE - 2, BLOCK_SIZE - 2,Square);
 
-		newObject(8 * xPoint, 2 * yPoint, xPoint - 2, yPoint - 2,Square);
-		newObject(8 * xPoint, 4 * yPoint, xPoint - 2, yPoint - 2,Square);
-		newObject(8 * xPoint, 6 * yPoint, xPoint - 2, yPoint - 2,Square);
-		newObject(8 * xPoint, 8 * yPoint, xPoint - 2, yPoint - 2,Square);
-
-		/* 5 x 5
-        newObject(xPoint, yPoint, xPoint - 2, yPoint - 2, Square);
-        newObject(xPoint, 3 * yPoint, xPoint - 2, yPoint - 2, Square);
-        newObject(xPoint, 5 * yPoint, xPoint - 2, yPoint - 2, Square);
-        newObject(xPoint, 7 * yPoint, xPoint - 2, yPoint - 2, Square);
-        newObject(xPoint, 9 * yPoint, xPoint - 2, yPoint - 2, Square);
-
-        newObject(3 * xPoint, yPoint, xPoint - 2, yPoint - 2, Square);
-        newObject(3 * xPoint, 3 * yPoint, xPoint - 2, yPoint - 2, Square);
-        newObject(3 * xPoint, 5 * yPoint, xPoint - 2, yPoint - 2, Square);
-        newObject(3 * xPoint, 7 * yPoint, xPoint - 2, yPoint - 2, Square);
-        newObject(3 * xPoint, 9 * yPoint, xPoint - 2, yPoint - 2, Square);
-
-        newObject(5 * xPoint, yPoint, xPoint - 2, yPoint - 2, Square);
-        newObject(5 * xPoint, 3 * yPoint, xPoint - 2, yPoint - 2, Square);
-        newObject(5 * xPoint, 5 * yPoint, xPoint - 2, yPoint - 2, Square);
-        newObject(5 * xPoint, 7 * yPoint, xPoint - 2, yPoint - 2, Square);
-        newObject(5 * xPoint, 9 * yPoint, xPoint - 2, yPoint - 2, Square);
-
-        newObject(7 * xPoint, yPoint, xPoint - 2, yPoint - 2, Square);
-        newObject(7 * xPoint, 3 * yPoint, xPoint - 2, yPoint - 2, Square);
-        newObject(7 * xPoint, 5 * yPoint, xPoint - 2, yPoint - 2, Square);
-        newObject(7 * xPoint, 7 * yPoint, xPoint - 2, yPoint - 2, Square);
-        newObject(7 * xPoint, 9 * yPoint, xPoint - 2, yPoint - 2, Square);
-        newObject(9 * xPoint, yPoint, xPoint - 2, yPoint - 2, Square);
-        newObject(9 * xPoint, 3 * yPoint, xPoint - 2, yPoint - 2, Square);
-        newObject(9 * xPoint, 5 * yPoint, xPoint - 2, yPoint - 2, Square);
-        newObject(9 * xPoint, 7 * yPoint, xPoint - 2, yPoint - 2, Square);
-        newObject(9 * xPoint, 9 * yPoint, xPoint - 2, yPoint - 2, Square);
-		 */
+		newNPObject(8 * BLOCK_SIZE, 2 * BLOCK_SIZE, BLOCK_SIZE - 2, BLOCK_SIZE - 2,Square);
+		newNPObject(8 * BLOCK_SIZE, 4 * BLOCK_SIZE, BLOCK_SIZE - 2, BLOCK_SIZE - 2,Square);
+		newNPObject(8 * BLOCK_SIZE, 6 * BLOCK_SIZE, BLOCK_SIZE - 2, BLOCK_SIZE - 2,Square);
+		newNPObject(8 * BLOCK_SIZE, 8 * BLOCK_SIZE, BLOCK_SIZE - 2, BLOCK_SIZE - 2,Square);
 	}
 
-	void newObject(int x, int y, int w, int h, ObjType type) {
+	~GameState() {
+		recentlyCreatedObjects.clear();
+		NPObject.clear();
+		players.clear();
+	}
+
+	void newNPObject(int x, int y, int w, int h, ObjType type) {
 		std::stringstream ss;
 		ss << (n++);
-		GenObject square(ss.str(), type, x, y, w, h);
-		fixedObjects.push_back(square);
+
+		switch(type) {
+		case Square:
+			recentlyCreatedObjects.push_back(GenObject(ss.str(), type, x, y, w, h));
+			break;
+		case Bomb:
+			recentlyCreatedObjects.push_back(GenObject(ss.str(), type, x, y, w, h));
+			break;
+		default:
+			return;
+			break;
+		}
+
 		if (_GAMESTATE_DEBUG == 1) {
-			std::cout << "OBJECT CREATED: number" << n-1 << ": (" << x << "," << y << ")";
+			std::cout << "OBJECT CREATED[" << type << "]: n=" << n-1 << ": (" << x << "," << y << ")";
 			std::cout << " (" << x+w << "," << y << ")";
 			std::cout << " (" << x+w << "," << y+h << ")";
 			std::cout << " (" << x << "," << y+h << ")" << std::endl;
@@ -98,30 +83,64 @@ public:
 		}
 	}
 
+	void deleteNPObject(unsigned int i) {
+		NPObject.erase(NPObject.begin() + i);
+	}
+
+	std::string updateNPObjects() {
+		std::stringstream ss;
+		for(unsigned int i = 0; i < NPObject.size(); i++) {
+			switch(NPObject[i].type) {
+			case Bomb:
+				if(--NPObject[i].timeInFrames == 0) {
+					ss << NPObject[i].generateObjectActionMessage((ObjectAction)Delete) << SEPARATOR;
+					deleteNPObject(i);
+				}
+				break;
+			default:
+				break;
+			}
+		}
+
+		return ss.str();
+	}
+
+	GenObject createPlayer(int x, int y, int w, int h, std::string guid) {
+		return GenObject(guid, Bomber, x, y, BOMBER_WIDTH, BOMBER_HEIGHT);
+	}
+
 	std::string generateDifStateMessage(bool firstDiff = false) {
 		std::string str;
 
 		//TODO: LOCK fixedOBjects + players WHILE DOING DIFF STATE
-		str += generateFixedObjectsDifStateMessage(firstDiff);
+		str += generateNPObjectsDifStateMessage(firstDiff);
 		str += generatePlayersDifStateMessage(firstDiff);
-
+		if (_GAMESTATE_DEBUG == 1)
+			if(!str.empty())
+				std::cout << "DIF STATE >> " << str << std::endl;
 
 		return str;
 	}
 
-	std::string generateFixedObjectsDifStateMessage(bool firstDiff) {
+	std::string generateNPObjectsDifStateMessage(bool firstDiff) {
 		std::stringstream ss;
+		unsigned int i=0;
 
 		if(firstDiff) {
-			for (unsigned int i = 0; i < fixedObjects.size(); i++) {
-				ss << fixedObjects[i].generateObjectActionMessage((ObjectAction)Add) << SEPARATOR;
+			for (i = 0; i < NPObject.size(); i++) {
+				ss << NPObject[i].generateObjectActionMessage((ObjectAction)Add) << SEPARATOR;
 			}
 		}
 		else {
-			for (unsigned int i = 0; i < fixedObjects.size(); i++) {
-				if(fixedObjects[i].hasChanges) {
-					ss << fixedObjects[i].generateObjectActionMessage((ObjectAction)Update) << SEPARATOR;
-					fixedObjects[i].hasChanges = false;
+			for(i=0; i < recentlyCreatedObjects.size(); i++) {
+				ss << recentlyCreatedObjects[i].generateObjectActionMessage((ObjectAction)Add) << SEPARATOR;
+				NPObject.push_back(recentlyCreatedObjects[i]);
+			}
+			recentlyCreatedObjects.clear();
+			for (i = 0; i < NPObject.size(); i++) {
+				if(NPObject[i].hasChanges) {
+					ss << NPObject[i].generateObjectActionMessage((ObjectAction)Update) << SEPARATOR;
+					NPObject[i].hasChanges = false;
 				}
 			}
 		}
@@ -153,58 +172,88 @@ public:
 		int xdif = 0, ydif = 0;
 
 		//translate input message into a vector of atomic inputs
-		std::vector<std::string> input = translateInput(msg);
 
+		std::vector<std::string> input = splitMessages(msg);
 
 		//process these inputs
 		for(std::vector<std::string>::const_iterator it = input.begin(); it != input.end(); it++) {
-			if ((*it).compare("move-left") == 0)
+			std::string topic = getTopic(*it);
+			if (topic.compare("moveLeft") == 0)
 				xdif = -xMove;
-			else if ((*it).compare("move-right") == 0)
+			else if (topic.compare("moveRight") == 0)
 				xdif = xMove;
-			else if ((*it).compare("move-up") == 0)
+			else if (topic.compare("moveUp") == 0)
 				ydif = -yMove;
-			else if ((*it).compare("move-down") == 0)
+			else if (topic.compare("moveDown") == 0)
 				ydif = yMove;
+			else if (topic.compare("dropBomb") == 0) {
+				std::vector<std::string> attr = getAttributes(topic.size(), *it);
+				newNPObject(atoi(attr[0].c_str()), atoi(attr[1].c_str()), 170, 170, Bomb);
+			}
+			else {
+				std::cout << "WARNING: UNKNOWN TOPIC >> " << topic << std::endl;
+			}
 		}
+
+		if(xdif != 0 || ydif != 0)
+			this->players[guid].Move(xdif, ydif);
 
 		if (_GAMESTATE_DEBUG == 1) {
 			std::cout << "bomber: topleft(" << players[guid].x << "," << players[guid].y << ") topright(" << players[guid].x + players[guid].width;
 			std::cout << "," << players[guid].y << ") bottomright(" << players[guid].x + players[guid].width << "," << players[guid].y + players[guid].height;
 			std::cout << ") bottomleft(" << players[guid].x << "," << players[guid].y + players[guid].height << ")" << std::endl;
-			//printf("bomber: topleft(%d,%d) topright(%d,%d) bottomright(%d,%d) bottomleft(%d,%d)\n", players[guid].x, players[guid].y, players[guid].x + players[guid].width, players[guid].y, players[guid].x + players[guid].width, players[guid].y + players[guid].height, players[guid].x, players[guid].y + players[guid].height);
 		}
-
-		players[guid].Move(xdif, ydif);
-		/*
-        if (collisionTest(players[guid].x + xdif, players[guid].y + ydif, players[guid].width, players[guid].height))
-            players[guid].Move(xdif, ydif);
-        else
-            printf("DEBUG: COLLISION\n");
-		 */
 	}
 
-	std::vector<std::string> translateInput(std::string msg) {
-		std::vector<std::string> inputVector;
-		std::string currInput;
+	std::vector<std::string> splitMessages(std::string msg) {
+		std::vector<std::string> output;
 
+		std::string currMsg;
 		for(unsigned int i=0; i < msg.length(); i++) {
-			if(msg[i] != (char)SEPARATOR)
-				currInput.push_back(msg[i]);
-			else {
-				inputVector.push_back(currInput);
-				currInput.clear();
+			if(msg[i] == (char)SEPARATOR) {
+				output.push_back(currMsg);
+				currMsg.clear();
+			} else {
+				currMsg.push_back(msg[i]);
 			}
 		}
 
-		if(currInput.length() > 0)
-			inputVector.push_back(currInput);
+		return output;
+	}
 
-		return inputVector;
+	std::string getTopic(std::string msg) {
+		std::string topic; //output
+
+		unsigned int i=0;
+		unsigned int len = msg.length();
+
+		while(msg[i] != '|' && msg[i] != ':' && i < len)
+			topic.push_back(msg[i++]);
+
+		return topic;
+	}
+
+	std::vector<std::string> getAttributes(unsigned int offset, std::string msg) {
+		std::vector<std::string> attributes;
+
+		unsigned int i=offset;
+		std::string str = "";
+
+		while(msg[i++] != ':');
+
+		for(;i < msg.size(); i++) {
+			while(msg[i] != ';' && i < msg.size())
+				str.push_back(msg[i++]);
+			attributes.push_back(str);
+			str.clear();
+		}
+
+		return attributes;
 	}
 
 	//collision test for fixed objects. Possible problems with 2 moving objects (crossing each other)
 	//false = collision happens, true otherwise
+
 	bool collisionTest(int x, int y, int w, int h) {
 		/* outside screen */
 		if(x < 0 || y < 0 || x > SCREEN_WIDTH - w || y > SCREEN_HEIGHT - h) return false;
@@ -216,13 +265,13 @@ public:
 		int a;
 
 		/* find nearest object */
-		for (unsigned int i = 0; i < fixedObjects.size(); i++) {
-			if (fixedObjects[i].type == Square) {
+		for (unsigned int i = 0; i < NPObject.size(); i++) {
+			if (NPObject[i].type == Square) {
 				if(leastDist<0) {
-					leastDist = distance(x,y,fixedObjects[i].x + fixedObjects[i].width, fixedObjects[i].y + fixedObjects[i].height);
+					leastDist = distance(x,y,NPObject[i].x + NPObject[i].width, NPObject[i].y + NPObject[i].height);
 					n = i;
 				}
-				else if((a = distance(x,y,fixedObjects[i].x + fixedObjects[i].width, fixedObjects[i].y + fixedObjects[i].height)) < leastDist)
+				else if((a = distance(x,y,NPObject[i].x + NPObject[i].width, NPObject[i].y + NPObject[i].height)) < leastDist)
 				{
 					n = i;
 					leastDist = a;
@@ -230,8 +279,8 @@ public:
 			}
 		}
 
-		centerx = fixedObjects[n].x + fixedObjects[n].width/2;
-		centery = fixedObjects[n].y + fixedObjects[n].height/2;
+		centerx = NPObject[n].x + NPObject[n].width/2;
+		centery = NPObject[n].y + NPObject[n].height/2;
 
 		/* find nearest point to the center of the object */
 		leastDist = distance(x,y,centerx,centery);
@@ -253,7 +302,7 @@ public:
 		}
 
 		/* if the nearest point is farther than the radius of the object */
-		if(distance(px,py,centerx, centery) > distance(fixedObjects[n].x, fixedObjects[n].y, centerx, centery)) {
+		if(distance(px,py,centerx, centery) > distance(NPObject[n].x, NPObject[n].y, centerx, centery)) {
 			std::cout << "DEBUG: FARTHER THAN POSSIBLE" << std::endl;
 			//printf("DEBUG: FARTHER THAN POSSIBLE\n");
 			return true;
@@ -262,35 +311,35 @@ public:
 		/* 8 points of interest of the object */
 		/* top */
 		int p1x = centerx;
-		int p1y = fixedObjects[n].y;
+		int p1y = NPObject[n].y;
 
 		/* right */
-		int p2x = fixedObjects[n].x + fixedObjects[n].width;
+		int p2x = NPObject[n].x + NPObject[n].width;
 		int p2y = centery;
 
 		/* bottom */
 		int p3x = centerx;
-		int p3y = fixedObjects[n].y + fixedObjects[n].height;
+		int p3y = NPObject[n].y + NPObject[n].height;
 
 		/* left */
-		int p4x = fixedObjects[n].x;
+		int p4x = NPObject[n].x;
 		int p4y = centery;
 
 		/* top left */
-		int p5x = fixedObjects[n].x;
-		int p5y = fixedObjects[n].y;
+		int p5x = NPObject[n].x;
+		int p5y = NPObject[n].y;
 
 		/* top right */
-		int p6x = fixedObjects[n].x + fixedObjects[n].width;
-		int p6y = fixedObjects[n].y;
+		int p6x = NPObject[n].x + NPObject[n].width;
+		int p6y = NPObject[n].y;
 
 		/* bottom left */
-		int p7x = fixedObjects[n].x;
-		int p7y = fixedObjects[n].y + fixedObjects[n].height;
+		int p7x = NPObject[n].x;
+		int p7y = NPObject[n].y + NPObject[n].height;
 
 		/* bottom right */
-		int p8x = fixedObjects[n].x + fixedObjects[n].width;
-		int p8y = fixedObjects[n].y + fixedObjects[n].height;
+		int p8x = NPObject[n].x + NPObject[n].width;
+		int p8y = NPObject[n].y + NPObject[n].height;
 
 
 		/* find the nearest PoI */
@@ -336,7 +385,7 @@ public:
 
 
 		std::cout << "bomber(" << x << "," << y << "," << w << "," << h << ") -- p(" << px << "," << py << ") -- center[" << n << "](" << centerx << "," << centery;
-		std::cout << ") -- PoI(" << obx << "," << oby << ") -- bottom(" << x << "," << y+h << ") -- top(" << centerx << "," << centery + fixedObjects[n].height/2 << ")." << std::endl;
+		std::cout << ") -- PoI(" << obx << "," << oby << ") -- bottom(" << x << "," << y+h << ") -- top(" << centerx << "," << centery + NPObject[n].height/2 << ")." << std::endl;
 		std::cout << "both distances: " << distance(px, py, centerx, centery) << " ---- " << distance(obx, oby, centerx, centery) << "." << std::endl;
 		//printf("bomber(%d,%d,%d,%d) -- p(%d,%d) -- center[%d](%d,%d) -- PoI(%d,%d) -- bottom(%d,%d) -- top(%d,%d).\n", x,y,w,h, px,py, n,centerx,centery, obx,oby, x,y+h, centerx, centery + fixedObjects[n].height/2);
 		//printf("both distances: %d ---- %d.\n", distance(px,py,centerx,centery), distance(obx,oby,centerx,centery));

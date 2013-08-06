@@ -24,7 +24,7 @@
 /************ GAME DEFINES ************/
 
 enum ObjType {
-    None, Square, Bomber
+    None, Square, Bomb, Bomber
 };
 
 enum ObjectAction {
