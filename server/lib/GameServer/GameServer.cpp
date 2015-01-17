@@ -135,10 +135,7 @@ void GameServer::step() {
 	{
 		if(!clients.empty()) {
 			string msg = gs.generateDifStateMessage(false);
-			string aux = gs.updateNPObjects();
-			if(!aux.empty())
-				std::cout << "update >> " << aux << std::endl;
-			msg += aux;
+			msg += gs.updateNPObjects();
 
 			if (!msg.empty()) {
 				broadcast(msg);

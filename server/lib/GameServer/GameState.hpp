@@ -188,7 +188,7 @@ public:
 				ydif = yMove;
 			else if (topic.compare("dropBomb") == 0) {
 				std::vector<std::string> attr = getAttributes(topic.size(), *it);
-				newNPObject(atoi(attr[0].c_str()), atoi(attr[1].c_str()), 170, 170, Bomb);
+				newNPObject(atoi(attr[0].c_str()), atoi(attr[1].c_str()), 20, 20, Bomb);
 			}
 			else {
 				std::cout << "WARNING: UNKNOWN TOPIC >> " << topic << std::endl;
