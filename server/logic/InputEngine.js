@@ -40,7 +40,10 @@ InputEngineClass = Class.create({
 		if(player)
 		{
 			for(var action in this.currActions)
+			{
+				
 				str += player.processAction(action, this.lastActions[action], this.currActions[action]);
+			}
 			
 			//send message to server
 			if(str!="")

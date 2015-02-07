@@ -15,7 +15,8 @@ GameServer::GameServer() {
 }
 
 GameServer::~GameServer() {
-	for (map<string, ClientConnection *>::iterator it = clients.begin(); it != clients.end(); it++) {
+	for (map<string, ClientConnection *>::iterator it = clients.begin(); it != clients.end(); it++)
+	{
 		if ((*it).second->isConnected())
 			(*it).second->disconnect();
 	}
@@ -33,7 +34,10 @@ void GameServer::broadcast(string msg) {
 
 void GameServer::sendMessageToClient(std::string clientGuid, std::string msg) {
 	if(!msg.empty())
-		clients[clientGuid]->sendMsg(msg);
+	{
+		if(clients.find(clientGuid) != clients.end())
+			clients[clientGuid]->sendMsg(msg);
+	}
 }
 
 void GameServer::start() {
@@ -53,7 +57,6 @@ void GameServer::run() {
     	// novos clients
     	while(!ConnServer::isClientQueueEmpty()) {
     		ClientConnection * client = ConnServer::clientQueue.pop();
-    		clients[client->guid] = client;
 
     		thread clientThread = thread([this, client] {this->receiveClientMessages(client);});
     		clientThread.detach();
@@ -111,7 +114,9 @@ void GameServer::receiveClientMessages(ClientConnection * client) {
 
 void GameServer::onClientConnect(ClientConnection * client) {
 	// client connected
-	GenObject gObj = gs.createPlayer(1, 0, BOMBER_WIDTH, BOMBER_HEIGHT, client->guid);
+	GenObject gObj = gs.createPlayer(0, 0);
+	client->guid = gObj.guid;
+	this->clients[client->guid] = client;
 
 	sendMessageToClient(client->guid, gObj.generateObjectActionMessage((ObjectAction)Add) + SEPARATOR);
 

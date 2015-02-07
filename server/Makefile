@@ -11,8 +11,9 @@ all: $(BIN)
 obj/main.o: main.cpp
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
-obj/%.o: %.cpp %.hpp lib/defs.hpp lib/MultithreadQueue.hpp lib/ConnectionManager/*.hpp
+obj/%.o: %.cpp %.hpp lib/defs.hpp lib/MultithreadQueue.hpp
 	$(CXX) $(CXXFLAGS) -c $< -o $@
+
 
 $(BIN): $(OBJ)
 	$(CXX) $^ -o $@ $(LIBS)

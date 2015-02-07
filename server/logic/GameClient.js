@@ -67,6 +67,7 @@ function update() {
 		clearInterval(lp);
 	else {
 		drawObjs();
+		InputEngine.processInput();
 	}
 }
 
@@ -123,9 +124,35 @@ function testWebSocket() {
 
 function loadInitialAssets() {
 	//Bomber
-	AssetManager.loadAsset('~/../../res/ship.png', 'BomberMiddle', 10, 0, 65, 85);
-	AssetManager.loadAsset('~/../../res/ship.png', 'BomberRight', 83, 0, 65, 85);
-	AssetManager.loadAsset('~/../../res/ship.png', 'BomberLeft', 156, 0, 65, 85);
+	AssetManager.loadAsset('~/../../res/atlas.png', 'BomberStanding_1', 9, 11, 27, 32);
+	AssetManager.loadAsset('~/../../res/atlas.png', 'BomberStanding_2', 38, 12, 27, 31);
+	AssetManager.loadAsset('~/../../res/atlas.png', 'BomberStanding_3', 67, 11, 27, 32);
+	AssetManager.loadAsset('~/../../res/atlas.png', 'BomberStanding_4', 97, 11, 27, 32);
+	AssetManager.loadAsset('~/../../res/atlas.png', 'BomberStanding_5', 125, 11, 27, 32);
+	AssetManager.loadAsset('~/../../res/atlas.png', 'BomberStanding_6', 153, 12, 27, 31);
+	AssetManager.loadAsset('~/../../res/atlas.png', 'BomberStanding_7', 182, 11, 27, 32);
+	AssetManager.loadAsset('~/../../res/atlas.png', 'BomberStanding_8', 211, 11, 27, 32);
+	
+	AssetManager.loadAsset('~/../../res/atlas.png', 'BomberMovingLeft_1', 469, 1061, 21, 36);
+	AssetManager.loadAsset('~/../../res/atlas.png', 'BomberMovingLeft_2', 494, 1062, 21, 35);
+	AssetManager.loadAsset('~/../../res/atlas.png', 'BomberMovingLeft_3', 521, 1061, 21, 36);
+	AssetManager.loadAsset('~/../../res/atlas.png', 'BomberMovingLeft_4', 546, 1062, 21, 35);
+	
+	AssetManager.loadAsset('~/../../res/atlas.png', 'BomberMovingRight_1', 470, 1145, 21, 35);
+	AssetManager.loadAsset('~/../../res/atlas.png', 'BomberMovingRight_2', 495, 1144, 21, 36);
+	AssetManager.loadAsset('~/../../res/atlas.png', 'BomberMovingRight_3', 522, 1145, 21, 35);
+	AssetManager.loadAsset('~/../../res/atlas.png', 'BomberMovingRight_4', 547, 1144, 21, 36);
+	
+	AssetManager.loadAsset('~/../../res/atlas.png', 'BomberMovingDown_1', 469, 1022, 22, 36);
+	AssetManager.loadAsset('~/../../res/atlas.png', 'BomberMovingDown_2', 495, 1024, 24, 34);
+	AssetManager.loadAsset('~/../../res/atlas.png', 'BomberMovingDown_3', 524, 1022, 25, 36);
+	AssetManager.loadAsset('~/../../res/atlas.png', 'BomberMovingDown_4', 550, 1023, 24, 34);
+	
+	AssetManager.loadAsset('~/../../res/atlas.png', 'BomberMovingUp_1', 466, 1103, 22, 36);
+	AssetManager.loadAsset('~/../../res/atlas.png', 'BomberMovingUp_2', 492, 1105, 27, 34);
+	AssetManager.loadAsset('~/../../res/atlas.png', 'BomberMovingUp_3', 521, 1103, 22, 36);
+	AssetManager.loadAsset('~/../../res/atlas.png', 'BomberMovingUp_4', 547, 1104, 26, 34);
+	
 	
 	//Bombs
 	AssetManager.loadAsset('~/../../res/atlas.png', 'BombSmall', 521, 687, 15, 16);
@@ -135,14 +162,10 @@ function loadInitialAssets() {
 
 function handleKeyDown(evt) {
 	InputEngine.onKeyDown(evt);
-	
-	InputEngine.processInput();
 }
 
 function handleKeyUp(evt) {
 	InputEngine.onKeyUp(evt);
-	
-	InputEngine.processInput();
 }
 
 function onOpen(evt) {
@@ -212,14 +235,14 @@ function onMessage(evt) {
 			{
 				if(PlayerGuid == null)
 				{
-					var p = new Player(x,y,w,h);
+					var p = new Player(x,y,w,h,1.5,1.5);
 					PlayerGuid = guid;
 					GameEngine.addEntity(guid, p);
 					p.init();
 				}
 				else
 				{
-					var b = new Bomber(x,y,w,h);
+					var b = new Bomber(x,y,w,h,1.5,1.5);
 					GameEngine.addEntity(guid, b);
 					b.init();
 				}

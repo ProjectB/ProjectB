@@ -29,10 +29,6 @@ ClientConnection::ClientConnection(int id, TCPSocket* sock) {
 		log(debug.str());
 	}
 
-	stringstream ssGuid;
-	ssGuid << this->address << this->port << this->id;
-	this->guid = ssGuid.str();
-
 	char recvBuffer[RCVBUFSIZE];
 	unsigned int recvMsgSize;
 	stringstream msg;
@@ -57,23 +53,25 @@ ClientConnection::ClientConnection(int id, TCPSocket* sock) {
 
 ClientConnection::~ClientConnection() {
 	//if(_CLIENT_DEBUG) log("Client disposed");
-	if (sock != NULL)
-		delete sock;
+	if (this->sock != NULL)
+		delete this->sock;
 }
 
-bool ClientConnection::isConnected() {
+bool ClientConnection::isConnected()
+{
+	return true;
 	bool isConnected;
-	connMutex.lock();
-	isConnected = !(sock == NULL);
-	connMutex.unlock();
+	this->connMutex.lock();
+	isConnected = !(this->sock == NULL);
+	this->connMutex.unlock();
 	return isConnected;
 }
 
 void ClientConnection::disconnect() {
-	connMutex.lock();
-	delete sock;
-	sock = NULL;
-	connMutex.unlock();
+	while(this->connMutex.try_lock() == false);
+	delete this->sock;
+	this->sock = NULL;
+	this->connMutex.unlock();
 	if(_CLIENT_DEBUG) log("Connection finished");
 }
 
@@ -278,8 +276,8 @@ int ClientConnection::hasData(int sec, int usec) {
 
 void ClientConnection::run() {
 	vector<Message> msgs;
-	isRunning = true;
-	while (isConnected() && isRunning) {
+	this->isRunning = true;
+	while (this->isConnected() && this->isRunning) {
 		receiveMsg(msgs);
 
 		for (vector<Message>::iterator it = msgs.begin(); it != msgs.end(); it++) {

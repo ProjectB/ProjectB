@@ -12,6 +12,7 @@
 -->
 
 <!--  INCLUDES -->
+<script type="text/javascript" src="../util/Enum.js"></script>
 <script type="text/javascript" src="../util/prototype.js"></script>
 <script type="text/javascript" src="../util/spriteManager.js"></script>
 <script type="text/javascript" src="../logic/GameEngine.js"></script>
@@ -40,6 +41,7 @@
             readonly="readonly"></div>
         <button onclick="websocket.close();init();">Connect</button>
         <button onclick="websocket.close();">Disconnect</button>
+        <button onclick="document.getElementById('output').innerHTML = '';">Clear</button>
     </div>
 </body>
 </html>

@@ -1,65 +1,104 @@
 /*********** PLAYER CLASS *********/
-function Player(x,y,w,h) {
-    Bomber.call(this,x,y,w,h);
+function Player(x, y, w, h, wScale, hScale)
+{
+    Bomber.call(this,x,y,w,h,wScale,hScale);
 }
 //inherits from Bomber
 Player.prototype = new Bomber();
 
-Player.prototype.init = function() {
+Player.prototype.init = function()
+{
 	console.log("player init");
 	Bomber.prototype.init.call(this);
 };
 
-Player.prototype.moveRight = function(last, curr, isMovingLeft) {
-    //moveRight key is down
-    if(curr==true && last==curr)
-        return InputEngine.createServerMessage("moveRight");
-    
-    if(curr==true && last!=curr) {
-        this.direction = isMovingLeft == true? 1 : 2;
-        return InputEngine.createServerMessage("moveRight");
-    }
-    
-    //moveRight key is up
-    if(curr==false && last==curr)
-        return "";
-    
-    if(curr==false && last!=curr) {
-        this.direction = isMovingLeft == true? 0 : 1;
-        return "";
-    }
+/*
+ * last: was this that last action?
+ * curr: is this button pressed?
+ */
+Player.prototype.moveRight = function(last, curr, isMovingLeft)
+{
+	if(curr == true)
+	{
+		if(isMovingLeft)
+		{
+			this.direction = EnumMoveDirection.Standing;
+		}
+		else if(last == true)
+		{
+			return InputEngine.createServerMessage("moveRight");
+		}
+		else
+		{
+			this.direction = EnumMoveDirection.Right;
+			return InputEngine.createServerMessage("moveRight"); 
+		}
+	}
+	return "";
 }
-Player.prototype.moveLeft = function(last, curr, isMovingRight) {
-    if(curr==true && last==curr)
-        return InputEngine.createServerMessage("moveLeft");
-    
-    if(curr==true && last!=curr) {
-        this.direction = isMovingRight == true? 1 : 0;
-        return InputEngine.createServerMessage("moveLeft");
-    }
-    
-    if(curr==false && last==curr)
-        return "";
-    
-    if(curr==false && last!=curr) {
-        this.direction = isMovingRight == true? 2 : 1;
-        return "";
-    }
-        
+Player.prototype.moveLeft = function(last, curr, isMovingRight)
+{
+	if(curr == true)
+	{
+		if(isMovingRight)
+		{
+			this.direction = EnumMoveDirection.Standing;
+		}
+		else if(last == true)
+		{
+			return InputEngine.createServerMessage("moveLeft");
+		}
+		else
+		{
+			this.direction = EnumMoveDirection.Left;
+			return InputEngine.createServerMessage("moveLeft"); 
+		}
+	}
+	return "";
 }
-Player.prototype.moveUp = function(last, curr, isMovingDown) {
-    if(curr==true)
-        return isMovingDown==true? "" : InputEngine.createServerMessage("moveUp");
-    
-    return "";
+Player.prototype.moveUp = function(last, curr, isMovingDown)
+{
+	if(curr == true)
+	{
+		if(isMovingDown)
+		{
+			this.direction = EnumMoveDirection.Standing;
+		}
+		else if(last == true)
+		{
+			return InputEngine.createServerMessage("moveUp");
+		}
+		else
+		{
+			this.direction = EnumMoveDirection.Up;
+			return InputEngine.createServerMessage("moveUp"); 
+		}
+	}
+	return "";
 }
-Player.prototype.moveDown = function(last, curr, isMovingUp) {
-    if(curr==true)
-        return isMovingUp==true? "" : InputEngine.createServerMessage("moveDown");
-    
-    return "";
+Player.prototype.moveDown = function(last, curr, isMovingUp)
+{
+	if(curr == true)
+	{
+		if(isMovingUp)
+		{
+			this.direction = EnumMoveDirection.Standing;
+		}
+		else if(last == true)
+		{
+			return InputEngine.createServerMessage("moveDown");
+		}
+		else
+		{
+			this.direction = EnumMoveDirection.Down;
+			return InputEngine.createServerMessage("moveDown"); 
+		}
+	}
+	
+	return "";
 }
-Player.prototype.dropBomb = function(last, curr) {
+Player.prototype.dropBomb = function(last, curr)
+{
     if(curr==false || last==true)
         return "";
     
@@ -70,7 +109,8 @@ Player.prototype.dropBomb = function(last, curr) {
         return InputEngine.createServerMessage("dropBomb", pos);
     }
 }
-Player.prototype.processAction = function(action, last, curr) {
+Player.prototype.processAction = function(action, last, curr)
+{
     if(action == "moveRight")
         return this.moveRight(last, curr, InputEngine.currActions["moveLeft"]);
     if(action == "moveLeft")

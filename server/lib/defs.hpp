@@ -24,7 +24,7 @@
 /************ GAME DEFINES ************/
 
 enum ObjType {
-    None, Square, Bomb, Bomber
+    _None, _Square, _Bomb, _Bomber
 };
 
 enum ObjectAction {
@@ -32,7 +32,10 @@ enum ObjectAction {
 };
 
 #define FPS 30
-#define BLOCK_SIZE 38
+#define BLOCK_WIDTH 38
+#define BLOCK_HEIGHT 38
+#define BOMB_WIDTH 20
+#define BOMB_HEIGHT 20
 #define BOMBER_WIDTH 32
 #define BOMBER_HEIGHT 42
 #define SEPARATOR '|'

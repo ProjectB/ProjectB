@@ -34,15 +34,15 @@ int main(int argc, char *argv[]) {
             cout << "Command not found." << endl;
     }
 
-    cout << "Closing GameServer..." << endl;
+    std::cout << "Closing GameServer..." << endl;
     gs->stop();
-    cout << "Closing ConnServer..." << endl;
+    std::cout << "Closing ConnServer..." << endl;
     cs->stop();
 
-    cout << "Cleaning..." << endl;
+    std::cout << "Cleaning..." << endl;
     delete gs;
     delete cs;
-    cout << "Clean!" << endl;
+    std::cout << "Clean!" << endl;
 
     return 0;
 }
