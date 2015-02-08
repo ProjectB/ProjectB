@@ -59,7 +59,6 @@ ClientConnection::~ClientConnection() {
 
 bool ClientConnection::isConnected()
 {
-	return true;
 	bool isConnected;
 	this->connMutex.lock();
 	isConnected = !(this->sock == NULL);
@@ -67,7 +66,8 @@ bool ClientConnection::isConnected()
 	return isConnected;
 }
 
-void ClientConnection::disconnect() {
+void ClientConnection::disconnect()
+{
 	while(this->connMutex.try_lock() == false);
 	delete this->sock;
 	this->sock = NULL;

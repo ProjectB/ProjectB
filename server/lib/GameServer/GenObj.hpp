@@ -37,6 +37,7 @@ public:
 	std::string generateObjectActionMessage(ObjectAction) const;
 	void Move(int, int);
 	std::string getGenObjectType() const;
+	void update(std::string);
 };
 
 

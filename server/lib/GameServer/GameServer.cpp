@@ -53,9 +53,11 @@ void GameServer::stop() {
 }
 
 void GameServer::run() {
-    while (isRunning) {
+    while (isRunning)
+    {
     	// novos clients
-    	while(!ConnServer::isClientQueueEmpty()) {
+    	while(!ConnServer::isClientQueueEmpty())
+    	{
     		ClientConnection * client = ConnServer::clientQueue.pop();
 
     		thread clientThread = thread([this, client] {this->receiveClientMessages(client);});
@@ -65,15 +67,18 @@ void GameServer::run() {
     	}
 
     	// novas msgs
-    	while(!messageQueue.empty()) {
+    	while(!messageQueue.empty())
+    	{
     		Message* m = messageQueue.pop();
     		onNewMessage(m);
     	}
 
     	// check clients
-    	for(map<string, ClientConnection*>::iterator it = clients.begin(); it != clients.end(); it++) {
-    		if(!(*it).second->isConnected()) {
-    			onClientDisconnect((*it).second);
+    	for(map<string, ClientConnection*>::iterator it = clients.begin(); it != clients.end(); it++)
+    	{
+    		if(!(*it).second->isConnected())
+    		{
+    			this->onClientDisconnect((*it).second);
     			delete ((*it).second);
     			clients.erase((*it).first);
     		}
@@ -118,36 +123,49 @@ void GameServer::onClientConnect(ClientConnection * client) {
 	client->guid = gObj.guid;
 	this->clients[client->guid] = client;
 
-	sendMessageToClient(client->guid, gObj.generateObjectActionMessage((ObjectAction)Add) + SEPARATOR);
+	//TODO: should generate stats message, not diff
+	//sendMessageToClient(client->guid, gObj.generateObjectActionMessage((ObjectAction)Add) + SEPARATOR);
 
-	sendMessageToClient(client->guid, gs.generateDifStateMessage(true));
-	gs.players[client->guid] = gObj;
+	//sendMessageToClient(client->guid, gs.generateDifStateMessage());
+	gs.objects[client->guid] = gObj;
 }
 
 void GameServer::onClientDisconnect(ClientConnection * client) {
 	// client disconnect
-	broadcast(gs.players[client->guid].generateObjectActionMessage((ObjectAction)Delete));
-
-	gs.players.erase(client->guid);
+	broadcast(gs.objects[client->guid].generateObjectActionMessage((ObjectAction)Delete));
+	gs.objects.erase(client->guid);
 }
 
-void GameServer::onNewMessage(Message* m) {
+void GameServer::onNewMessage(Message* m)
+{
 	gs.update(m->getGuid(), m->getMessage());
 }
 
-void GameServer::step() {
+void GameServer::step()
+{
+	timeval begin, end;
+	double elapsedTime;
+	unsigned int million = 1000000;
+	int sleepTime;
+
 	while(isRunning)
 	{
+		gettimeofday(&begin, NULL);
+
 		if(!clients.empty()) {
-			string msg = gs.generateDifStateMessage(false);
+			string msg = gs.generateDifStateMessage();
 			msg += gs.updateNPObjects();
 
 			if (!msg.empty()) {
 				broadcast(msg);
 			}
 		}
+		gettimeofday(&end, NULL);
 
-		this_thread::sleep_for(chrono::milliseconds(1000 / FPS));
+		elapsedTime = ((end.tv_sec * million +  end.tv_usec) - (begin.tv_sec * million + begin.tv_usec)) / 1000;
+		sleepTime = (int)((double)(1000 - FPS) - elapsedTime);
+
+		this_thread::sleep_for(chrono::milliseconds(sleepTime));
 	}
 }
 

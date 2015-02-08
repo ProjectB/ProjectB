@@ -21,18 +21,18 @@ public:
 	int width, height, xMove, yMove;
 	unsigned int n;
 	std::vector<GenObject> recentlyCreatedObjects;
-	std::vector<GenObject> NPObject; //Non-playable/player Object
-	std::map<std::string, GenObject> players;
+	std::vector<std::string> npObjects; //guids of Non-player Objects
+	std::vector<std::string> players; //guids of the players
+	std::map<std::string, GenObject> objects; //dictionary to any object with a guid in the game
 
 	GameState();
 	~GameState();
-	GenObject newNPObject(short int posX, short int posY, ObjType);
-	void deleteNPObject(unsigned int);
+	GenObject newObject(short int posX, short int posY, ObjType);
+	void deleteObject(unsigned int);
 	std::string updateNPObjects();
 	GenObject createPlayer(int, int);
-	std::string generateDifStateMessage(bool);
-	std::string generateNPObjectsDifStateMessage(bool);
-	std::string generatePlayersDifStateMessage(bool);
+	std::string generateDifStateMessage();
+	std::string generateObjectsDifStateMessage();
 	void update(std::string, std::string);
 	std::vector<std::string> splitMessages(std::string);
 	std::string getTopic(std::string) const;

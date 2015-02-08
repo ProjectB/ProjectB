@@ -10,6 +10,7 @@
 
 #include <iostream>
 #include <sstream>
+#include <sys/time.h>
 #include "../defs.hpp"
 #include "GameState.hpp"
 #include "../ConnectionManager/ClientConnection.hpp"
