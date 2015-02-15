@@ -119,20 +119,23 @@ void GameServer::receiveClientMessages(ClientConnection * client) {
 
 void GameServer::onClientConnect(ClientConnection * client) {
 	// client connected
+	std::cout << "client connect " << std::endl;
 	GenObject gObj = gs.createPlayer(0, 0);
+	std::cout << "obj created, assigning guid " << std::endl;
 	client->guid = gObj.guid;
+	std::cout << "???" << std::endl;
 	this->clients[client->guid] = client;
 
 	//TODO: should generate stats message, not diff
 	//sendMessageToClient(client->guid, gObj.generateObjectActionMessage((ObjectAction)Add) + SEPARATOR);
 
 	//sendMessageToClient(client->guid, gs.generateDifStateMessage());
-	gs.objects[client->guid] = gObj;
+	gs.objects[client->guid] = &gObj;
 }
 
 void GameServer::onClientDisconnect(ClientConnection * client) {
 	// client disconnect
-	broadcast(gs.objects[client->guid].generateObjectActionMessage((ObjectAction)Delete));
+	broadcast((*gs.objects[client->guid]).generateObjectActionMessage((ObjectAction)Delete));
 	gs.objects.erase(client->guid);
 }
 

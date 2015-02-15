@@ -41,5 +41,7 @@ enum ObjectAction {
 #define SEPARATOR '|'
 #define SCREEN_WIDTH 440
 #define SCREEN_HEIGHT 440
+#define PLAYER_X_MOVE 4
+#define PLAYER_Y_MOVE 4
 
 #endif /* DEFS_HPP_ */

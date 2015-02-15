@@ -20,10 +20,10 @@ class GameState {
 public:
 	int width, height, xMove, yMove;
 	unsigned int n;
-	std::vector<GenObject> recentlyCreatedObjects;
+	std::vector<GenObject*> recentlyCreatedObjects;
 	std::vector<std::string> npObjects; //guids of Non-player Objects
 	std::vector<std::string> players; //guids of the players
-	std::map<std::string, GenObject> objects; //dictionary to any object with a guid in the game
+	std::map<std::string, GenObject*> objects; //dictionary to any object with a guid in the game
 
 	GameState();
 	~GameState();
