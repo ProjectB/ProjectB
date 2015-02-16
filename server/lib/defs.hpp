@@ -43,5 +43,7 @@ enum ObjectAction {
 #define SCREEN_HEIGHT 440
 #define PLAYER_X_MOVE 4
 #define PLAYER_Y_MOVE 4
+#define BOMB_LIFETIME 3000
+#define BOMB_MIN_POWER 1
 
 #endif /* DEFS_HPP_ */

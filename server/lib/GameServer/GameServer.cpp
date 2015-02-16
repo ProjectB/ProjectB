@@ -119,18 +119,15 @@ void GameServer::receiveClientMessages(ClientConnection * client) {
 
 void GameServer::onClientConnect(ClientConnection * client) {
 	// client connected
-	std::cout << "client connect " << std::endl;
-	GenObject gObj = gs.createPlayer(0, 0);
-	std::cout << "obj created, assigning guid " << std::endl;
-	client->guid = gObj.guid;
-	std::cout << "???" << std::endl;
+	GenObject *gObj = gs.createPlayer(0, 0);
+	client->guid = gObj->guid;
 	this->clients[client->guid] = client;
 
 	//TODO: should generate stats message, not diff
 	//sendMessageToClient(client->guid, gObj.generateObjectActionMessage((ObjectAction)Add) + SEPARATOR);
 
 	//sendMessageToClient(client->guid, gs.generateDifStateMessage());
-	gs.objects[client->guid] = &gObj;
+	gs.objects[client->guid] = gObj;
 }
 
 void GameServer::onClientDisconnect(ClientConnection * client) {
@@ -155,7 +152,8 @@ void GameServer::step()
 	{
 		gettimeofday(&begin, NULL);
 
-		if(!clients.empty()) {
+		if(!clients.empty())
+		{
 			string msg = gs.generateDifStateMessage();
 			msg += gs.updateNPObjects();
 
@@ -166,7 +164,7 @@ void GameServer::step()
 		gettimeofday(&end, NULL);
 
 		elapsedTime = ((end.tv_sec * million +  end.tv_usec) - (begin.tv_sec * million + begin.tv_usec)) / 1000;
-		sleepTime = (int)((double)(1000 - FPS) - elapsedTime);
+		sleepTime = (int)((double)(1000/FPS) - elapsedTime);
 
 		this_thread::sleep_for(chrono::milliseconds(sleepTime));
 	}
