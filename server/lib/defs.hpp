@@ -32,6 +32,7 @@ enum ObjectAction {
 };
 
 #define FPS 30
+#define FRAME_TIME 1000/30
 #define BLOCK_WIDTH 38
 #define BLOCK_HEIGHT 38
 #define BOMB_WIDTH 20

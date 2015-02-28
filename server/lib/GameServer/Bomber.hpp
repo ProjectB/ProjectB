@@ -11,6 +11,7 @@
 #include "GenObj.hpp"
 using namespace std;
 #include <string>
+#include "Game.hpp"
 
 class Bomber : public GenObject
 {
@@ -31,16 +32,19 @@ public:
 
 	std::string getObjectState() const;
 	/* GETTERS/SETTERS/UPDATES */
-	Bomber(std::string, int, int, int, int);
+	Bomber(std::string, int, int, int, int, Game*);
 	~Bomber();
 	void update(std::string);
+	void bombExploded();
 private:
 	short int HP; //Hit Points
 	short int bombStr; //bomb strength, in squares
 	short int bombLimit; //number of concurrent bombs that can be placed
+	short int numBombsDropped;
 
 	std::string generateObjectState() const;
-	void dropBomb() const;
+	void dropBomb();
+	Game* game;
 };
 
 

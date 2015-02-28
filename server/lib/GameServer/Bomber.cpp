@@ -15,12 +15,14 @@ using namespace std;
 #include <sstream>
 #include <vector>
 
-Bomber::Bomber(std::string guid, int x, int y, int w, int h)
+Bomber::Bomber(std::string guid, int x, int y, int w, int h, Game* game)
 : GenObject(guid, ObjType::_Bomber, x, y, w, h)
 {
+	this->game = game;
 	this->HP = 1;
 	this->bombStr = 1;
 	this->bombLimit = 1;
+	this->numBombsDropped = 0;
 }
 
 Bomber::~Bomber()
@@ -39,11 +41,17 @@ std::string Bomber::generateObjectState() const
 
 	return ss.str();
 }
-void Bomber::dropBomb() const
+void Bomber::dropBomb()
 {
-	std::cout << "Bomber " << this->guid << " dropping a bomb." << std::endl;
-	GameState gs;
-	gs.bomberDropsABomb(this->guid);
+	if(this->numBombsDropped < this->bombLimit)
+	{
+		this->game->bomberDropsABomb(this->guid);
+		this->numBombsDropped++;
+	}
+}
+void Bomber::bombExploded()
+{
+	this->numBombsDropped--;
 }
 /* PRIVATE FUNCTIONS */
 /* PUBLIC FUNCTIONS */

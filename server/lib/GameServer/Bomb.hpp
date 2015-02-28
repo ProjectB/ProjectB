@@ -10,23 +10,26 @@
 
 #include "GenObj.hpp"
 #include <string>
+#include "Game.hpp"
 
 class Bomb : public GenObject
 {
 public:
-	short int getTimeLeft() const;
-	void setTimeLeft(short int);
+	float getTimeLeft() const;
+	void setTimeLeft(float);
 	short int getPower() const;
 	void setPower(short int);
 	std::string getOwnerGuid() const;
 	void setOwnerGuid(std::string);
 
-	Bomb(std::string, int, int, int, int);
+	Bomb(std::string, int, int, int, int, Game* game);
 	~Bomb();
+	void update();
 private:
 	std::string ownerGuid;
-	short int timeLeft;
+	float timeLeft;
 	short int power;
+	Game* game;
 };
 
 

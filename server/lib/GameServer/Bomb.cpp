@@ -7,29 +7,34 @@
 
 #include "Bomb.hpp"
 #include "../defs.hpp"
-#include "GameState.hpp"
 
 #include <algorithm>
 
-Bomb::Bomb(std::string guid, int x, int y, int w, int h)
+Bomb::Bomb(std::string guid, int x, int y, int w, int h, Game* game)
 : GenObject(guid, ObjType::_Bomb, x, y, w, h)
 {
+	this->game = game;
 	this->timeLeft = BOMB_LIFETIME;
 	this->power = 1;
 }
 Bomb::~Bomb()
 {
-	GameState gs;
-	gs.onBombExplosion(this);
-	delete this;
+	std::cout << "bomb exploded" << std::endl;
+	this->game->onBombExplosion(this);
+	std::cout << "after bomb explosion.. object should disappear" << std::endl;
 }
-
+void Bomb::update()
+{
+	this->timeLeft -= FRAME_TIME;
+	if(this->timeLeft <= 0)
+		delete this;
+}
 /* GETTERS && SETTERS */
-short int Bomb::getTimeLeft() const
+float Bomb::getTimeLeft() const
 {
 	return this->timeLeft;
 }
-void Bomb::setTimeLeft(short int timeLeft)
+void Bomb::setTimeLeft(float timeLeft)
 {
 	this->timeLeft = timeLeft;
 }

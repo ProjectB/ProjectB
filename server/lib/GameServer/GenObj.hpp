@@ -22,7 +22,6 @@ public:
 	ObjType type;
 	int x, y, height, width;
 	bool hasChanges;
-	unsigned int timeInFrames; //temporary! for bombs!
 
 	GenObject();
 	GenObject(std::string, ObjType, int, int, int, int);

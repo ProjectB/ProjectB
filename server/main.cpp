@@ -16,11 +16,13 @@ int main(int argc, char *argv[]) {
     if (argc >= 2)
         port = atoi(argv[1]);
 
+    std::cout << "starting connection server " << std::endl;
     ConnServer * cs = new ConnServer(port);
     cs->start();
 
-    GameServer * gs = new GameServer();
-    gs->start();
+    std::cout << "starting game server " << std::endl;
+
+    GameServer::getInstance().initGameServer();
 
     cout << "Type 'help' to list available commands" << endl;
 
@@ -35,12 +37,11 @@ int main(int argc, char *argv[]) {
     }
 
     std::cout << "Closing GameServer..." << endl;
-    gs->stop();
+    GameServer::getInstance().stop();
     std::cout << "Closing ConnServer..." << endl;
     cs->stop();
 
     std::cout << "Cleaning..." << endl;
-    delete gs;
     delete cs;
     std::cout << "Clean!" << endl;
 

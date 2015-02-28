@@ -19,7 +19,6 @@ GenObject::GenObject()
 	type = ObjType::_None;
 	x = y = height = width = -1;
 	hasChanges = true;
-	timeInFrames = 0;
 }
 GenObject::GenObject(std::string id, ObjType type, int x, int y, int width, int height)
 {
@@ -30,8 +29,6 @@ GenObject::GenObject(std::string id, ObjType type, int x, int y, int width, int 
 	this->height = height;
 	this->width = width;
 	this->hasChanges = false;
-	if(type == ObjType::_Bomb)
-		timeInFrames = 100;
 }
 GenObject::~GenObject()
 {

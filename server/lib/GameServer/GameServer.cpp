@@ -9,50 +9,72 @@
 
 using namespace std;
 
-
-GameServer::GameServer() {
-	isRunning = false;
-}
-
-GameServer::~GameServer() {
-	for (map<string, ClientConnection *>::iterator it = clients.begin(); it != clients.end(); it++)
+GameServer::~GameServer()
+{
+	for (map<string, ClientConnection *>::iterator it = this->clients.begin(); it != this->clients.end(); it++)
 	{
 		if ((*it).second->isConnected())
 			(*it).second->disconnect();
 	}
 
-	for (map<string, ClientConnection *>::iterator it = clients.begin(); it != clients.end();) {
+	for (map<string, ClientConnection *>::iterator it = this->clients.begin(); it != this->clients.end();) {
 		delete ((*it).second);
-		it = clients.erase(it);
+		it = this->clients.erase(it);
 	}
 }
 
-void GameServer::broadcast(string msg) {
-    for (map<string, ClientConnection *>::iterator it = clients.begin(); it != clients.end(); it++)
-        sendMessageToClient((*it).second->guid, msg);
+void GameServer::initGameServer()
+{
+	this->isRunning = false;
+	this->gamesCounter = 0;
+	this->start();
 }
 
-void GameServer::sendMessageToClient(std::string clientGuid, std::string msg) {
+void GameServer::sendMessageToClientArray(std::vector<std::string> arrayClientsGuid, string msg)
+{
+	for(unsigned int i=0; i < arrayClientsGuid.size(); i++)
+	{
+		this->sendMessageToClient(arrayClientsGuid[i], msg);
+	}
+}
+
+void GameServer::sendMessageToClient(std::string clientGuid, std::string msg)
+{
 	if(!msg.empty())
 	{
-		if(clients.find(clientGuid) != clients.end())
-			clients[clientGuid]->sendMsg(msg);
+		if(this->clients.find(clientGuid) != this->clients.end())
+			this->clients[clientGuid]->sendMsg(msg);
 	}
 }
 
-void GameServer::start() {
+Game* GameServer::getClientGameObject(std::string clientGuid)
+{
+	if(this->mapClientGame.find(clientGuid) != this->mapClientGame.end())
+	{
+		unsigned int gameIndex = this->mapClientGame[clientGuid];
+		if(this->arrayGames.find(gameIndex) != this->arrayGames.end())
+		{
+			return this->arrayGames[gameIndex];
+		}
+	}
+	return nullptr;
+}
+
+void GameServer::start()
+{
 	isRunning = true;
 	mainThread = thread([this] {this->run();});
-	stepThread = thread([this] {this->step();});
 }
 
-void GameServer::stop() {
+void GameServer::stop()
+{
 	isRunning = false;
     mainThread.join();
-    stepThread.join();
+    delete this;
 }
 
-void GameServer::run() {
+void GameServer::run()
+{
     while (isRunning)
     {
     	// novos clients
@@ -63,30 +85,31 @@ void GameServer::run() {
     		thread clientThread = thread([this, client] {this->receiveClientMessages(client);});
     		clientThread.detach();
 
-    		onClientConnect(client);
+    		this->onClientConnect(client);
     	}
 
     	// novas msgs
-    	while(!messageQueue.empty())
+    	while(!this->messageQueue.empty())
     	{
-    		Message* m = messageQueue.pop();
-    		onNewMessage(m);
+    		Message* m = this->messageQueue.pop();
+    		this->onNewMessage(m);
     	}
 
     	// check clients
-    	for(map<string, ClientConnection*>::iterator it = clients.begin(); it != clients.end(); it++)
+    	for(map<string, ClientConnection*>::iterator it = this->clients.begin(); it != this->clients.end(); it++)
     	{
     		if(!(*it).second->isConnected())
     		{
     			this->onClientDisconnect((*it).second);
     			delete ((*it).second);
-    			clients.erase((*it).first);
+    			this->clients.erase((*it).first);
     		}
     	}
     }
 }
 
-void GameServer::receiveClientMessages(ClientConnection * client) {
+void GameServer::receiveClientMessages(ClientConnection * client)
+{
     vector<Message> msgs;
     while (client->isConnected()) {
         client->receiveMsg(msgs);
@@ -117,75 +140,49 @@ void GameServer::receiveClientMessages(ClientConnection * client) {
  *
  */
 
-void GameServer::onClientConnect(ClientConnection * client) {
+void GameServer::onClientConnect(ClientConnection * client)
+{
 	// client connected
-	GenObject *gObj = gs.createPlayer(0, 0);
+	//TODO: should check if a new Game should be created... for now allocating a new Game for every client
+	Game *g = new Game();
+	this->arrayGames[this->gamesCounter] = g;
+	GenObject *gObj = g->createPlayer(0, 0);
 	client->guid = gObj->guid;
 	this->clients[client->guid] = client;
-
+	this->mapClientGame[client->guid] = this->gamesCounter;
+	this->gamesCounter++;
 	//TODO: should generate stats message, not diff
 	//sendMessageToClient(client->guid, gObj.generateObjectActionMessage((ObjectAction)Add) + SEPARATOR);
 
 	//sendMessageToClient(client->guid, gs.generateDifStateMessage());
-	gs.objects[client->guid] = gObj;
 }
 
-void GameServer::onClientDisconnect(ClientConnection * client) {
+void GameServer::onClientDisconnect(ClientConnection * client)
+{
 	// client disconnect
-	broadcast((*gs.objects[client->guid]).generateObjectActionMessage((ObjectAction)Delete));
-	gs.objects.erase(client->guid);
+	Game *g = this->getClientGameObject(client->guid);
+	if(g != nullptr)
+	{
+		this->sendMessageToClientArray(g->getAllGuids(), g->deletePlayer(client->guid));
+		if(g->getNumPlayersOnGame() == 0)
+		{
+			//if no players exist in the game, delete it
+			this->arrayGames.erase(this->mapClientGame[client->guid]);
+			//TODO: a lock should be necessary here
+			delete g;
+		}
+
+		//remove client from <Client,Game> map
+		this->mapClientGame.erase(client->guid);
+	}
 }
 
 void GameServer::onNewMessage(Message* m)
 {
-	gs.update(m->getGuid(), m->getMessage());
-}
-
-void GameServer::step()
-{
-	timeval begin, end;
-	double elapsedTime;
-	unsigned int million = 1000000;
-	int sleepTime;
-
-	while(isRunning)
+	std::string guid = m->getGuid();
+	Game *g = this->getClientGameObject(guid);
+	if(g != nullptr)
 	{
-		gettimeofday(&begin, NULL);
-
-		if(!clients.empty())
-		{
-			string msg = gs.generateDifStateMessage();
-			msg += gs.updateNPObjects();
-
-			if (!msg.empty()) {
-				broadcast(msg);
-			}
-		}
-		gettimeofday(&end, NULL);
-
-		elapsedTime = ((end.tv_sec * million +  end.tv_usec) - (begin.tv_sec * million + begin.tv_usec)) / 1000;
-		sleepTime = (int)((double)(1000/FPS) - elapsedTime);
-
-		this_thread::sleep_for(chrono::milliseconds(sleepTime));
+		g->update(guid, m->getMessage());
 	}
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
