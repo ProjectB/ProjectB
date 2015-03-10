@@ -8,6 +8,7 @@
 #include "Bomber.hpp"
 #include "GameState.hpp"
 #include "../util/UtilMethods.hpp"
+#include "../defs.hpp"
 
 
 using namespace std;
@@ -23,6 +24,7 @@ Bomber::Bomber(std::string guid, int x, int y, int w, int h, Game* game)
 	this->bombStr = 1;
 	this->bombLimit = 1;
 	this->numBombsDropped = 0;
+	this->lastDirection = EnumMoveDirection::Down;
 }
 
 Bomber::~Bomber()
@@ -46,7 +48,6 @@ void Bomber::dropBomb()
 	if(this->numBombsDropped < this->bombLimit)
 	{
 		this->game->bomberDropsABomb(this->guid);
-		this->numBombsDropped++;
 	}
 }
 void Bomber::bombExploded()
@@ -65,18 +66,28 @@ void Bomber::update(std::string msg)
 	{
 		std::string topic = UtilMethods::getMessageTopic(*it);
 		if (topic.compare("moveLeft") == 0)
+		{
+			this->lastDirection = EnumMoveDirection::Left;
 			xdif = -PLAYER_X_MOVE;
+		}
 		else if (topic.compare("moveRight") == 0)
+		{
+			this->lastDirection = EnumMoveDirection::Right;
 			xdif = PLAYER_X_MOVE;
+		}
 		else if (topic.compare("moveUp") == 0)
+		{
+			this->lastDirection = EnumMoveDirection::Up;
 			ydif = -PLAYER_Y_MOVE;
+		}
 		else if (topic.compare("moveDown") == 0)
+		{
+			this->lastDirection = EnumMoveDirection::Down;
 			ydif = PLAYER_Y_MOVE;
+		}
 		else if (topic.compare("dropBomb") == 0)
 		{
 			this->dropBomb();
-			//std::vector<std::string> attr = this->getAttributes(topic.size(), *it);
-			//this->newNPObject(atoi(attr[0].c_str()), atoi(attr[1].c_str()), ObjType::_Bomb);
 		}
 		else {
 			std::cout << "WARNING: UNKNOWN BOMBER TOPIC @guid " << this->guid << " >> " << topic << std::endl;
@@ -86,6 +97,27 @@ void Bomber::update(std::string msg)
 	if(xdif != 0 || ydif != 0)
 		this->Move(xdif, ydif);
 }
+std::string Bomber::generateObjectActionMessage(ObjectAction act) const
+{
+	std::stringstream ss;
+	ss << GenObject::generateObjectActionMessage(act);
+
+	switch(act)
+	{
+	case Add:
+		break;
+	case Update:
+		ss << ";" << this->lastDirection << ";" << this->getHasMovedThisFrame();
+		break;
+	case Delete:
+		break;
+	default:
+		break;
+	}
+
+	return ss.str();
+}
+
 /* PUBLIC FUNCTIONS */
 
 /* GETTERS && SETTERS */

@@ -17,9 +17,10 @@ function Bomber(x, y, w, h, wScale, hScale)
 Bomber.prototype = {
 	assets: {},
 	assetIndex: 0,
-	framesPerAsset: 3,
+	framesPerAsset: 4,
 	frameCounter: 0,
-	lastDirection: 1,
+	lastDirection: EnumMoveDirection.Down,
+	isMoving: false,
 	enumAssetNameDict: {},
 	init: function()
 	{
@@ -41,49 +42,45 @@ Bomber.prototype = {
 
 		var curName = this.enumAssetNameDict[EnumMoveDirection.Standing];
 		this.assets[curName] = [];
-		this.assets[curName].push({asset: AssetManager.getAsset("BomberStanding_1"), numFrames: this.framesPerAsset});
-		this.assets[curName].push({asset: AssetManager.getAsset("BomberStanding_2"), numFrames: this.framesPerAsset});
-		this.assets[curName].push({asset: AssetManager.getAsset("BomberStanding_3"), numFrames: this.framesPerAsset});
-		this.assets[curName].push({asset: AssetManager.getAsset("BomberStanding_4"), numFrames: this.framesPerAsset});
-		this.assets[curName].push({asset: AssetManager.getAsset("BomberStanding_5"), numFrames: this.framesPerAsset});
-		this.assets[curName].push({asset: AssetManager.getAsset("BomberStanding_6"), numFrames: this.framesPerAsset});
-		this.assets[curName].push({asset: AssetManager.getAsset("BomberStanding_7"), numFrames: this.framesPerAsset});
-		this.assets[curName].push({asset: AssetManager.getAsset("BomberStanding_8"), numFrames: this.framesPerAsset});
-
-		var curName = this.enumAssetNameDict[EnumMoveDirection.Left];
-		this.assets[curName] = [];
-		this.assets[curName].push({asset: AssetManager.getAsset("BomberMovingLeft_1"), numFrames: this.framesPerAsset});
-		this.assets[curName].push({asset: AssetManager.getAsset("BomberMovingLeft_2"), numFrames: this.framesPerAsset});
-		this.assets[curName].push({asset: AssetManager.getAsset("BomberMovingLeft_3"), numFrames: this.framesPerAsset});
-		this.assets[curName].push({asset: AssetManager.getAsset("BomberMovingLeft_4"), numFrames: this.framesPerAsset});
-
-		var curName = this.enumAssetNameDict[EnumMoveDirection.Right];
-		this.assets[curName] = [];
-		this.assets[curName].push({asset: AssetManager.getAsset("BomberMovingRight_1"), numFrames: this.framesPerAsset});
-		this.assets[curName].push({asset: AssetManager.getAsset("BomberMovingRight_2"), numFrames: this.framesPerAsset});
-		this.assets[curName].push({asset: AssetManager.getAsset("BomberMovingRight_3"), numFrames: this.framesPerAsset});
-		this.assets[curName].push({asset: AssetManager.getAsset("BomberMovingRight_4"), numFrames: this.framesPerAsset});
-		
-
-		var curName = this.enumAssetNameDict[EnumMoveDirection.Down];
-		this.assets[curName] = [];
-		this.assets[curName].push({asset: AssetManager.getAsset("BomberMovingDown_1"), numFrames: this.framesPerAsset});
-		this.assets[curName].push({asset: AssetManager.getAsset("BomberMovingDown_2"), numFrames: this.framesPerAsset});
-		this.assets[curName].push({asset: AssetManager.getAsset("BomberMovingDown_3"), numFrames: this.framesPerAsset});
-		this.assets[curName].push({asset: AssetManager.getAsset("BomberMovingDown_4"), numFrames: this.framesPerAsset});
-		
+		this.assets[curName].push({asset: AssetManager.getAsset("BomberStandingUp"), numFrames: 0});
+		this.assets[curName].push({asset: AssetManager.getAsset("BomberStandingRight"), numFrames: 0});
+		this.assets[curName].push({asset: AssetManager.getAsset("BomberStandingDown"), numFrames: 0});
+		this.assets[curName].push({asset: AssetManager.getAsset("BomberStandingLeft"), numFrames: 0});
 
 		var curName = this.enumAssetNameDict[EnumMoveDirection.Up];
 		this.assets[curName] = [];
 		this.assets[curName].push({asset: AssetManager.getAsset("BomberMovingUp_1"), numFrames: this.framesPerAsset});
 		this.assets[curName].push({asset: AssetManager.getAsset("BomberMovingUp_2"), numFrames: this.framesPerAsset});
 		this.assets[curName].push({asset: AssetManager.getAsset("BomberMovingUp_3"), numFrames: this.framesPerAsset});
-		this.assets[curName].push({asset: AssetManager.getAsset("BomberMovingUp_4"), numFrames: this.framesPerAsset});
+		this.assets[curName].push({asset: AssetManager.getAsset("BomberMovingUp_2"), numFrames: this.framesPerAsset});
+
+		var curName = this.enumAssetNameDict[EnumMoveDirection.Right];
+		this.assets[curName] = [];
+		this.assets[curName].push({asset: AssetManager.getAsset("BomberMovingRight_1"), numFrames: this.framesPerAsset});
+		this.assets[curName].push({asset: AssetManager.getAsset("BomberMovingRight_2"), numFrames: this.framesPerAsset});
+		this.assets[curName].push({asset: AssetManager.getAsset("BomberMovingRight_3"), numFrames: this.framesPerAsset});
+		this.assets[curName].push({asset: AssetManager.getAsset("BomberMovingRight_2"), numFrames: this.framesPerAsset});
+
+		var curName = this.enumAssetNameDict[EnumMoveDirection.Down];
+		this.assets[curName] = [];
+		this.assets[curName].push({asset: AssetManager.getAsset("BomberMovingDown_1"), numFrames: this.framesPerAsset});
+		this.assets[curName].push({asset: AssetManager.getAsset("BomberMovingDown_2"), numFrames: this.framesPerAsset});
+		this.assets[curName].push({asset: AssetManager.getAsset("BomberMovingDown_3"), numFrames: this.framesPerAsset});
+		this.assets[curName].push({asset: AssetManager.getAsset("BomberMovingDown_2"), numFrames: this.framesPerAsset});
+		
+		var curName = this.enumAssetNameDict[EnumMoveDirection.Left];
+		this.assets[curName] = [];
+		this.assets[curName].push({asset: AssetManager.getAsset("BomberMovingLeft_1"), numFrames: this.framesPerAsset});
+		this.assets[curName].push({asset: AssetManager.getAsset("BomberMovingLeft_2"), numFrames: this.framesPerAsset});
+		this.assets[curName].push({asset: AssetManager.getAsset("BomberMovingLeft_3"), numFrames: this.framesPerAsset});
+		this.assets[curName].push({asset: AssetManager.getAsset("BomberMovingLeft_2"), numFrames: this.framesPerAsset});
+
 	},
-	update: function(x,y)
+	update: function(arrayMsg)
 	{
-		this.pos.x = x;
-		this.pos.y = y;
+		this.pos.x = arrayMsg[0];
+		this.pos.y = arrayMsg[1];
+		this.direction = arrayMsg[2];
 	},
 	draw: function()
 	{
@@ -120,7 +117,7 @@ Bomber.prototype = {
 		if(this.assets[this.enumAssetNameDict[this.direction]])
 			return this.assets[this.enumAssetNameDict[this.direction]];
 		
-		return  this.assets[this.enumAssetNameDict[EnumMoveDirection.Standing]];
+		return this.assets[this.enumAssetNameDict[EnumMoveDirection.Standing]];
 	}
 };
 /*********** END BOMBER CLASS ***********/

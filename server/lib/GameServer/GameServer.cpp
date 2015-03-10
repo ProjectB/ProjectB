@@ -70,7 +70,6 @@ void GameServer::stop()
 {
 	isRunning = false;
     mainThread.join();
-    delete this;
 }
 
 void GameServer::run()

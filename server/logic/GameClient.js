@@ -84,7 +84,6 @@ var wsUri = "ws://localhost:8080/";
 var output;
 
 function init() {
-	console.log("INIT GAME CLIENT");
 	initCanvas();
 	output = document.getElementById("output");
 
@@ -99,7 +98,6 @@ function init() {
 	
 	InputEngine.init();
 	loadInitialAssets();
-	
 
 	initMetrics();
 }
@@ -124,35 +122,26 @@ function testWebSocket() {
 
 function loadInitialAssets() {
 	//Bomber
-	AssetManager.loadAsset('~/../../res/atlas.png', 'BomberStanding_1', 9, 11, 27, 32);
-	AssetManager.loadAsset('~/../../res/atlas.png', 'BomberStanding_2', 38, 12, 27, 31);
-	AssetManager.loadAsset('~/../../res/atlas.png', 'BomberStanding_3', 67, 11, 27, 32);
-	AssetManager.loadAsset('~/../../res/atlas.png', 'BomberStanding_4', 97, 11, 27, 32);
-	AssetManager.loadAsset('~/../../res/atlas.png', 'BomberStanding_5', 125, 11, 27, 32);
-	AssetManager.loadAsset('~/../../res/atlas.png', 'BomberStanding_6', 153, 12, 27, 31);
-	AssetManager.loadAsset('~/../../res/atlas.png', 'BomberStanding_7', 182, 11, 27, 32);
-	AssetManager.loadAsset('~/../../res/atlas.png', 'BomberStanding_8', 211, 11, 27, 32);
+	AssetManager.loadAsset('~/../../res/super_bomberman.png', 'BomberStandingUp', 236, 39, 16, 23);
+	AssetManager.loadAsset('~/../../res/super_bomberman.png', 'BomberStandingRight', 178, 37, 17, 25);
+	AssetManager.loadAsset('~/../../res/super_bomberman.png', 'BomberStandingDown', 69, 37, 16, 25);
+	AssetManager.loadAsset('~/../../res/super_bomberman.png', 'BomberStandingLeft', 123, 37, 17, 25);
+
+	AssetManager.loadAsset('~/../../res/super_bomberman.png', 'BomberMovingUp_1', 218, 38, 16, 24);
+	AssetManager.loadAsset('~/../../res/super_bomberman.png', 'BomberMovingUp_2', 236, 37, 16, 23);
+	AssetManager.loadAsset('~/../../res/super_bomberman.png', 'BomberMovingUp_3', 142, 39, 16, 24);
 	
-	AssetManager.loadAsset('~/../../res/atlas.png', 'BomberMovingLeft_1', 469, 1061, 21, 36);
-	AssetManager.loadAsset('~/../../res/atlas.png', 'BomberMovingLeft_2', 494, 1062, 21, 35);
-	AssetManager.loadAsset('~/../../res/atlas.png', 'BomberMovingLeft_3', 521, 1061, 21, 36);
-	AssetManager.loadAsset('~/../../res/atlas.png', 'BomberMovingLeft_4', 546, 1062, 21, 35);
+	AssetManager.loadAsset('~/../../res/super_bomberman.png', 'BomberMovingRight_1', 160, 38, 16, 24);
+	AssetManager.loadAsset('~/../../res/super_bomberman.png', 'BomberMovingRight_2', 178, 37, 17, 25);
+	AssetManager.loadAsset('~/../../res/super_bomberman.png', 'BomberMovingRight_3', 196, 39, 17, 23);
 	
-	AssetManager.loadAsset('~/../../res/atlas.png', 'BomberMovingRight_1', 470, 1145, 21, 35);
-	AssetManager.loadAsset('~/../../res/atlas.png', 'BomberMovingRight_2', 495, 1144, 21, 36);
-	AssetManager.loadAsset('~/../../res/atlas.png', 'BomberMovingRight_3', 522, 1145, 21, 35);
-	AssetManager.loadAsset('~/../../res/atlas.png', 'BomberMovingRight_4', 547, 1144, 21, 36);
-	
-	AssetManager.loadAsset('~/../../res/atlas.png', 'BomberMovingDown_1', 469, 1022, 22, 36);
-	AssetManager.loadAsset('~/../../res/atlas.png', 'BomberMovingDown_2', 495, 1024, 24, 34);
-	AssetManager.loadAsset('~/../../res/atlas.png', 'BomberMovingDown_3', 524, 1022, 25, 36);
-	AssetManager.loadAsset('~/../../res/atlas.png', 'BomberMovingDown_4', 550, 1023, 24, 34);
-	
-	AssetManager.loadAsset('~/../../res/atlas.png', 'BomberMovingUp_1', 466, 1103, 22, 36);
-	AssetManager.loadAsset('~/../../res/atlas.png', 'BomberMovingUp_2', 492, 1105, 27, 34);
-	AssetManager.loadAsset('~/../../res/atlas.png', 'BomberMovingUp_3', 521, 1103, 22, 36);
-	AssetManager.loadAsset('~/../../res/atlas.png', 'BomberMovingUp_4', 547, 1104, 26, 34);
-	
+	AssetManager.loadAsset('~/../../res/super_bomberman.png', 'BomberMovingDown_1', 51, 37, 16, 25);
+	AssetManager.loadAsset('~/../../res/super_bomberman.png', 'BomberMovingDown_2', 69, 37, 16, 25);
+	AssetManager.loadAsset('~/../../res/super_bomberman.png', 'BomberMovingDown_3', 87, 37, 16, 25);
+
+	AssetManager.loadAsset('~/../../res/super_bomberman.png', 'BomberMovingLeft_1', 105, 38, 16, 24);
+	AssetManager.loadAsset('~/../../res/super_bomberman.png', 'BomberMovingLeft_2', 123, 37, 17, 25);
+	AssetManager.loadAsset('~/../../res/super_bomberman.png', 'BomberMovingLeft_3', 142, 39, 16, 23);
 	
 	//Bombs
 	AssetManager.loadAsset('~/../../res/atlas.png', 'BombSmall', 521, 687, 15, 16);
@@ -179,6 +168,8 @@ function onClose(evt) {
 	writeToScreen('blue', 'WARNING', "DISCONNECTED");
 	websocket.isConnected = false;
 	isRunning = false;
+	GameEngine.onCloseConnection();
+	PlayerGuid = null;
 }
 
 function onMessage(evt) {
@@ -267,11 +258,9 @@ function onMessage(evt) {
 		} else if(action == "U") {
 			var attr = msgVect[i].substr(count, msgVect[i].length).split(';');
 			var guid = attr[0];
-			var x = attr[1];
-			var y = attr[2];
 			
 			var obj = GameEngine.entityMap[guid];
-			obj.update(x,y);
+			obj.update(attr);
 		} else if(action == "D") {
 			var guid = msgVect[i].substr(count, msgVect[i].length);
 			var obj = GameEngine.entityMap[guid];

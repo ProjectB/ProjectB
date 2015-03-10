@@ -12,6 +12,7 @@
 using namespace std;
 #include <string>
 #include "Game.hpp"
+#include "../util/Enums.hpp"
 
 class Bomber : public GenObject
 {
@@ -36,11 +37,14 @@ public:
 	~Bomber();
 	void update(std::string);
 	void bombExploded();
+	std::string generateObjectActionMessage(ObjectAction) const;
 private:
 	short int HP; //Hit Points
 	short int bombStr; //bomb strength, in squares
 	short int bombLimit; //number of concurrent bombs that can be placed
 	short int numBombsDropped;
+
+	EnumMoveDirection lastDirection;
 
 	std::string generateObjectState() const;
 	void dropBomb();

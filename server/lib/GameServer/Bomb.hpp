@@ -24,7 +24,8 @@ public:
 
 	Bomb(std::string, int, int, int, int, Game* game);
 	~Bomb();
-	void update();
+	void stepUpdateAfterDif();
+	void explode();
 private:
 	std::string ownerGuid;
 	float timeLeft;

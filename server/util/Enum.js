@@ -1,7 +1,6 @@
 var EnumMoveDirection = {
 	Left: 0,
-	Standing: 1,
-	Right: 2,
-	Down: 3,
-	Up: 4
+	Right: 1,
+	Down: 2,
+	Up: 3
 }

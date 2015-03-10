@@ -26,6 +26,9 @@ public:
 	GenObject();
 	GenObject(std::string, ObjType, int, int, int, int);
 	virtual ~GenObject();
+
+
+	/* GETTERS/SETTERS/UPDATES */
 	/* Create a message that describe the action to be taken by the javascript client.
 	 * Message schema should be:
 	 *  "Action|Object|Properties"
@@ -34,10 +37,16 @@ public:
 	 *  Properties are the attributes that define the object.
 	 *  The message is spliced by a separator "|".
 	 */
-	std::string generateObjectActionMessage(ObjectAction) const;
+	virtual std::string generateObjectActionMessage(ObjectAction) const;
 	void Move(int, int);
-	std::string getGenObjectType() const;
 	virtual void update(std::string);
+	virtual void stepUpdateBeforeDif();
+	virtual void stepUpdateAfterDif();
+
+	std::string getGenObjectType() const;
+	bool getHasMovedThisFrame() const;
+private:
+	bool hasMovedThisFrame;
 };
 
 

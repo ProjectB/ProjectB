@@ -19,15 +19,17 @@ Bomb::Bomb(std::string guid, int x, int y, int w, int h, Game* game)
 }
 Bomb::~Bomb()
 {
-	std::cout << "bomb exploded" << std::endl;
-	this->game->onBombExplosion(this);
-	std::cout << "after bomb explosion.. object should disappear" << std::endl;
 }
-void Bomb::update()
+void Bomb::stepUpdateAfterDif()
 {
+	GenObject::stepUpdateAfterDif();
 	this->timeLeft -= FRAME_TIME;
 	if(this->timeLeft <= 0)
-		delete this;
+		this->explode();
+}
+void Bomb::explode()
+{
+	this->game->onBombExplosion(this);
 }
 /* GETTERS && SETTERS */
 float Bomb::getTimeLeft() const

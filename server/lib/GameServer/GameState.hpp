@@ -18,7 +18,7 @@ class GameState {
 public:
 	GameState();
 	~GameState();
-	std::string generateDifStateMessage(std::map<std::string, GenObject*>*, std::vector<GenObject*>*);
-	std::string generateObjectsDifStateMessage(std::map<std::string, GenObject*>*, std::vector<GenObject*>*);
+	std::string generateDifStateMessage(std::map<std::string, GenObject*>*, std::vector<GenObject*>*, std::vector<GenObject*>*);
+	std::string generateObjectsDifStateMessage(std::map<std::string, GenObject*>*, std::vector<GenObject*>*, std::vector<GenObject*>*);
 };
 #endif /* GAMESTATE_HPP_ */
