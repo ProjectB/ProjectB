@@ -67,7 +67,6 @@ function update() {
 		clearInterval(lp);
 	else {
 		drawObjs();
-		InputEngine.processInput();
 	}
 }
 
@@ -260,7 +259,8 @@ function onMessage(evt) {
 			var guid = attr[0];
 			
 			var obj = GameEngine.entityMap[guid];
-			obj.update(attr);
+			if(obj.update)
+				obj.update(attr);
 		} else if(action == "D") {
 			var guid = msgVect[i].substr(count, msgVect[i].length);
 			var obj = GameEngine.entityMap[guid];

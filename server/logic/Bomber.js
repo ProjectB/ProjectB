@@ -9,7 +9,7 @@ function Bomber(x, y, w, h, wScale, hScale)
 			w: w,
 			h: h
 	}
-	this.direction = 1;
+	this.direction = EnumMoveDirection.Down;
 	this.wScale = wScale;
 	this.hScale = hScale;
 }
@@ -21,6 +21,7 @@ Bomber.prototype = {
 	frameCounter: 0,
 	lastDirection: EnumMoveDirection.Down,
 	isMoving: false,
+	wasMoving: false,
 	enumAssetNameDict: {},
 	init: function()
 	{
@@ -42,10 +43,11 @@ Bomber.prototype = {
 
 		var curName = this.enumAssetNameDict[EnumMoveDirection.Standing];
 		this.assets[curName] = [];
-		this.assets[curName].push({asset: AssetManager.getAsset("BomberStandingUp"), numFrames: 0});
+		//order must follow EnumMoveDirection order
+		this.assets[curName].push({asset: AssetManager.getAsset("BomberStandingLeft"), numFrames: 0});
 		this.assets[curName].push({asset: AssetManager.getAsset("BomberStandingRight"), numFrames: 0});
 		this.assets[curName].push({asset: AssetManager.getAsset("BomberStandingDown"), numFrames: 0});
-		this.assets[curName].push({asset: AssetManager.getAsset("BomberStandingLeft"), numFrames: 0});
+		this.assets[curName].push({asset: AssetManager.getAsset("BomberStandingUp"), numFrames: 0});
 
 		var curName = this.enumAssetNameDict[EnumMoveDirection.Up];
 		this.assets[curName] = [];
@@ -78,22 +80,28 @@ Bomber.prototype = {
 	},
 	update: function(arrayMsg)
 	{
-		this.pos.x = arrayMsg[0];
-		this.pos.y = arrayMsg[1];
-		this.direction = arrayMsg[2];
+		this.pos.x = arrayMsg[1];
+		this.pos.y = arrayMsg[2];
+		this.direction = arrayMsg[3];
+		this.isMoving = arrayMsg[4] == "1" ? true : false;
 	},
 	draw: function()
 	{
-		var assetArray = this._getAssetArrayByDirection();
-		
-		if(!assetArray)
-			return;
-		
 		if(this.direction != this.lastDirection)
 		{
 			this.assetIndex = 0;
 			this.lastDirection = this.direction;
 		}
+		
+		if(this.isMoving != this.wasMoving)
+		{
+			this.assetIndex = 0;
+			this.wasMoving = this.isMoving;
+		}
+		
+		var assetArray = this._getAssetArrayByDirection();
+		if(!assetArray)
+			return;
 		
 		var asset = assetArray[this.assetIndex];
 		
@@ -114,10 +122,11 @@ Bomber.prototype = {
 	},
 	_getAssetArrayByDirection: function()
 	{
+		if(this.isMoving === false)
+			return [this.assets[this.enumAssetNameDict[EnumMoveDirection.Standing]][this.direction]];
+		
 		if(this.assets[this.enumAssetNameDict[this.direction]])
 			return this.assets[this.enumAssetNameDict[this.direction]];
-		
-		return this.assets[this.enumAssetNameDict[EnumMoveDirection.Standing]];
 	}
 };
 /*********** END BOMBER CLASS ***********/
